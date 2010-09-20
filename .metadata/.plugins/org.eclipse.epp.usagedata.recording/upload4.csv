@@ -1,0 +1,26 @@
+what,kind,bundleId,bundleVersion,description,time
+java.vm.name,sysinfo,,,"Java HotSpot(TM) Client VM",1285021401512
+java.vm.specification.name,sysinfo,,,"Java Virtual Machine Specification",1285021401512
+java.vm.specification.vendor,sysinfo,,,"Sun Microsystems Inc.",1285021401512
+java.vm.specification.version,sysinfo,,,"1.0",1285021401512
+java.vm.vendor,sysinfo,,,"Sun Microsystems Inc.",1285021401512
+java.vm.version,sysinfo,,,"16.0-b13",1285021401512
+started,bundle,org.eclipse.debug.core,3.5.0.v20090526-1600,"org.eclipse.debug.core",1285021403157
+started,bundle,org.eclipse.jdt.launching,3.5.0.v20090527,"org.eclipse.jdt.launching",1285021403274
+deactivated,workbench,org.eclipse.ui.workbench,3.5.1.M20090826-0800a,"",1285021404463
+activated,workbench,org.eclipse.ui.workbench,3.5.1.M20090826-0800a,"",1285021409781
+started,bundle,org.eclipse.jdt.apt.core,3.3.201.R35x_v20090818-0235,"org.eclipse.jdt.apt.core",1285021409781
+started,bundle,org.eclipse.jdt.apt.pluggable.core,1.0.201.R35x_v20090818-0225,"org.eclipse.jdt.apt.pluggable.core",1285021409791
+activated,view,org.eclipse.jdt.ui,3.5.1.r351_v20090821-0800,"org.eclipse.jdt.ui.PackageExplorer",1285021409798
+started,bundle,org.eclipse.ltk.core.refactoring,3.5.0.v20090513-2000,"org.eclipse.ltk.core.refactoring",1285021412494
+started,bundle,org.eclipse.ltk.ui.refactoring,3.4.100.v20090604,"org.eclipse.ltk.ui.refactoring",1285021412530
+started,bundle,org.eclipse.compare,3.5.0.I20090514-0808,"org.eclipse.compare",1285021412926
+deactivated,workbench,org.eclipse.ui.workbench,3.5.1.M20090826-0800a,"",1285021415229
+activated,workbench,org.eclipse.ui.workbench,3.5.1.M20090826-0800a,"",1285021426742
+executed,command,org.eclipse.ui,3.5.1.M20090902-1000,"org.eclipse.ui.file.import",1285021426779
+executed,command,org.eclipse.ui,3.5.1.M20090902-1000,"org.eclipse.ui.file.import",1285021426779
+deactivated,workbench,org.eclipse.ui.workbench,3.5.1.M20090826-0800a,"",1285021431741
+activated,workbench,org.eclipse.ui.workbench,3.5.1.M20090826-0800a,"",1285021432782
+closed,workbench,org.eclipse.ui.workbench,3.5.1.M20090826-0800a,"",1285021433238
+stopped,bundle,com.omondo.uml.std,3.5.0.v20090815,"com.omondo.uml.std",1285021433823
+stopped,bundle,org.eclipse.mylyn.ide.ant,3.2.2.v20090912-0400-e3x,"org.eclipse.mylyn.ide.ant",1285021433825
