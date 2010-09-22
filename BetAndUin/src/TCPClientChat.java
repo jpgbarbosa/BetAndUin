@@ -10,23 +10,31 @@ public class TCPClientChat {
 	    //System.exit(0);
 	}
 
-	//OLA
+	/*Set to true if you want the program to display debugging messages.*/
+	Boolean debugging = false;
 	
+	/*The socket variable we shall use to connect to the server.*/
 	Socket s = null;
-	int serverPos = 0;
-	int []serverPorts = new int[2];
-	int serversocket;
-	ReadChat readThread;
-	WriteChat writeThread;
-	int retries = 0;
-	int retrying = 0;
-	int WAITING_TIME = 1000;
-	int NO_RETRIES = 10;
 	
+	/*The variables related to the reconnection.*/
+	int retries = 0; //The numbers of times we reconnected already to a given port.
+	int retrying = 0; //Tests if we are retrying for the first or second time.
+	int WAITING_TIME = 1000; //The time the thread sleeps.
+	int NO_RETRIES = 10; //The maximum amount of retries for a given port.
+	
+	/*The thread related variables.*/
+	Lock lock = new Lock();
+	WriteChat writeThread;
+	ReadChat readThread;
+	
+	/*The variables related to the server ports available.*/
+	int []serverPorts = new int[2]; //The array with the two different ports.
+	int serverPos = 0; //The position array, which corresponds to active port.
+	//Places the two ports in the array.
 	serverPorts[0] = 6000;
 	serverPorts[1] = 7000;
-	serversocket = serverPorts[serverPos];
 	
+	writeThread =  new WriteChat(lock);
 	//Five attemps to reconnect the connection.
 	while (retries < NO_RETRIES){
 		try {
@@ -43,40 +51,52 @@ public class TCPClientChat {
 			}
 		    // 1o passo
 		    //s = new Socket(args[0], serversocket);
-			s = new Socket("localHost", serversocket);
-	
-		    System.out.println("SOCKET=" + s);
+			s = new Socket("localHost", serverPorts[serverPos]);
+			
+			if (debugging){
+				System.out.println("SOCKET=" + s);
+			}
 		    
-		    writeThread =  new WriteChat(s);
-		    readThread = new ReadChat(s);
+		    writeThread.setSocket(s);
+		    readThread = new ReadChat(s,lock);
+		    
 		    // 3o passo
 	
-		    try{
-			    readThread.join();
-		    	writeThread.join();
-		    	System.out.println("Waited for all the threads.");
-		    }catch (InterruptedException e) {
-			    System.out.println("Thread Exception.\n");
+		    //Resets the counters and the lock flags.
+		    synchronized(lock){
+		    	lock.setConnectionDown(false);
+		    	lock.notify();
 		    }
-		    
-		    //Resets the counters.
 			retries = 0;
 			retrying = 0;
 		    
+		    try{
+		    	readThread.join();
+		    }catch (InterruptedException e) {
+		    	if (debugging){
+		    		System.out.println("Thread Exception.\n");
+		    	}
+		    }
+		    
 		} catch (UnknownHostException e) {
-		    System.out.println("Sock:" + e.getMessage());
+			if (debugging){
+				System.out.println("Sock:" + e.getMessage());
+			}
 		} catch (EOFException e) {
-		    System.out.println("EOF:" + e.getMessage());
+			if (debugging){
+				System.out.println("EOF:" + e.getMessage());
+			}
 		} catch (IOException e) {
-		    System.out.println("IO:" + e.getMessage());
+			if (debugging){
+				System.out.println("IO:" + e.getMessage());
+			}
 		    retries++;
 		    /* In this case, it's the first connection, and the server is already down.
 		     * So, we will pass immediately to the next one and retry this one later.
 		     */
 		    if (retries == 1 && retrying == 0){
 		    	serverPos = (++serverPos)%2;
-		    	serversocket = serverPorts[serverPos];
-		    	System.out.println("Trying to connect to server in port " + serversocket + ".");
+		    	System.out.println("Trying to connect to server in port " + serverPorts[serverPos] + ".");
 		    }
 		    /* We have retried the connection at least once.
 		     * Consequently, the thread shall wait WAITING_TIME miliseconds 
@@ -92,8 +112,7 @@ public class TCPClientChat {
 		    	//Resets the number of retries and passes to the serverPort of the other server.
 		    	retries = 0;
 		    	serverPos = (++serverPos)%2;
-		    	serversocket = serverPorts[serverPos];
-		    	System.out.println("Trying to connect to server in port " + serversocket + ".");
+		    	System.out.println("Trying to connect to server in port " + serverPorts[serverPos] + ".");
 		    	retrying++;
 		    }
 		} finally {
@@ -106,7 +125,11 @@ public class TCPClientChat {
 		}
 		}
 	
+		/* Talvez temos de alterar isto, para deixar o programa a correr indefinidamente
+		 * até que o utilizador prima o Ctr+C.
+		 */
 		System.out.println("Exited");
+		System.exit(0);
     }
     
 }
@@ -114,31 +137,33 @@ public class TCPClientChat {
 class ReadChat extends Thread {
 	DataInputStream in;
     Socket clientSocket;
+    Lock lock;
     
-    public ReadChat (Socket aClientSocket) {
+    public ReadChat (Socket aClientSocket, Lock lock) {
         try{
             clientSocket = aClientSocket;
             in = new DataInputStream(clientSocket.getInputStream());
+            this.lock = lock;
             this.start();
         }catch(IOException e){System.out.println("Connection:" + e.getMessage());}
     }
     //=============================
     public void run(){
-    	while(true){
-	        try{
-	            while(true){
-	                //an echo server
-	                String data = in.readUTF();
-	                System.out.println("MENSAGEM RECEBIDA:\n   "+data + "\nFIM DA MENSAGEM\n");
-	            }
-	        }catch(EOFException e){
-	        	System.out.println("EOF:" + e);
-	        }catch(IOException e){
-	        	System.out.println("IO:" + e);
-	        	System.out.println("The server is down. Please press enter to retry connecting to it.");
-	        	return;
-	        }
-    	}
+        try{
+            while(true){
+                //an echo server
+                String data = in.readUTF();
+                System.out.println("MENSAGEM RECEBIDA:\n   "+data + "\nFIM DA MENSAGEM\n");
+            }
+        }catch(EOFException e){
+        	System.out.println("EOF:" + e);
+        }catch(IOException e){
+        	System.out.println("IO:" + e);
+        	synchronized(lock){
+        		lock.setConnectionDown(true);
+        	}
+        	System.out.println("The server is down. Please wait while we try to reconnect...");
+        }
     }
 }
 
@@ -148,21 +173,29 @@ class WriteChat extends Thread {
     Socket clientSocket;
     String userInput;
     int serverSocketFirst = 6000, serverSocketSecond = 7000;
+    Lock lock;
     
     BufferedReader reader;
     
-    public WriteChat (Socket aClientSocket) {
-        try{
-            clientSocket = aClientSocket;
-            out = new DataOutputStream(clientSocket.getOutputStream());
-    	    reader = new BufferedReader(new InputStreamReader(System.in));
-            this.start();
-        }catch(IOException e){System.out.println("Connection:" + e.getMessage());}
+    public WriteChat (Lock lock) {
+    	this.lock = lock;
+        this.start();
     }
     //=============================
     public void run(){
     	while (true){
 	        try{
+	        	synchronized(lock){
+	        		while (lock.isConnectionDown()){
+	        			try {
+	        				System.out.println("Here!");
+							lock.wait();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+	        		}
+	        	}
 	            while(true){
 	            	userInput = reader.readLine();
 	                out.writeUTF(userInput);
@@ -175,5 +208,29 @@ class WriteChat extends Thread {
 	        }
     	}
     }
+    
+    public void setSocket(Socket s){
+    	clientSocket = s;
+    	try{
+    		out = new DataOutputStream(clientSocket.getOutputStream());
+    	    reader = new BufferedReader(new InputStreamReader(System.in));
+        }catch(IOException e){System.out.println("Connection:" + e.getMessage());}
+    }
 	
+}
+
+class Lock{
+	Boolean connectionDown;
+	
+	public Lock(){
+		connectionDown = true;
+	}
+	
+	public Boolean isConnectionDown(){
+		return connectionDown;
+	}
+	
+	public void setConnectionDown(Boolean value){
+		connectionDown = value;
+	}
 }
