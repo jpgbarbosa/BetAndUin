@@ -10,8 +10,6 @@ public class TCPClientChat {
 	    //System.exit(0);
 	}
 
-	//OLA
-	
 	Socket s = null;
 	int serverPos = 0;
 	int []serverPorts = new int[2];

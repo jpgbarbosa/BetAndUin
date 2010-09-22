@@ -1,0 +1,26 @@
+what,kind,bundleId,bundleVersion,description,time
+started,bundle,org.eclipse.team.cvs.core,3.3.200.I20090430-0408,"org.eclipse.team.cvs.core",1285113197572
+started,bundle,org.eclipse.team.cvs.ui,3.3.201.R35x_v20090826-0905,"org.eclipse.team.cvs.ui",1285113197590
+started,bundle,org.eclipse.team.ui,3.5.0.I20090430-0408,"org.eclipse.team.ui",1285113197593
+started,bundle,org.eclipse.ui,3.5.1.M20090902-1000,"org.eclipse.ui",1285113197598
+started,bundle,org.eclipse.ui.console,3.4.0.v20090513,"org.eclipse.ui.console",1285113197619
+started,bundle,org.eclipse.ui.editors,3.5.0.v20090527-2000,"org.eclipse.ui.editors",1285113197620
+started,bundle,org.eclipse.ui.forms,3.4.1.v20090714_35x,"org.eclipse.ui.forms",1285113197628
+started,bundle,org.eclipse.ui.ide,3.5.1.M20090826-0800,"org.eclipse.ui.ide",1285113197640
+started,bundle,org.eclipse.ui.net,1.2.1.r35x_20090812-1200,"org.eclipse.ui.net",1285113197641
+started,bundle,org.eclipse.ui.views,3.4.1.M20090826-0800,"org.eclipse.ui.views",1285113197643
+started,bundle,org.eclipse.ui.workbench,3.5.1.M20090826-0800a,"org.eclipse.ui.workbench",1285113197644
+started,bundle,org.eclipse.ui.workbench.texteditor,3.5.0.v20090603,"org.eclipse.ui.workbench.texteditor",1285113197646
+started,bundle,org.eclipse.uml2.common.edit,1.5.0.v200905041045,"org.eclipse.uml2.common.edit",1285113197647
+started,bundle,org.eclipse.uml2.uml,3.0.0.v200905151700,"org.eclipse.uml2.uml",1285113197663
+started,bundle,org.eclipse.uml2.uml.edit,3.0.0.v200905041045,"org.eclipse.uml2.uml.edit",1285113197668
+started,bundle,org.eclipse.update.configurator,3.3.0.v20090312,"org.eclipse.update.configurator",1285113197670
+started,bundle,org.eclipse.update.core,3.2.300.v20090525,"org.eclipse.update.core",1285113197682
+started,bundle,org.eclipse.update.scheduler,3.2.200.v20081127,"org.eclipse.update.scheduler",1285113197682
+os,sysinfo,,,"win32",1285113197693
+arch,sysinfo,,,"x86",1285113197693
+ws,sysinfo,,,"win32",1285113197693
+locale,sysinfo,,,"pt_PT",1285113197693
+processors,sysinfo,,,"2",1285113197693
+java.runtime.name,sysinfo,,,"Java(TM) SE Runtime Environment",1285113197693
+java.runtime.version,sysinfo,,,"1.6.0_18-b07",1285113197693

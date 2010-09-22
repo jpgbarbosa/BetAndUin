@@ -1,4 +1,4 @@
-#Mon Sep 20 23:23:53 BST 2010
+#Mon Sep 20 23:33:25 BST 2010
 useQuickDiffPrefPage=true
 proposalOrderMigrated=true
 tabWidthPropagated=true
@@ -8,6 +8,7 @@ useAnnotationsPrefPage=true
 org.eclipse.jface.textfont=1|Courier New|10.0|0|WINDOWS|1|0|0|0|0|0|0|0|0|1|0|0|0|0|Courier New;
 org.eclipse.jdt.ui.editor.tab.width=
 org.eclipse.jdt.ui.formatterprofiles.version=11
+content_assist_number_of_computers=16
 spelling_locale_initialized=true
 eclipse.preferences.version=1
 content_assist_proposals_foreground=0,0,0
