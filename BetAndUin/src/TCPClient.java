@@ -47,7 +47,7 @@ public class TCPClient {
 			    try {
 					Thread.sleep(WAITING_TIME);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					//TODO Auto-generated catch block
 					e.printStackTrace();
 					System.exit(0);
 				}
