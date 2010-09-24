@@ -23,8 +23,13 @@ public class ClientWriteTCP extends Thread {
     }
     
     public String printMenu(){    	
-    	return "\tMenu:\n-> 1- Show credits\n-> 2- Reset\n-> 3- View Current Matches\n-> 4- Bet" +
-    			"\n-> 5- Online Users\n-> 6- Message User\n-> 7- Message All\n";    	
+    	return "\tMenu:\n-> 1- Show credits: shows the current credit of the user." +
+    			"\n-> 2- Reset: users credit are defaulted to 100 cr" +
+    			"\n-> 3- View Current Matches" +
+    			"\n-> 4- Bet: bet [match number] [1 x 2] [credits]" +
+    			"\n-> 5- Online Users: show users logged ing" +
+    			"\n-> 6- Message User: send messagen to specific user" +
+    			"\n-> 7- Message All: send message to all users\n";    	
     }
     
     //=============================
