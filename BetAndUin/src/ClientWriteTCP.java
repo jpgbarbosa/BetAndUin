@@ -19,7 +19,7 @@ public class ClientWriteTCP extends Thread {
     	connectionLock = lock;
         this.start();
     }
-    //=============================
+    
     public void run(){
     	while (true){
 	        try{
