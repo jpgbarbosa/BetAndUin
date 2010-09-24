@@ -1,0 +1,26 @@
+what,kind,bundleId,bundleVersion,description,time
+java.specification.name,sysinfo,,,"Java Platform API Specification",1285319954282
+java.specification.vendor,sysinfo,,,"Sun Microsystems Inc.",1285319954282
+java.specification.version,sysinfo,,,"1.6",1285319954282
+java.vendor,sysinfo,,,"Sun Microsystems Inc.",1285319954282
+java.version,sysinfo,,,"1.6.0_18",1285319954282
+java.vm.info,sysinfo,,,"mixed mode",1285319954282
+java.vm.name,sysinfo,,,"Java HotSpot(TM) Client VM",1285319954282
+java.vm.specification.name,sysinfo,,,"Java Virtual Machine Specification",1285319954283
+java.vm.specification.vendor,sysinfo,,,"Sun Microsystems Inc.",1285319954283
+java.vm.specification.version,sysinfo,,,"1.0",1285319954283
+java.vm.vendor,sysinfo,,,"Sun Microsystems Inc.",1285319954283
+java.vm.version,sysinfo,,,"16.0-b13",1285319954283
+opened,editor,org.eclipse.jdt.ui,3.5.1.r351_v20090821-0800,"org.eclipse.jdt.ui.CompilationUnitEditor",1285319966842
+activated,editor,org.eclipse.jdt.ui,3.5.1.r351_v20090821-0800,"org.eclipse.jdt.ui.CompilationUnitEditor",1285319967165
+activated,view,org.eclipse.jdt.ui,3.5.1.r351_v20090821-0800,"org.eclipse.jdt.ui.PackageExplorer",1285319971439
+activated,editor,org.eclipse.jdt.ui,3.5.1.r351_v20090821-0800,"org.eclipse.jdt.ui.CompilationUnitEditor",1285319975306
+activated,editor,org.eclipse.jdt.ui,3.5.1.r351_v20090821-0800,"org.eclipse.jdt.ui.CompilationUnitEditor",1285319983724
+activated,view,org.eclipse.jdt.ui,3.5.1.r351_v20090821-0800,"org.eclipse.jdt.ui.PackageExplorer",1285320268166
+deactivated,workbench,org.eclipse.ui.workbench,3.5.1.M20090826-0800a,"",1285320273670
+activated,workbench,org.eclipse.ui.workbench,3.5.1.M20090826-0800a,"",1285320278240
+executed,command,org.eclipse.ui,3.5.1.M20090902-1000,"org.eclipse.ui.file.import",1285320278269
+executed,command,org.eclipse.ui,3.5.1.M20090902-1000,"org.eclipse.ui.file.refresh",1285320279912
+opened,editor,org.eclipse.jdt.ui,3.5.1.r351_v20090821-0800,"org.eclipse.jdt.ui.CompilationUnitEditor",1285320285949
+activated,editor,org.eclipse.jdt.ui,3.5.1.r351_v20090821-0800,"org.eclipse.jdt.ui.CompilationUnitEditor",1285320286247
+started,bundle,org.eclipse.jdt.junit,3.5.1.r351_v20090708-0800,"org.eclipse.jdt.junit",1285320286559

@@ -82,3 +82,50 @@ HandlerActivation(commandId=AUTOGEN:::com.objectaid.uml.cls.controller.ClassDiag
 HandlerActivation(commandId=AUTOGEN:::com.objectaid.uml.cls.controller.ClassDiagramEditPart/com.objectaid.uml.automatic.image.,
 	handler=ActionDelegateHandlerProxy(null,com.objectaid.uml.controller.action.SetAutomaticImageActionDelegate),
 	expression=WorkbenchWindowExpression(org.eclipse.ui.internal.WorkbenchWindow@54777e),sourcePriority=16384)
+!SESSION 2010-09-22 23:34:21.404 -----------------------------------------------
+eclipse.buildId=M20090917-0800
+java.version=1.6.0_18
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=pt_PT
+Framework arguments:  -product org.eclipse.epp.package.java.product
+Command-line arguments:  -os win32 -ws win32 -arch x86 -product org.eclipse.epp.package.java.product
+
+!ENTRY org.eclipse.emf.ecore 2 0 2010-09-22 23:34:37.110
+!MESSAGE Both 'com.omondo.uml.core' and 'org.eclipse.uml2.uml' register an extension parser for 'uml'
+
+!ENTRY org.eclipse.ui.workbench 2 0 2010-09-22 23:35:05.017
+!MESSAGE A handler conflict occurred.  This may disable some commands.
+!SUBENTRY 1 org.eclipse.ui.workbench 2 0 2010-09-22 23:35:05.017
+!MESSAGE Conflict for 'AUTOGEN:::com.objectaid.uml.cls.controller.ClassDiagramEditPart/com.objectaid.uml.automatic.image.':
+HandlerActivation(commandId=AUTOGEN:::com.objectaid.uml.cls.controller.ClassDiagramEditPart/com.objectaid.uml.automatic.image.,
+	handler=ActionDelegateHandlerProxy(null,com.objectaid.uml.controller.action.SetAutomaticImageActionDelegate),
+	expression=WorkbenchWindowExpression(org.eclipse.ui.internal.WorkbenchWindow@dd89f9),sourcePriority=16384)
+HandlerActivation(commandId=AUTOGEN:::com.objectaid.uml.cls.controller.ClassDiagramEditPart/com.objectaid.uml.automatic.image.,
+	handler=ActionDelegateHandlerProxy(null,com.objectaid.uml.controller.action.SaveAutomaticImageAction),
+	expression=WorkbenchWindowExpression(org.eclipse.ui.internal.WorkbenchWindow@dd89f9),sourcePriority=16384)
+!SESSION 2010-09-24 10:18:25.882 -----------------------------------------------
+eclipse.buildId=M20090917-0800
+java.version=1.6.0_18
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=pt_PT
+Framework arguments:  -product org.eclipse.epp.package.java.product
+Command-line arguments:  -os win32 -ws win32 -arch x86 -product org.eclipse.epp.package.java.product
+
+!ENTRY org.eclipse.emf.ecore 2 0 2010-09-24 10:18:37.828
+!MESSAGE Both 'com.omondo.uml.core' and 'org.eclipse.uml2.uml' register an extension parser for 'uml'
+
+!ENTRY org.eclipse.ui.workbench 2 0 2010-09-24 10:19:07.500
+!MESSAGE A handler conflict occurred.  This may disable some commands.
+!SUBENTRY 1 org.eclipse.ui.workbench 2 0 2010-09-24 10:19:07.501
+!MESSAGE Conflict for 'AUTOGEN:::com.objectaid.uml.cls.controller.ClassDiagramEditPart/com.objectaid.uml.automatic.image.':
+HandlerActivation(commandId=AUTOGEN:::com.objectaid.uml.cls.controller.ClassDiagramEditPart/com.objectaid.uml.automatic.image.,
+	handler=ActionDelegateHandlerProxy(null,com.objectaid.uml.controller.action.SaveAutomaticImageAction),
+	expression=WorkbenchWindowExpression(org.eclipse.ui.internal.WorkbenchWindow@1af9e98),sourcePriority=16384)
+HandlerActivation(commandId=AUTOGEN:::com.objectaid.uml.cls.controller.ClassDiagramEditPart/com.objectaid.uml.automatic.image.,
+	handler=ActionDelegateHandlerProxy(null,com.objectaid.uml.controller.action.SetAutomaticImageActionDelegate),
+	expression=WorkbenchWindowExpression(org.eclipse.ui.internal.WorkbenchWindow@1af9e98),sourcePriority=16384)
+
+!ENTRY org.eclipse.core.resources 2 2 2010-09-24 11:22:59.249
+!MESSAGE Save operation warnings.
+!SUBENTRY 1 org.eclipse.core.resources 2 234 2010-09-24 11:22:59.249
+!MESSAGE The project description file (.project) for 'Fichas' was missing.  This file contains important information about the project.  A new project description file has been created, but some information about the project may have been lost.

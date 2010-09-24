@@ -13,12 +13,20 @@ public class ClientWriteTCP extends Thread {
     int serverSocketFirst = 6000, serverSocketSecond = 7000;
     ConnectionLock connectionLock;
     
+    String login=null;
+    
     BufferedReader reader;
     
     public ClientWriteTCP (ConnectionLock lock) {
     	connectionLock = lock;
         this.start();
     }
+    
+    public String printMenu(){    	
+    	return "\tMenu:\n-> 1- Show credits\n-> 2- Reset\n-> 3- View Current Matches\n-> 4- Bet" +
+    			"\n-> 5- Online Users\n-> 6- Message User\n-> 7- Message All\n";    	
+    }
+    
     //=============================
     public void run(){
     	while (true){
@@ -34,6 +42,7 @@ public class ClientWriteTCP extends Thread {
 	        		}
 	        	}
 	            while(true){
+	            	System.out.println(printMenu());
 	            	userInput = reader.readLine();
 	                out.writeUTF(userInput);
 	            }

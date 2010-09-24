@@ -1,0 +1,26 @@
+what,kind,bundleId,bundleVersion,description,time
+started,bundle,org.eclipse.team.core,3.5.0.I20090527-0620,"org.eclipse.team.core",1285194911517
+started,bundle,org.eclipse.team.cvs.core,3.3.200.I20090430-0408,"org.eclipse.team.cvs.core",1285194911520
+started,bundle,org.eclipse.team.cvs.ui,3.3.201.R35x_v20090826-0905,"org.eclipse.team.cvs.ui",1285194911550
+started,bundle,org.eclipse.team.ui,3.5.0.I20090430-0408,"org.eclipse.team.ui",1285194911554
+started,bundle,org.eclipse.ui,3.5.1.M20090902-1000,"org.eclipse.ui",1285194911558
+started,bundle,org.eclipse.ui.console,3.4.0.v20090513,"org.eclipse.ui.console",1285194911561
+started,bundle,org.eclipse.ui.editors,3.5.0.v20090527-2000,"org.eclipse.ui.editors",1285194911561
+started,bundle,org.eclipse.ui.forms,3.4.1.v20090714_35x,"org.eclipse.ui.forms",1285194911564
+started,bundle,org.eclipse.ui.ide,3.5.1.M20090826-0800,"org.eclipse.ui.ide",1285194911580
+started,bundle,org.eclipse.ui.net,1.2.1.r35x_20090812-1200,"org.eclipse.ui.net",1285194911583
+started,bundle,org.eclipse.ui.views,3.4.1.M20090826-0800,"org.eclipse.ui.views",1285194911585
+started,bundle,org.eclipse.ui.workbench,3.5.1.M20090826-0800a,"org.eclipse.ui.workbench",1285194911589
+started,bundle,org.eclipse.ui.workbench.texteditor,3.5.0.v20090603,"org.eclipse.ui.workbench.texteditor",1285194911593
+started,bundle,org.eclipse.uml2.common.edit,1.5.0.v200905041045,"org.eclipse.uml2.common.edit",1285194911595
+started,bundle,org.eclipse.uml2.uml,3.0.0.v200905151700,"org.eclipse.uml2.uml",1285194911615
+started,bundle,org.eclipse.uml2.uml.edit,3.0.0.v200905041045,"org.eclipse.uml2.uml.edit",1285194911652
+started,bundle,org.eclipse.update.configurator,3.3.0.v20090312,"org.eclipse.update.configurator",1285194911653
+started,bundle,org.eclipse.update.core,3.2.300.v20090525,"org.eclipse.update.core",1285194911665
+started,bundle,org.eclipse.update.scheduler,3.2.200.v20081127,"org.eclipse.update.scheduler",1285194911666
+os,sysinfo,,,"win32",1285194911675
+arch,sysinfo,,,"x86",1285194911675
+ws,sysinfo,,,"win32",1285194911675
+locale,sysinfo,,,"pt_PT",1285194911675
+processors,sysinfo,,,"2",1285194911675
+java.runtime.name,sysinfo,,,"Java(TM) SE Runtime Environment",1285194911675

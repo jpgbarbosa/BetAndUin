@@ -4,6 +4,7 @@
 		<item value="false" key="WizardFileSystemResourceImportPage1.STORE_OVERWRITE_EXISTING_RESOURCES_ID"/>
 		<item value="false" key="WizardFileSystemResourceImportPage1.STORE_CREATE_CONTAINER_STRUCTURE_ID"/>
 		<list key="WizardFileSystemResourceImportPage1.STORE_SOURCE_NAMES_ID">
+			<item value="C:\Users\Barbosa\Documents\EI\3Ano\SD\DEMO_2_Sockets\DEMO_2_Sockets\SocketsExamples"/>
 			<item value="C:\Users\Barbosa\Desktop"/>
 		</list>
 	</section>
