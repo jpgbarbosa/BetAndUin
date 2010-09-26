@@ -39,29 +39,39 @@
 <info part="DefaultEditorWorkbook">
 <folder appearance="1" expanded="2">
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
-<part id="1"/>
 <part id="0"/>
+<part id="1"/>
 <part id="2"/>
 <part id="3"/>
+<part id="4"/>
+<part id="5"/>
 </presentation>
 </folder>
 </info>
 </editorArea>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="UDPClient.java" partName="UDPClient.java" path="C:/Users/Barbosa/Documents/EI/3Ano/SD/BetAndUin/Fichas/src/UDPClient.java" title="UDPClient.java" tooltip="Fichas/src/UDPClient.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/Fichas/src/UDPClient.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="643" selectionTopPixel="255"/>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BetScheduler.java" partName="BetScheduler.java" path="C:/Users/Barbosa/Documents/EI/3Ano/SD/BetAndUin/BetAndUin/src/BetScheduler.java" title="BetScheduler.java" tooltip="BetAndUin/src/BetScheduler.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BetAndUin/src/BetScheduler.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="0"/>
 </editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="UDPServer.java" partName="UDPServer.java" path="C:/Users/Barbosa/Documents/EI/3Ano/SD/BetAndUin/Fichas/src/UDPServer.java" title="UDPServer.java" tooltip="Fichas/src/UDPServer.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/Fichas/src/UDPServer.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="144" selectionTopPixel="0"/>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="ClientReadTCP.java" partName="ClientReadTCP.java" path="C:/Users/Barbosa/Documents/EI/3Ano/SD/BetAndUin/BetAndUin/src/ClientReadTCP.java" title="ClientReadTCP.java" tooltip="BetAndUin/src/ClientReadTCP.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BetAndUin/src/ClientReadTCP.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="627" selectionTopPixel="0"/>
 </editor>
-<editor activePart="true" focus="true" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="TCPClientChat.java" partName="TCPClientChat.java" path="C:/Users/Barbosa/Documents/EI/3Ano/SD/BetAndUin/BetAndUin/src/TCPClientChat.java" title="TCPClientChat.java" tooltip="BetAndUin/src/TCPClientChat.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BetAndUin/src/TCPClientChat.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="5648" selectionTopPixel="2430"/>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="ClientWriteTCP.java" partName="ClientWriteTCP.java" path="C:/Users/Barbosa/Documents/EI/3Ano/SD/BetAndUin/BetAndUin/src/ClientWriteTCP.java" title="ClientWriteTCP.java" tooltip="BetAndUin/src/ClientWriteTCP.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BetAndUin/src/ClientWriteTCP.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1308" selectionTopPixel="459"/>
 </editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="TCPServerChat.java" partName="TCPServerChat.java" path="C:/Users/Barbosa/Documents/EI/3Ano/SD/BetAndUin/BetAndUin/src/TCPServerChat.java" title="TCPServerChat.java" tooltip="BetAndUin/src/TCPServerChat.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BetAndUin/src/TCPServerChat.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="820" selectionTopPixel="0"/>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="ConnectionLock.java" partName="ConnectionLock.java" path="C:/Users/Barbosa/Documents/EI/3Ano/SD/BetAndUin/BetAndUin/src/ConnectionLock.java" title="ConnectionLock.java" tooltip="BetAndUin/src/ConnectionLock.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BetAndUin/src/ConnectionLock.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="0"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="TCPClient.java" partName="TCPClient.java" path="C:/Users/Barbosa/Documents/EI/3Ano/SD/BetAndUin/BetAndUin/src/TCPClient.java" title="TCPClient.java" tooltip="BetAndUin/src/TCPClient.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BetAndUin/src/TCPClient.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="398" selectionTopPixel="255"/>
+</editor>
+<editor activePart="true" focus="true" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="TCPServer.java" partName="TCPServer.java" path="C:/Users/Barbosa/Documents/EI/3Ano/SD/BetAndUin/BetAndUin/src/TCPServer.java" title="TCPServer.java" tooltip="BetAndUin/src/TCPServer.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/BetAndUin/src/TCPServer.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="2119" selectionTopPixel="594"/>
 </editor>
 </editors>
 <views>
@@ -293,163 +303,171 @@
 <workingSets/>
 <navigationHistory>
 <editors>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BetAndUin/src/TCPServerChat.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BetAndUin/src/TCPClientChat.java"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/Fichas/src/UDPClient.java"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/Fichas/src/UDPServer.java"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/Fichas/src/UDPServer.java"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BetAndUin/src/TCPClientChat.java"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BetAndUin/src/TCPServerChat.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/Fichas/src/UDPClient.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BetAndUin/src/TCPServerChat.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BetAndUin/src/BetScheduler.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BetAndUin/src/ClientReadTCP.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BetAndUin/src/ClientWriteTCP.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BetAndUin/src/TCPServer.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BetAndUin/src/TCPClient.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BetAndUin/src/TCPServer.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BetAndUin/src/TCPClient.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/BetAndUin/src/ConnectionLock.java"/>
 </editors>
-<item historyLabel="TCPClientChat.java" index="1">
-<position info="not_deleted" x="536" y="0"/>
-</item>
-<item historyLabel="TCPServerChat.java" index="0">
-<position info="not_deleted" x="2631" y="0"/>
-</item>
-<item historyLabel="TCPClientChat.java" index="1">
-<position info="not_deleted" x="296" y="0"/>
-</item>
-<item historyLabel="TCPServerChat.java" index="0">
-<position info="not_deleted" x="201" y="0"/>
-</item>
-<item historyLabel="TCPClientChat.java" index="1">
-<position info="not_deleted" x="1333" y="0"/>
-</item>
-<item historyLabel="TCPServerChat.java" index="0">
-<position info="not_deleted" x="201" y="0"/>
-</item>
-<item historyLabel="TCPClientChat.java" index="1">
-<position info="not_deleted" x="1333" y="0"/>
-</item>
-<item historyLabel="TCPClientChat.java" index="1">
-<position info="not_deleted" x="351" y="0"/>
-</item>
-<item historyLabel="UDPClient.java" index="2">
-<position info="not_deleted" x="0" y="0"/>
-</item>
-<item historyLabel="UDPServer.java" index="3">
-<position info="not_deleted" x="410" y="0"/>
-</item>
-<item historyLabel="UDPClient.java" index="2">
-<position info="not_deleted" x="0" y="0"/>
-</item>
-<item historyLabel="UDPServer.java" index="3">
+<item historyLabel="UDPServer.java" index="1">
 <position info="not_deleted" x="712" y="0"/>
 </item>
-<item historyLabel="UDPClient.java" index="2">
-<position info="not_deleted" x="0" y="0"/>
-</item>
-<item historyLabel="UDPClient.java" index="2">
-<position/>
-</item>
-<item historyLabel="UDPClient.java" index="2">
-<position info="not_deleted" x="211" y="0"/>
-</item>
-<item historyLabel="UDPServer.java" index="3">
-<position info="not_deleted" x="712" y="0"/>
-</item>
-<item historyLabel="UDPClient.java" index="2">
-<position info="not_deleted" x="211" y="0"/>
-</item>
-<item historyLabel="UDPClient.java" index="2">
-<position info="not_deleted" x="732" y="0"/>
-</item>
-<item historyLabel="UDPClient.java" index="2">
-<position info="not_deleted" x="154" y="0"/>
-</item>
-<item historyLabel="UDPServer.java" index="3">
-<position info="not_deleted" x="712" y="0"/>
-</item>
-<item historyLabel="UDPClient.java" index="2">
-<position info="not_deleted" x="378" y="0"/>
-</item>
-<item historyLabel="UDPServer.java" index="3">
-<position info="not_deleted" x="712" y="0"/>
-</item>
-<item historyLabel="UDPClient.java" index="2">
-<position info="not_deleted" x="378" y="0"/>
-</item>
-<item historyLabel="UDPServer.java" index="3">
-<position info="not_deleted" x="712" y="0"/>
-</item>
-<item historyLabel="UDPClient.java" index="2">
+<item historyLabel="UDPClient.java" index="0">
 <position info="not_deleted" x="303" y="0"/>
 </item>
-<item historyLabel="UDPServer.java" index="3">
+<item historyLabel="UDPServer.java" index="1">
 <position info="not_deleted" x="712" y="0"/>
 </item>
-<item historyLabel="UDPClient.java" index="2">
+<item historyLabel="UDPClient.java" index="0">
 <position/>
 </item>
-<item historyLabel="UDPServer.java" index="3">
+<item historyLabel="UDPServer.java" index="1">
 <position info="not_deleted" x="712" y="0"/>
 </item>
-<item historyLabel="UDPClient.java" index="2">
+<item historyLabel="UDPClient.java" index="0">
 <position/>
 </item>
-<item historyLabel="UDPServer.java" index="3">
+<item historyLabel="UDPServer.java" index="1">
 <position info="not_deleted" x="791" y="0"/>
 </item>
-<item historyLabel="UDPClient.java" index="2">
+<item historyLabel="UDPClient.java" index="0">
 <position info="not_deleted" x="1594" y="0"/>
 </item>
-<item historyLabel="UDPServer.java" index="3">
+<item historyLabel="UDPServer.java" index="1">
 <position info="not_deleted" x="791" y="0"/>
 </item>
-<item historyLabel="UDPClient.java" index="2">
+<item historyLabel="UDPClient.java" index="0">
 <position info="not_deleted" x="1594" y="0"/>
 </item>
-<item historyLabel="UDPServer.java" index="4">
+<item historyLabel="UDPServer.java" index="2">
 <position info="not_deleted" x="122" y="0"/>
 </item>
-<item historyLabel="UDPClient.java" index="2">
+<item historyLabel="UDPClient.java" index="0">
 <position info="not_deleted" x="643" y="0"/>
 </item>
-<item historyLabel="UDPServer.java" index="4">
+<item historyLabel="UDPServer.java" index="2">
 <position info="not_deleted" x="144" y="0"/>
 </item>
-<item historyLabel="TCPClientChat.java" index="5">
+<item historyLabel="TCPClientChat.java" index="3">
 <position info="not_deleted" x="0" y="0"/>
 </item>
-<item historyLabel="TCPClientChat.java" index="5">
+<item historyLabel="TCPClientChat.java" index="3">
 <position info="not_deleted" x="0" y="0"/>
 </item>
-<item historyLabel="TCPServerChat.java" index="6">
+<item historyLabel="TCPServerChat.java" index="4">
 <position info="not_deleted" x="214" y="0"/>
 </item>
-<item historyLabel="TCPClientChat.java" index="5">
+<item historyLabel="TCPClientChat.java" index="3">
 <position info="not_deleted" x="2034" y="0"/>
 </item>
-<item historyLabel="TCPServerChat.java" index="6">
+<item historyLabel="TCPServerChat.java" index="4">
 <position info="not_deleted" x="214" y="0"/>
 </item>
-<item historyLabel="TCPClientChat.java" index="5">
+<item historyLabel="TCPClientChat.java" index="3">
 <position info="not_deleted" x="3907" y="0"/>
 </item>
-<item historyLabel="TCPServerChat.java" index="6">
+<item historyLabel="TCPServerChat.java" index="4">
 <position info="not_deleted" x="527" y="0"/>
 </item>
-<item historyLabel="TCPClientChat.java" index="5">
+<item historyLabel="TCPClientChat.java" index="3">
 <position info="not_deleted" x="5801" y="0"/>
 </item>
-<item historyLabel="TCPServerChat.java" index="6">
+<item historyLabel="TCPServerChat.java" index="4">
 <position info="not_deleted" x="527" y="0"/>
 </item>
-<item historyLabel="TCPClientChat.java" index="5">
+<item historyLabel="TCPClientChat.java" index="3">
 <position info="not_deleted" x="1853" y="0"/>
 </item>
-<item historyLabel="TCPServerChat.java" index="6">
+<item historyLabel="TCPServerChat.java" index="4">
 <position info="not_deleted" x="913" y="0"/>
 </item>
-<item historyLabel="TCPClientChat.java" index="5">
+<item historyLabel="TCPClientChat.java" index="3">
 <position info="not_deleted" x="1853" y="0"/>
 </item>
-<item historyLabel="TCPServerChat.java" index="6">
+<item historyLabel="TCPServerChat.java" index="4">
 <position info="not_deleted" x="820" y="0"/>
 </item>
-<item active="true" historyLabel="TCPClientChat.java" index="5">
-<position info="not_deleted" x="1853" y="0"/>
+<item historyLabel="TCPClientChat.java" index="3">
+<position info="not_deleted" x="0" y="0"/>
+</item>
+<item historyLabel="UDPClient.java" index="5">
+<position info="not_deleted" x="0" y="0"/>
+</item>
+<item historyLabel="TCPClientChat.java" index="3">
+<position info="not_deleted" x="0" y="0"/>
+</item>
+<item historyLabel="TCPServerChat.java" index="6">
+<position info="not_deleted" x="0" y="0"/>
+</item>
+<item historyLabel="BetScheduler.java" index="7">
+<position info="not_deleted" x="0" y="0"/>
+</item>
+<item historyLabel="ClientReadTCP.java" index="8">
+<position info="not_deleted" x="246" y="0"/>
+</item>
+<item historyLabel="ClientWriteTCP.java" index="9">
+<position info="not_deleted" x="1159" y="0"/>
+</item>
+<item historyLabel="TCPServer.java" index="10">
+<position info="not_deleted" x="0" y="0"/>
+</item>
+<item historyLabel="TCPClient.java" index="11">
+<position info="not_deleted" x="170" y="0"/>
+</item>
+<item historyLabel="TCPServer.java" index="10">
+<position info="not_deleted" x="537" y="0"/>
+</item>
+<item historyLabel="TCPClient.java" index="11">
+<position info="not_deleted" x="170" y="0"/>
+</item>
+<item historyLabel="ClientReadTCP.java" index="8">
+<position info="not_deleted" x="627" y="0"/>
+</item>
+<item historyLabel="ClientWriteTCP.java" index="9">
+<position info="not_deleted" x="1159" y="0"/>
+</item>
+<item historyLabel="TCPServer.java" index="12">
+<position info="not_deleted" x="572" y="0"/>
+</item>
+<item historyLabel="TCPClient.java" index="13">
+<position info="not_deleted" x="170" y="0"/>
+</item>
+<item historyLabel="TCPServer.java" index="12">
+<position info="not_deleted" x="3266" y="0"/>
+</item>
+<item historyLabel="TCPClient.java" index="13">
+<position info="not_deleted" x="170" y="0"/>
+</item>
+<item historyLabel="ConnectionLock.java" index="14">
+<position info="not_deleted" x="0" y="0"/>
+</item>
+<item historyLabel="ClientWriteTCP.java" index="9">
+<position info="not_deleted" x="1308" y="0"/>
+</item>
+<item historyLabel="TCPServer.java" index="12">
+<position info="not_deleted" x="3266" y="0"/>
+</item>
+<item historyLabel="TCPServer.java" index="12">
+<position info="not_deleted" x="2279" y="0"/>
+</item>
+<item historyLabel="TCPServer.java" index="12">
+<position info="not_deleted" x="2225" y="0"/>
+</item>
+<item historyLabel="TCPClient.java" index="13">
+<position info="not_deleted" x="398" y="0"/>
+</item>
+<item active="true" historyLabel="TCPServer.java" index="12">
+<position info="not_deleted" x="2225" y="0"/>
 </item>
 </navigationHistory>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
@@ -468,6 +486,24 @@
 </trimLayout>
 </window>
 <mruList>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="TCPServer.java" tooltip="BetAndUin/src/TCPServer.java">
+<persistable path="/BetAndUin/src/TCPServer.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="TCPClient.java" tooltip="BetAndUin/src/TCPClient.java">
+<persistable path="/BetAndUin/src/TCPClient.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="ConnectionLock.java" tooltip="BetAndUin/src/ConnectionLock.java">
+<persistable path="/BetAndUin/src/ConnectionLock.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="ClientWriteTCP.java" tooltip="BetAndUin/src/ClientWriteTCP.java">
+<persistable path="/BetAndUin/src/ClientWriteTCP.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="ClientReadTCP.java" tooltip="BetAndUin/src/ClientReadTCP.java">
+<persistable path="/BetAndUin/src/ClientReadTCP.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BetScheduler.java" tooltip="BetAndUin/src/BetScheduler.java">
+<persistable path="/BetAndUin/src/BetScheduler.java"/>
+</file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="TCPServerChat.java" tooltip="BetAndUin/src/TCPServerChat.java">
 <persistable path="/BetAndUin/src/TCPServerChat.java"/>
 </file>

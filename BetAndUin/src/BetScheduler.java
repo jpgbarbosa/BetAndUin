@@ -52,7 +52,7 @@ public class BetScheduler extends Thread{
 	        }
 	
 	        /*Send the results to all the active clients.*/
-	        threadCounter.sendMessage(message, null);
+	        threadCounter.sendMessageAll(message, null);
 	        /* Creates a new batch of games. */
 	        man.refreshMatches();
         }
