@@ -7,15 +7,34 @@ public class TCPServer{
         int numero=0;
         ThreadCounter threadArray;
         BetScheduler betScheduler;
+        ConnectionWithServerManager connectionWithServerManager;
+        Boolean isPrimaryServer;
+        int serverPort, partnerPort;
         
+        if (args.length < 3){
+        	System.out.println("java TCPServer serverPort partnerPort isPrimaryServer (for this last" +
+        			"option, type primary or secondary");
+    	    System.exit(0);
+        }
+        
+        serverPort = Integer.parseInt(args[0]);
+        partnerPort = Integer.parseInt(args[1]);
+        if (args[2].toLowerCase().equals("primary")){
+        	isPrimaryServer = true;
+        }
+        else{
+        	isPrimaryServer = false;
+        }
         try{
-            int serverPort = 6000;
+            
             threadArray = new ThreadCounter(10);
             System.out.println("A Escuta no Porto " + serverPort);
             ServerSocket listenSocket = new ServerSocket(serverPort);
             System.out.println("LISTEN SOCKET="+listenSocket);
             
-            betScheduler = new BetScheduler(threadArray);
+            //IMPORTANT: We are temporarily disabling the bets!!!
+            //betScheduler = new BetScheduler(threadArray);
+            connectionWithServerManager = new ConnectionWithServerManager(serverPort, partnerPort, isPrimaryServer);
             
             while(true) {
                 Socket clientSocket = listenSocket.accept(); // BLOQUEANTE

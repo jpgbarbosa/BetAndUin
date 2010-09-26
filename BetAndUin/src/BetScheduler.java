@@ -1,4 +1,3 @@
-import java.net.Socket;
 import pt.uc.dei.sd.BetManager;
 import pt.uc.dei.sd.IBetManager;
 import pt.uc.dei.sd.IMatch;

@@ -1,30 +1,33 @@
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
 public class ReceiveServerMessages extends Thread{
 	/*Set to true if you want the program to display debugging messages.*/
-	Boolean debugging = false;
+	Boolean debugging = true;
 	
 	DatagramSocket aSocket = null;
 	String msg;
-	int partnerPort;
+	int serverPort;
+	ServerMessagesRepository msgList;
+	ConnectionWithServerManager parentThread;
 	
-	public ReceiveServerMessages(int pPort){
-		partnerPort = pPort;
-		
+	public ReceiveServerMessages(int sPort, ServerMessagesRepository list, ConnectionWithServerManager thread){
+		serverPort = sPort;
+		msgList = list;
+		parentThread = thread;
+		this.start();
 	}
 	
 	public void run(){
 		try{
 			/* Opens the Datagram socket. */
-			aSocket = new DatagramSocket(partnerPort);
+			aSocket = new DatagramSocket(serverPort);
 			
 			if (debugging){
-				System.out.println("Socket Datagram writing in port " + partnerPort + ".");
+				System.out.println("Socket Datagram writing in port " + serverPort + ".");
 			}
 			
 			while(true){
@@ -35,6 +38,11 @@ public class ReceiveServerMessages extends Thread{
 				
 				if (debugging){
 					System.out.println("This server has received a " + msg + ".");
+				}
+				
+				synchronized (msgList){
+					msgList.addMsg(msg);
+					parentThread.interrupt();
 				}
 			}
 			
@@ -52,6 +60,12 @@ public class ReceiveServerMessages extends Thread{
 			
 		}
 	}
-
+	
+	/* This thread is no longer needed, so we can safely terminate it
+	 * and stop using more resources.
+	 */
+	public void terminateThread(){
+		//TODO: We ought to implement this method!
+	}
 
 }
