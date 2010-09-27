@@ -32,7 +32,7 @@ public class ConnectionWithServerManager extends Thread{
 	/* Connection variables. */
 	int serverPort;
 	int partnerPort;
-	ServerMessagesRepository msgToReceiveList;
+	MessagesRepository msgToReceiveList;
 	ReceiveServerMessages receiveMensager;
 	/* This variables is used when both servers decide, at the same time
 	 * that they should be the main server. When this happens and both of them
@@ -45,7 +45,7 @@ public class ConnectionWithServerManager extends Thread{
 	Boolean isPartnerDead = false;
 	/* Times to trigger the message timers. */
 	int KEEP_ALIVE_TIME = 5000; //The time between two consecutive KEEP_ALIVE's.
-	int WAITING_TIME = 20000; //The time needed to consider the other server dead.
+	int WAITING_TIME = 15000; //The time needed to consider the other server dead.
 	int FIRST_WAITING_TIME = 5000; //The time the server waits before sending the intial message again.
 	
 	/*Variables related to the sending action.*/
@@ -57,7 +57,7 @@ public class ConnectionWithServerManager extends Thread{
 		serverPort = sPort;
 		partnerPort = pPort;
 		this.isDefaultServer = isDefaultServer;
-		msgToReceiveList = new ServerMessagesRepository();
+		msgToReceiveList = new MessagesRepository();
 		receiveMensager = new ReceiveServerMessages(serverPort, msgToReceiveList, this);
 		
 		/* Initializes the UDP socket to send messages to the other server. */
@@ -119,8 +119,6 @@ public class ConnectionWithServerManager extends Thread{
 				if (msgToReceiveList.listSize() > 0){
 					partnerAnswer = msgToReceiveList.getMsg();
 				}
-				
-				
 			}
 			
 			// TODO: Should we inform the server class that we are now the primary server?

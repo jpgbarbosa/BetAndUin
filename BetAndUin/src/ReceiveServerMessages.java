@@ -11,10 +11,10 @@ public class ReceiveServerMessages extends Thread{
 	DatagramSocket aSocket = null;
 	String msg;
 	int serverPort;
-	ServerMessagesRepository msgList;
+	MessagesRepository msgList;
 	ConnectionWithServerManager parentThread;
 	
-	public ReceiveServerMessages(int sPort, ServerMessagesRepository list, ConnectionWithServerManager thread){
+	public ReceiveServerMessages(int sPort, MessagesRepository list, ConnectionWithServerManager thread){
 		serverPort = sPort;
 		msgList = list;
 		parentThread = thread;
