@@ -34,7 +34,7 @@ public class TCPServer{
             System.out.println("LISTEN SOCKET="+listenSocket);
             
             //IMPORTANT: We are temporarily disabling the bets!!!
-            //betScheduler = new BetScheduler(threadArray);
+            betScheduler = new BetScheduler(threadArray);
             connectionWithServerManager = new ConnectionWithServerManager(serverPort, partnerPort, isPrimaryServer);
             
             while(true) {
