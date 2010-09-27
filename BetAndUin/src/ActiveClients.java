@@ -19,6 +19,7 @@ import java.util.ListIterator;
  *             (chat option). When we want to perform this action, an hash table
  *             is useless.
  */
+
 public class ActiveClients {
 	Hashtable<String, ClientListElement> clientHash;
 	List <ClientListElement> clientList;
@@ -119,3 +120,4 @@ class ClientListElement{
 	}
 
 }
+

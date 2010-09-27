@@ -7,6 +7,8 @@ import java.net.Socket;
 
 public class ClientWriteTCP extends Thread {
 	//This thread will be responsible for handling problems with the link to the server.
+	String user=null,pass=null;
+	boolean loggedIn=false;
     DataOutputStream out;
     Socket clientSocket;
     String userInput;
@@ -19,7 +21,18 @@ public class ClientWriteTCP extends Thread {
     	connectionLock = lock;
         this.start();
     }
+
+    public String printMenu(){    	
+    	return "\tMenu:\n-> Show the current credit of the user: show credits" +
+    			"\n-> Reset user credits to 100Cr: reset" +
+    			"\n-> View Current Matches: show matches" +
+    			"\n-> Make a Bet: bet [match number] [1 x 2] [credits]" +
+    			"\n-> Show Online Users: show users" +
+    			"\n-> Send messagen to specific user: send [user] '[message]'" +
+    			"\n-> Send message to all users: send all '[message]'";    	
+    }
     
+    //=============================
     public void run(){
     	while (true){
 	        try{
@@ -33,6 +46,8 @@ public class ClientWriteTCP extends Thread {
 						}
 	        		}
 	        	}
+	
+	        	System.out.println(printMenu());
 	            while(true){
 	            	userInput = reader.readLine();
 	                out.writeUTF(userInput);

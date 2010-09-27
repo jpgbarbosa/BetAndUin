@@ -1,5 +1,6 @@
 // TCPServer2.java: Multithreaded server
 import java.net.*;
+import java.util.StringTokenizer;
 import java.io.*;
 
 public class TCPServer{
@@ -40,7 +41,7 @@ public class TCPServer{
                 Socket clientSocket = listenSocket.accept(); // BLOQUEANTE
                 System.out.println("CLIENT_SOCKET (created at accept())="+clientSocket);
                 numero ++;
-                new ConnectionChat(clientSocket, numero, threadArray);
+                new ConnectionChat(clientSocket, numero, threadArray, betScheduler);
                 synchronized (threadArray){
                 	threadArray.insertSocket(clientSocket);
                 }
@@ -51,13 +52,17 @@ public class TCPServer{
 }
 //= Thread para tratar de cada canal de comunicação com um cliente
 class ConnectionChat extends Thread {
+	BetScheduler betScheduler;
+	String user="gaia",pass="fixe";
+	boolean loggedIn=false;
     DataInputStream in;
     Socket clientSocket;
     int thread_number;
     ThreadCounter threadArray;
     
-    public ConnectionChat (Socket aClientSocket, int numero, ThreadCounter threadArray) {
+    public ConnectionChat (Socket aClientSocket, int numero, ThreadCounter threadArray, BetScheduler betScheduler) {
         thread_number = numero;
+        this.betScheduler=betScheduler;
         try{
             clientSocket = aClientSocket;
             in = new DataInputStream(clientSocket.getInputStream());
@@ -65,16 +70,71 @@ class ConnectionChat extends Thread {
             this.start();
         }catch(IOException e){System.out.println("Connection:" + e.getMessage());}
     }
+    
+    public String parseFunction(String input){
+    	String result="";
+    	String temp;
+    	
+    	StringTokenizer strToken;
+        strToken = new StringTokenizer (input);
+        temp=strToken.nextToken();
+        
+        if(temp.equals("show")){
+        	temp=strToken.nextToken();
+        	if(temp.equals("matches")){
+        		threadArray.sendMessageAll(betScheduler.getMatches(), clientSocket);
+        	}else if(temp.equals("credits")){
+        		//TODO: por o resultado numa string e devolver
+        	}else if(temp.equals("users")){
+        		//TODO: por o resultado numa string e devolver
+        	}else{
+        		result="Unknow Command";
+        	}
+        }else if(temp.equals("send")){
+        	temp=strToken.nextToken();
+        	if(temp.equals("all")){
+        		threadArray.sendMessageAll(temp, clientSocket);
+        	} else if(false/*checkUser(temp)*/){
+        		//TODO: verificar se o cliente existe e devolver o socket possivelmente
+        	} else{
+        		result = "Invalid Command or user Unknow";
+        	}
+        } else if(temp.equals("reset")){
+        	//TODO: faz o reset
+        	result = "Your credits were reseted to ";//+user.credits+"Cr";
+        } else if(temp.equals("bet")){
+        	//TODO: check if next token is integer, collect the remaining infos check them 
+        	//if successful result="bet done!"
+        } else {
+        	result = "Unknown command";
+        }
+        
+    	
+		return result;
+    }
     //=============================
     public void run(){
         try{
+        	while(!loggedIn){
+            	StringTokenizer strToken;
+            	String userInfo = in.readUTF();
+                strToken = new StringTokenizer (userInfo);
+                if(strToken.nextToken().equals(user) && strToken.nextToken().equals(pass)){
+                	loggedIn=true;
+                	threadArray.sendMessageUser("log successful",clientSocket);
+                }
+                else{
+                	threadArray.sendMessageUser("log error",clientSocket);
+                }
+        	}
             while(true){
                 //an echo server
                 String data = in.readUTF();
                 System.out.println("T["+thread_number + "] Recebeu: "+data);
-                synchronized (threadArray){
+                //TODO: parseFunction(data)...
+                /*synchronized (threadArray){
                 	threadArray.sendMessage(data, clientSocket);
-                }
+                }*/
             }
         }catch(EOFException e){System.out.println("EOF:" + e);
         }catch(IOException e){System.out.println("IO:" + e);}
@@ -97,7 +157,7 @@ class ThreadCounter {
 		counter++;
 	}
 	
-	public void sendMessage(String message, Socket clientSocket){
+	public void sendMessageAll(String message, Socket clientSocket){
 		int i;
 		try{
 			for (i = 0; i < counter; i++){
@@ -109,4 +169,12 @@ class ThreadCounter {
 			}
 		}catch(Exception e){System.out.println("ERROR");}
 	}
+	
+	public void sendMessageUser(String message, Socket clientSocket){
+		try{
+			out = new DataOutputStream(clientSocket.getOutputStream());
+			out.writeUTF(message);
+		}catch(Exception e){System.out.println("ERROR");}
+	}
+	
 }

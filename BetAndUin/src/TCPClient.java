@@ -23,6 +23,8 @@ public class TCPClient {
 	int retrying = 0; //Tests if we are retrying for the first or second time.
 	int WAITING_TIME = 1000; //The time the thread sleeps.
 	int NO_RETRIES = 10; //The maximum amount of retries for a given port.
+	String user=null,pass=null;
+	boolean loggedIn=false;
 	
 	/*The thread related variables.*/
 	ConnectionLock connectionLock = new ConnectionLock();
@@ -71,8 +73,32 @@ public class TCPClient {
 		    writeThread.setSocket(s);
 		    readThread.setSocket(s);
 		    
-		    // 3o passo
-	
+			String temp;
+			boolean error=false;
+			
+			while(!loggedIn){
+				if((user!=null && pass!=null) && !error){
+					writeThread.out.writeUTF(user+" "+pass);
+					temp=readThread.in.readUTF();
+				} else {
+		        	System.out.print("Login\nuser: ");
+		        	user = writeThread.reader.readLine();
+		        	System.out.print("pass: ");
+		        	pass = writeThread.reader.readLine();
+		        	writeThread.out.writeUTF(user+" "+pass);
+		        	temp=readThread.in.readUTF();
+				}
+	        	if(temp.equals("log error")){
+	        		temp="";
+	        		error=true;
+	        		System.out.println("user or password incorrect. Please try again...");
+	        	} else if(temp.equals("log successful")){
+	        		loggedIn=true;
+	        		System.out.println("You are now logged in!");
+	        	}
+			}
+        	
+        	// 3o passo
 		    //Resets the counters and the lock flags.
 		    synchronized(connectionLock){
 		    	connectionLock.setConnectionDown(false);
@@ -86,6 +112,8 @@ public class TCPClient {
 		    }
 			retries = 0;
 			retrying = 0;
+			loggedIn = false;
+			error = false;
 		    
 		} catch (UnknownHostException e) {
 			if (debugging){
