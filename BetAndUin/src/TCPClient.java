@@ -73,20 +73,26 @@ public class TCPClient {
 		    writeThread.setSocket(s);
 		    readThread.setSocket(s);
 		    
+			String temp;
+			boolean error=false;
+			
 			while(!loggedIn){
-				String temp;
-	        	System.out.print("Login\nuser: ");
-	        	user = writeThread.reader.readLine();
-	        	System.out.print("pass: ");
-	        	pass = writeThread.reader.readLine();
-	        	writeThread.out.writeUTF(user+" "+pass);
-	        	
-	        	temp=readThread.in.readUTF();
-	        	
-	        	if(temp=="log error"){
+				if((user!=null && pass!=null) && !error){
+					writeThread.out.writeUTF(user+" "+pass);
+					temp=readThread.in.readUTF();
+				} else {
+		        	System.out.print("Login\nuser: ");
+		        	user = writeThread.reader.readLine();
+		        	System.out.print("pass: ");
+		        	pass = writeThread.reader.readLine();
+		        	writeThread.out.writeUTF(user+" "+pass);
+		        	temp=readThread.in.readUTF();
+				}
+	        	if(temp.equals("log error")){
 	        		temp="";
+	        		error=true;
 	        		System.out.println("user or password incorrect. Please try again...");
-	        	} else if(temp=="log successful"){
+	        	} else if(temp.equals("log successful")){
 	        		loggedIn=true;
 	        		System.out.println("You are now logged in!");
 	        	}
@@ -106,6 +112,8 @@ public class TCPClient {
 		    }
 			retries = 0;
 			retrying = 0;
+			loggedIn = false;
+			error = false;
 		    
 		} catch (UnknownHostException e) {
 			if (debugging){

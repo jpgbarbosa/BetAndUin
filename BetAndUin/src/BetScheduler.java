@@ -6,7 +6,7 @@ import pt.uc.dei.sd.IMatch;
 
 public class BetScheduler extends Thread{
 	int TIME_BETWEEN_ROUNDS = 10000;
-	String message;
+	String message, lastMatches="";
 	ThreadCounter threadCounter;
 	
 	public BetScheduler(ThreadCounter counter){
@@ -24,7 +24,9 @@ public class BetScheduler extends Thread{
 	        for (IMatch m : man.getMatches()) {
 	            message += m.getHomeTeam() + " vs " + m.getAwayTeam() + "\n";
 	        }
-	        
+	        synchronized(lastMatches){
+	        	lastMatches=new String(message);
+	        }
 	        System.out.println(message);
 	        try {
 				Thread.sleep(TIME_BETWEEN_ROUNDS);
@@ -56,5 +58,9 @@ public class BetScheduler extends Thread{
 	        /* Creates a new batch of games. */
 	        man.refreshMatches();
         }
+	}
+	
+	public String getMatches(){
+		return lastMatches;
 	}
 }

@@ -22,7 +22,7 @@ public class TCPServer{
                 Socket clientSocket = listenSocket.accept(); // BLOQUEANTE
                 System.out.println("CLIENT_SOCKET (created at accept())="+clientSocket);
                 numero ++;
-                new ConnectionChat(clientSocket, numero, threadArray);
+                new ConnectionChat(clientSocket, numero, threadArray, betScheduler);
                 synchronized (threadArray){
                 	threadArray.insertSocket(clientSocket);
                 }
@@ -33,6 +33,7 @@ public class TCPServer{
 }
 //= Thread para tratar de cada canal de comunicação com um cliente
 class ConnectionChat extends Thread {
+	BetScheduler betScheduler;
 	String user="gaia",pass="fixe";
 	boolean loggedIn=false;
     DataInputStream in;
@@ -40,8 +41,9 @@ class ConnectionChat extends Thread {
     int thread_number;
     ThreadCounter threadArray;
     
-    public ConnectionChat (Socket aClientSocket, int numero, ThreadCounter threadArray) {
+    public ConnectionChat (Socket aClientSocket, int numero, ThreadCounter threadArray, BetScheduler betScheduler) {
         thread_number = numero;
+        this.betScheduler=betScheduler;
         try{
             clientSocket = aClientSocket;
             in = new DataInputStream(clientSocket.getInputStream());
@@ -61,7 +63,7 @@ class ConnectionChat extends Thread {
         if(temp.equals("show")){
         	temp=strToken.nextToken();
         	if(temp.equals("matches")){
-        		//TODO: por o resultado numa string e devolver
+        		threadArray.sendMessageAll(betScheduler.getMatches(), clientSocket);
         	}else if(temp.equals("credits")){
         		//TODO: por o resultado numa string e devolver
         	}else if(temp.equals("users")){
@@ -72,9 +74,9 @@ class ConnectionChat extends Thread {
         }else if(temp.equals("send")){
         	temp=strToken.nextToken();
         	if(temp.equals("all")){
-        		//TODO: devolver todos os users para uma string e devolver;
+        		threadArray.sendMessageAll(temp, clientSocket);
         	} else if(false/*checkUser(temp)*/){
-        		//TODO: send message to user temp;
+        		//TODO: verificar se o cliente existe e devolver o socket possivelmente
         	} else{
         		result = "Invalid Command or user Unknow";
         	}
@@ -98,12 +100,12 @@ class ConnectionChat extends Thread {
             	StringTokenizer strToken;
             	String userInfo = in.readUTF();
                 strToken = new StringTokenizer (userInfo);
-                if(strToken.nextToken()==user && strToken.nextToken()==pass){
+                if(strToken.nextToken().equals(user) && strToken.nextToken().equals(pass)){
                 	loggedIn=true;
-                	threadArray.senduserMessageUser("log successful",clientSocket);
+                	threadArray.sendMessageUser("log successful",clientSocket);
                 }
                 else{
-                	threadArray.senduserMessageUser("log error",clientSocket);
+                	threadArray.sendMessageUser("log error",clientSocket);
                 }
         	}
             while(true){
@@ -149,7 +151,7 @@ class ThreadCounter {
 		}catch(Exception e){System.out.println("ERROR");}
 	}
 	
-	public void senduserMessageUser(String message, Socket clientSocket){
+	public void sendMessageUser(String message, Socket clientSocket){
 		try{
 			out = new DataOutputStream(clientSocket.getOutputStream());
 			out.writeUTF(message);
