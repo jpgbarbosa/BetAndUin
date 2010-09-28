@@ -5,7 +5,10 @@ import java.net.*;
 import java.util.StringTokenizer;
 import java.io.*;
 
-public class TCPServer{    
+
+import client.ClientInfo;
+
+public class TCPServer{
     public static void main(String args[]){
     	
     	/*Set to true if you want the program to display debugging messages.*/
@@ -122,7 +125,9 @@ public class TCPServer{
 /* Thread used to take care of each communication channel between the active server and a given client. */
 class ConnectionChat extends Thread {
 	/* The betScheduler so we can send the matches' information back to the client. */
-	BetScheduler betScheduler;
+	BetScheduler betScheduler; 
+	ClientInfo clientInfo; //Will be easier to access client's info. -> this is just a reference
+	/*TODO: ATTENTION!!! we must initialize clientInfo once database is running.*/
 	
 	String user="gaia",pass="fixe";
 	
@@ -133,7 +138,7 @@ class ConnectionChat extends Thread {
     DataInputStream in;
     Socket clientSocket;
     ActiveClients activeClients;
-    
+
     public ConnectionChat (Socket aClientSocket, ActiveClients activeClients, BetScheduler betScheduler) {
         this.betScheduler=betScheduler;
         try{
@@ -157,13 +162,14 @@ class ConnectionChat extends Thread {
                 
                 userInfo = in.readUTF();
                 strToken = new StringTokenizer (userInfo);
-                
-                /* Collects the information sent by the client. */
-                username = strToken.nextToken();
-                password = strToken.nextToken();
-                
-                /* It's a valid login. */
-                if(username.equals(user) && password.equals(pass)){
+
+                /*needs to be fixed: server will search at the registered clients (SQL database or in some
+                 * memory struct)
+                 * if the username do not exist it must be registered first. if not it will be
+                 * added to the activeClients*/
+                if((username = strToken.nextToken()).equals(user)
+                		&& (password = strToken.nextToken()).equals(pass)){
+
                 	
                 	/* However, the user was already validated in some other machine. */
                 	if (activeClients.isClientLoggedIn(username)){
@@ -203,8 +209,13 @@ class ConnectionChat extends Thread {
         	/* The client is leaving. Consequently, we have to remove it from the list
         	 * of active clients.
         	 */
+        	/*TODO: we must save the user's current state, i.e., current bets and all finished bets
+        	 * during this last session.*/
         	activeClients.removeClient(username);
         	System.out.println("IO:" + e);
+        	/*TODO: When user is offline, we should also record messages of finished games, 
+        	 * where user made some bets, and non-delivered messages from other users so that, 
+        	 * in the next session, the user can check this informations*/
         }
     }
     
@@ -222,41 +233,50 @@ class ConnectionChat extends Thread {
         if(command.equals("show")){
         	command = strToken.nextToken();
         	
-        	if(command.equals("matches")){
+        	if(command.equals("matches")){ //show all current matches
         		activeClients.sendMessageAll(betScheduler.getMatches(), clientSocket);
         	}
-        	else if(command.equals("credits")){
-        		//TODO: por o resultado numa string e devolver
+        	else if(command.equals("credits")){ //show user's credits
+        		activeClients.sendMessageBySocket(""+clientInfo.getCredits(), clientSocket);
         	}
-        	else if(command.equals("users")){
-        		//TODO: por o resultado numa string e devolver
+        	else if(command.equals("users")){ //show all active users
+        		activeClients.sendMessageBySocket(activeClients.getUsersList(), clientSocket);
         	}
         	else{
         		answer = "Unknow Command";
         	}
         }
         else if(command.equals("send")){
-        	command = "";
+        	command=strToken.nextToken();
         	
-        	while(strToken.countTokens() - 1 > 0){
-        		command += strToken.nextToken() + " ";
-        	}
-        	
-        	command += strToken.nextToken();
-        	
-        	if(command.equals("all")){
+        	if(command.equals("all")){ //send a message to all users
+            	command = "";
+            	
+            	while(strToken.countTokens() - 1 > 0){
+            		command += strToken.nextToken() + " ";
+            	}
+            	command += strToken.nextToken();
+            	
         		activeClients.sendMessageAll(command, clientSocket);
         	}
-        	else if(false/*checkUser(temp)*/){
-        		//TODO: verificar se o cliente existe e devolver o socket possivelmente
+        	else if(activeClients.checkUser(command)){ //send a message to a specific user
+        		String user=command;
+            	command = "";
+            	
+            	while(strToken.countTokens() - 1 > 0){
+            		command += strToken.nextToken() + " ";
+            	}
+            	command += strToken.nextToken();
+            	
+            	activeClients.sendMessageUser(command, user);
         	}
         	else{
         		answer = "Invalid Command or user Unknow";
         	}
         }
-        else if(command.equals("reset")){
-        	//TODO: faz o reset
-        	answer = "Your credits were reseted to ";//+user.credits+"Cr";
+        else if(command.equals("reset")){ //resets user's credits to 100Cr
+        	clientInfo.setCredits(100);
+        	answer = "Your credits were reseted to "+clientInfo.getCredits()+"Cr";
         }
         else if(command.equals("bet")){
         	//TODO: check if next token is integer, collect the remaining infos check them 
