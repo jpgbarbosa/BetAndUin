@@ -5,9 +5,6 @@ import java.net.*;
 import java.util.StringTokenizer;
 import java.io.*;
 
-
-import client.ClientInfo;
-
 public class TCPServer{
     public static void main(String args[]){
     	
