@@ -32,22 +32,25 @@ import messages.ReceiveServerMessages;
 
 public class ConnectionWithServerManager extends Thread{
 	/*Set to true if you want the program to display debugging messages.*/
-	Boolean debugging = true;
+	boolean debugging = true;
 
 	/* Connection variables. */
 	int serverPort;
 	int partnerPort;
 	MessagesRepository msgToReceiveList;
 	ReceiveServerMessages receiveMensager;
+	
+	/* The lock to synchronize with the server. */
+	ChangeStatusLock statusLock;
 	/* This variables is used when both servers decide, at the same time
 	 * that they should be the main server. When this happens and both of them
 	 * detect this inconsistency (two main servers), the one with a 'false' value
 	 * will give up from being main server.
 	 */
-	Boolean isDefaultServer;
+	boolean isDefaultServer;
 	/* Variables that checks whether this is the primary server or not. */
-	Boolean isPrimaryServer = false;
-	Boolean isPartnerDead = false;
+	boolean isPrimaryServer = false;
+	boolean isPartnerDead = false;
 	/* Times to trigger the message timers. */
 	int KEEP_ALIVE_TIME = 5000; //The time between two consecutive KEEP_ALIVE's.
 	int WAITING_TIME = 15000; //The time needed to consider the other server dead.
@@ -57,13 +60,13 @@ public class ConnectionWithServerManager extends Thread{
 	DatagramSocket aSocket = null;
 	String msgToSend = "";
 	
-	
-	public ConnectionWithServerManager(int sPort, int pPort, Boolean isDefaultServer){
+	public ConnectionWithServerManager(int sPort, int pPort, boolean isDefaultServer, ChangeStatusLock lock){
 		serverPort = sPort;
 		partnerPort = pPort;
 		this.isDefaultServer = isDefaultServer;
 		msgToReceiveList = new MessagesRepository();
 		receiveMensager = new ReceiveServerMessages(serverPort, msgToReceiveList, this);
+		statusLock = lock;
 		
 		/* Initializes the UDP socket to send messages to the other server. */
 		try {
@@ -136,6 +139,16 @@ public class ConnectionWithServerManager extends Thread{
 				}
 				
 				isPrimaryServer = true;
+				
+				/* Informs that parent server about its status. */
+				synchronized (statusLock){
+					statusLock.setInitialProcessConcluded(true);
+					statusLock.setPrimaryServer(true);
+					if (statusLock.hasChangedStatus()){
+						statusLock.notifyAll();
+					}
+				}
+				
 				// TODO: We can now terminate the receiveMensager, it won't be needed any longer.
 				while(true){
 					/* Once we are simultaneously the main server and default server,
@@ -176,6 +189,15 @@ public class ConnectionWithServerManager extends Thread{
 				isPrimaryServer = true;
 				isPartnerDead = false;
 				
+				/* Informs that parent server about its status. */
+				synchronized (statusLock){
+					statusLock.setInitialProcessConcluded(true);
+					statusLock.setPrimaryServer(true);
+					if (statusLock.hasChangedStatus()){
+						statusLock.notifyAll();
+					}
+				}
+				
 				/* We continue here while we don't get any KEEP_ALIVE message. */
 				while(isPrimaryServer){
 					/* Once we are simultaneously the main server and default server,
@@ -199,6 +221,20 @@ public class ConnectionWithServerManager extends Thread{
 							if (partnerAnswer.equals("KEEP_ALIVE")){
 								/* We give up from the primary server status. */
 								isPrimaryServer = false;
+								
+								/*TODO: This may lead to bugs in the server, as we only wait if we
+								 *      are the secondary server. If we are the primary server, this
+								 *      notify is likely to be lost, but let's check it out later.
+								 */
+								
+								/* Informs that parent server about its status. */
+								synchronized (statusLock){
+									statusLock.setPrimaryServer(false);
+									if (statusLock.hasChangedStatus()){
+										statusLock.notifyAll();
+									}
+								}
+								
 							}
 							else if (partnerAnswer.equals("I_WILL_BE_PRIMARY_SERVER")){
 								/* We notify the other server that we are already the
@@ -222,6 +258,15 @@ public class ConnectionWithServerManager extends Thread{
 				}
 				
 				isPrimaryServer = false;
+				
+				/* Informs that parent server about its status. */
+				synchronized (statusLock){
+					statusLock.setInitialProcessConcluded(true);
+					statusLock.setPrimaryServer(false);
+					if (statusLock.hasChangedStatus()){
+						statusLock.notifyAll();
+					}
+				}
 			}
 		
 			/* If we ever get here, it means that we are not the primary server.*/
@@ -258,6 +303,13 @@ public class ConnectionWithServerManager extends Thread{
 				 * the timeout occurred. Consequently, we will now be the primary server.
 				 */
 				isPrimaryServer = true;
+				/* Informs that parent server about its status. */
+				synchronized (statusLock){
+					statusLock.setPrimaryServer(true);
+					if (statusLock.hasChangedStatus()){
+						statusLock.notifyAll();
+					}
+				}
 			}// while (!isPrimaryServer)
 			
 			try {
@@ -266,12 +318,23 @@ public class ConnectionWithServerManager extends Thread{
 				 * to waste both local and network resources by sending messages.
 				 */
 				
+				
 				if (debugging){
 					System.out.println("We are now going to stop sending messages till our partner " +
 							" sends us a message.");
 				}
 				
 				isPartnerDead = true;
+				
+				/* Informs that parent server about its status. */
+				synchronized (statusLock){
+					statusLock.setInitialProcessConcluded(true);
+					statusLock.setPrimaryServer(true);
+					if (statusLock.hasChangedStatus()){
+						statusLock.notifyAll();
+					}
+				}
+				
 				synchronized(msgToReceiveList){
 					msgToReceiveList.wait();
 				}

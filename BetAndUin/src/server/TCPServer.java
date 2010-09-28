@@ -5,39 +5,99 @@ import java.net.*;
 import java.util.StringTokenizer;
 import java.io.*;
 
-public class TCPServer{
+public class TCPServer{    
     public static void main(String args[]){
-        int numero=0;
+    	
+    	/*Set to true if you want the program to display debugging messages.*/
+		Boolean debugging = true;
+		
+    	/* The object responsible for dealing with the information related to the clients logged in the system. */
         ActiveClients activeClients;
+        /* The object responsible for creating the matches and setting the results. */
         BetScheduler betScheduler;
+        /* The object responsible for maintaining the communication with the partner server. */
         ConnectionWithServerManager connectionWithServerManager;
-        Boolean isPrimaryServer;
+        /* The object responsible for maintaining the clients' database. */
+        ClientsStorage database;
+        /* The lock we are going to use when the connection manager wants to inform that server that its status
+         * (i.e. primary or secondary server) has changed.
+         */
+        ChangeStatusLock changeStatusLock = new ChangeStatusLock();
+        /* Variable to know whether we are the default server or not. */
+        boolean isDefaultServer;
+        /* The ports of the two servers. */
         int serverPort, partnerPort;
         
         /* A testing variable, used when we want to disableBets so we won't get all those messages.*/
         boolean disableBets = true;
         
+        /* The user has introduced less than three options by the command line, so we can't carry on. */
         if (args.length < 3){
         	System.out.println("java TCPServer serverPort partnerPort isPrimaryServer (for this last" +
         			"option, type primary or secondary");
     	    System.exit(0);
         }
         
+        /* We read from the command line the two port numbers passed. */
         serverPort = Integer.parseInt(args[0]);
         partnerPort = Integer.parseInt(args[1]);
         if (args[2].toLowerCase().equals("primary")){
-        	isPrimaryServer = true;
+        	isDefaultServer = true;
         }
         else{
-        	isPrimaryServer = false;
+        	isDefaultServer = false;
         }
+        
         try{
             
-            activeClients = new ActiveClients();
-            System.out.println("A Escuta no Porto " + serverPort);
+            connectionWithServerManager = new ConnectionWithServerManager(serverPort, partnerPort, isDefaultServer, changeStatusLock);
+    		/* Before going to wait, we have to see whether the manager has concluded its operations
+    		 * or not yet. Otherwise, we may wait forever if it concluded before we entered here.
+    		 * This step is used in order not to accept any clients before we know whether we are
+    		 * the primary server or not.
+    		 */
+    		synchronized(changeStatusLock){
+    			try{
+            		if (!changeStatusLock.isInitialProcessConcluded()){
+            			changeStatusLock.wait();
+            		}
+				} catch (InterruptedException e) {
+					/*We have been awaken by the connection manager, keep going. */
+				}
+    		}
+    		
+    		/* Now, we have to check whether we are the primary server or not. */
+    		
+    		/* We are not the primary server, so we are going to sleep and not attend any clients.
+    		 * We will eventually be awaken if our status changes.
+    		 */
+    		//TODO: We have to be assure about this part!
+    		synchronized (changeStatusLock){
+	    		while (!changeStatusLock.isPrimaryServer()){
+	    			try{
+	    				if (debugging){
+							System.out.println("The server is going to sleep...");
+						}
+	            		changeStatusLock.wait();
+					} catch (InterruptedException e) {
+						/*We have been awaken by the connection manager, keep going.*/
+						if (debugging){
+							System.out.println("The server has been awakened!");
+						}
+					}
+	    		}
+    		}
+    		
             ServerSocket listenSocket = new ServerSocket(serverPort);
-            System.out.println("LISTEN SOCKET="+listenSocket);
+            if (debugging){
+            	System.out.println("Listening at port  " + serverPort);
+            	System.out.println("LISTEN SOCKET=" + listenSocket);
+            }
+    		
+    		/* We are the primary server, so we can communicate with clients. */
             
+    		activeClients = new ActiveClients();
+    		
             /* We can take this off later.*/
             if (!disableBets){
             	betScheduler = new BetScheduler(activeClients);
@@ -45,16 +105,18 @@ public class TCPServer{
             else{
             	betScheduler = null;
             }
-            connectionWithServerManager = new ConnectionWithServerManager(serverPort, partnerPort, isPrimaryServer);
-            
+
             while(true) {
                 Socket clientSocket = listenSocket.accept(); // BLOQUEANTE
-                System.out.println("CLIENT_SOCKET (created at accept())="+clientSocket);
-                numero ++;
-                new ConnectionChat(clientSocket, numero, activeClients, betScheduler = null);
+                
+                if (debugging){
+                	System.out.println("CLIENT_SOCKET = " + clientSocket);
+                }
+                new ConnectionChat(clientSocket, activeClients, betScheduler = null);
             }
-        }catch(IOException e)
-        {System.out.println("Listen:" + e.getMessage());}
+        }catch(IOException e){
+        	System.out.println("Listen:" + e.getMessage());
+        }
     }
 }
 /* Thread used to take care of each communication channel between the active server and a given client. */
@@ -67,14 +129,12 @@ class ConnectionChat extends Thread {
 	/* This two variables keep the values inserted by the user, so we can use it later. */
 	String username, password;
 	
-	boolean loggedIn=false;
+
     DataInputStream in;
     Socket clientSocket;
-    int thread_number;
     ActiveClients activeClients;
     
-    public ConnectionChat (Socket aClientSocket, int numero, ActiveClients activeClients, BetScheduler betScheduler) {
-        thread_number = numero;
+    public ConnectionChat (Socket aClientSocket, ActiveClients activeClients, BetScheduler betScheduler) {
         this.betScheduler=betScheduler;
         try{
             clientSocket = aClientSocket;
@@ -86,6 +146,8 @@ class ConnectionChat extends Thread {
 
     //=============================
     public void run(){
+    	boolean loggedIn = false;
+    	
         try{
         	/* Performs login authentication. */
         	while(!loggedIn){
@@ -125,7 +187,7 @@ class ConnectionChat extends Thread {
                  * and sending back the respective information.
                  */
                 String data = in.readUTF();
-                System.out.println("T["+thread_number + "] Recebeu: "+data);
+                System.out.println("T["+ username + "] has received: "+data);
                 //TODO: parseFunction(data)...
                 /*synchronized (activeClients){
                 	activeClients.sendMessageUser(data, username);
