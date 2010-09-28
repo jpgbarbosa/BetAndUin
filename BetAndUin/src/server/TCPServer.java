@@ -8,11 +8,14 @@ import java.io.*;
 public class TCPServer{
     public static void main(String args[]){
         int numero=0;
-        ThreadCounter threadArray;
+        ActiveClients activeClients;
         BetScheduler betScheduler;
         ConnectionWithServerManager connectionWithServerManager;
         Boolean isPrimaryServer;
         int serverPort, partnerPort;
+        
+        /* A testing variable, used when we want to disableBets so we won't get all those messages.*/
+        boolean disableBets = true;
         
         if (args.length < 3){
         	System.out.println("java TCPServer serverPort partnerPort isPrimaryServer (for this last" +
@@ -30,156 +33,165 @@ public class TCPServer{
         }
         try{
             
-            threadArray = new ThreadCounter(10);
+            activeClients = new ActiveClients();
             System.out.println("A Escuta no Porto " + serverPort);
             ServerSocket listenSocket = new ServerSocket(serverPort);
             System.out.println("LISTEN SOCKET="+listenSocket);
             
-            //IMPORTANT: We are temporarily disabling the bets!!!
-            betScheduler = new BetScheduler(threadArray);
+            /* We can take this off later.*/
+            if (!disableBets){
+            	betScheduler = new BetScheduler(activeClients);
+            }
+            else{
+            	betScheduler = null;
+            }
             connectionWithServerManager = new ConnectionWithServerManager(serverPort, partnerPort, isPrimaryServer);
             
             while(true) {
                 Socket clientSocket = listenSocket.accept(); // BLOQUEANTE
                 System.out.println("CLIENT_SOCKET (created at accept())="+clientSocket);
                 numero ++;
-                new ConnectionChat(clientSocket, numero, threadArray, betScheduler);
-                synchronized (threadArray){
-                	threadArray.insertSocket(clientSocket);
-                }
+                new ConnectionChat(clientSocket, numero, activeClients, betScheduler = null);
             }
         }catch(IOException e)
         {System.out.println("Listen:" + e.getMessage());}
     }
 }
-//= Thread para tratar de cada canal de comunicação com um cliente
+/* Thread used to take care of each communication channel between the active server and a given client. */
 class ConnectionChat extends Thread {
+	/* The betScheduler so we can send the matches' information back to the client. */
 	BetScheduler betScheduler;
+	
 	String user="gaia",pass="fixe";
+	
+	/* This two variables keep the values inserted by the user, so we can use it later. */
+	String username, password;
+	
 	boolean loggedIn=false;
     DataInputStream in;
     Socket clientSocket;
     int thread_number;
-    ThreadCounter threadArray;
+    ActiveClients activeClients;
     
-    public ConnectionChat (Socket aClientSocket, int numero, ThreadCounter threadArray, BetScheduler betScheduler) {
+    public ConnectionChat (Socket aClientSocket, int numero, ActiveClients activeClients, BetScheduler betScheduler) {
         thread_number = numero;
         this.betScheduler=betScheduler;
         try{
             clientSocket = aClientSocket;
             in = new DataInputStream(clientSocket.getInputStream());
-            this.threadArray = threadArray;
+            this.activeClients = activeClients;
             this.start();
         }catch(IOException e){System.out.println("Connection:" + e.getMessage());}
     }
-    
-    public String parseFunction(String input){
-    	String result="";
-    	String temp;
-    	
-    	StringTokenizer strToken;
-        strToken = new StringTokenizer (input);
-        temp=strToken.nextToken();
-        
-        if(temp.equals("show")){
-        	temp=strToken.nextToken();
-        	if(temp.equals("matches")){
-        		threadArray.sendMessageAll(betScheduler.getMatches(), clientSocket);
-        	}else if(temp.equals("credits")){
-        		//TODO: por o resultado numa string e devolver
-        	}else if(temp.equals("users")){
-        		//TODO: por o resultado numa string e devolver
-        	}else{
-        		result="Unknow Command";
-        	}
-        }else if(temp.equals("send")){
-        	temp="";
-        	while(strToken.countTokens()-1>0){
-        		temp+=strToken.nextToken()+" ";
-        	}
-        	temp+=strToken.nextToken();
-        	
-        	if(temp.equals("all")){
-        		threadArray.sendMessageAll(temp, clientSocket);
-        	} else if(false/*checkUser(temp)*/){
-        		//TODO: verificar se o cliente existe e devolver o socket possivelmente
-        	} else{
-        		result = "Invalid Command or user Unknow";
-        	}
-        } else if(temp.equals("reset")){
-        	//TODO: faz o reset
-        	result = "Your credits were reseted to ";//+user.credits+"Cr";
-        } else if(temp.equals("bet")){
-        	//TODO: check if next token is integer, collect the remaining infos check them 
-        	//if successful result="bet done!"
-        } else {
-        	result = "Unknown command";
-        }
-    	
-		return result;
-    }
+
     //=============================
     public void run(){
         try{
+        	/* Performs login authentication. */
         	while(!loggedIn){
-            	StringTokenizer strToken;
-            	String userInfo = in.readUTF();
+        		
+        		StringTokenizer strToken;
+            	String userInfo;
+                
+                userInfo = in.readUTF();
                 strToken = new StringTokenizer (userInfo);
-                if(strToken.nextToken().equals(user) && strToken.nextToken().equals(pass)){
+                
+                if((username = strToken.nextToken()).equals(user)
+                		&& (password = strToken.nextToken()).equals(pass)){
+                	
                 	loggedIn=true;
-                	threadArray.sendMessageUser("log successful",clientSocket);
+                	activeClients.addClient(username, clientSocket);
+                	activeClients.sendMessageUser("log successful",username);
+                	
                 }
                 else{
-                	threadArray.sendMessageUser("log error",clientSocket);
+                	activeClients.sendMessageBySocket("log error",clientSocket);
                 }
         	}
             while(true){
-                //an echo server
+                /* Now, the server can communicate with the client, receiving the requests
+                 * and sending back the respective information.
+                 */
                 String data = in.readUTF();
                 System.out.println("T["+thread_number + "] Recebeu: "+data);
                 //TODO: parseFunction(data)...
-                /*synchronized (threadArray){
-                	threadArray.sendMessage(data, clientSocket);
+                /*synchronized (activeClients){
+                	activeClients.sendMessageUser(data, username);
                 }*/
             }
-        }catch(EOFException e){System.out.println("EOF:" + e);
-        }catch(IOException e){System.out.println("IO:" + e);}
+        }catch(EOFException e){
+        	/*TODO: Verify if when the closed is closed, this won't be executed too.
+        	 * 		If it does in any occassion, we also have to remove the clients
+        	 * 		here.
+        	 */
+        	System.out.println("EOF in here:" + e);
+        }catch(IOException e){
+        	/* The client is leaving. Consequently, we have to remove it from the list
+        	 * of active clients.
+        	 */
+        	activeClients.removeClient(username);
+        	System.out.println("IO:" + e);
+        }
     }
-}
-
-class ThreadCounter {
-	//We ought to create a list if we want to expand the capacity of the structure.
-	Socket []threadArray;
-	int counter;
-	DataOutputStream out;
-	
-	public ThreadCounter(int no){
-		threadArray = new Socket[no];
-		counter = 0;
-	}
-	
-	public void insertSocket(Socket s){
-		threadArray[counter] = s;
-		counter++;
-	}
-	
-	public void sendMessageAll(String message, Socket clientSocket){
-		int i;
-		try{
-			for (i = 0; i < counter; i++){
-				//Verifies if we aren't forwarding the message to the sender.
-				if (threadArray[i] != clientSocket){
-					out = new DataOutputStream(threadArray[i].getOutputStream());
-					out.writeUTF(message);
-				}
-			}
-		}catch(Exception e){System.out.println("ERROR");}
-	}
-	
-	public void sendMessageUser(String message, Socket clientSocket){
-		try{
-			out = new DataOutputStream(clientSocket.getOutputStream());
-			out.writeUTF(message);
-		}catch(Exception e){System.out.println("ERROR");}
-	}
+    
+    /* The parsing function. Given a request from a client, this thread must recognized the commands
+     * and get the right information, so the thread can send it to the client.
+     */
+    public String parseFunction(String input){
+    	String answer = "";
+    	String command;
+    	
+    	StringTokenizer strToken;
+        strToken = new StringTokenizer(input);
+        command = strToken.nextToken();
+        
+        if(command.equals("show")){
+        	command = strToken.nextToken();
+        	
+        	if(command.equals("matches")){
+        		activeClients.sendMessageAll(betScheduler.getMatches(), clientSocket);
+        	}
+        	else if(command.equals("credits")){
+        		//TODO: por o resultado numa string e devolver
+        	}
+        	else if(command.equals("users")){
+        		//TODO: por o resultado numa string e devolver
+        	}
+        	else{
+        		answer = "Unknow Command";
+        	}
+        }
+        else if(command.equals("send")){
+        	command = "";
+        	
+        	while(strToken.countTokens() - 1 > 0){
+        		command += strToken.nextToken() + " ";
+        	}
+        	
+        	command += strToken.nextToken();
+        	
+        	if(command.equals("all")){
+        		activeClients.sendMessageAll(command, clientSocket);
+        	}
+        	else if(false/*checkUser(temp)*/){
+        		//TODO: verificar se o cliente existe e devolver o socket possivelmente
+        	}
+        	else{
+        		answer = "Invalid Command or user Unknow";
+        	}
+        }
+        else if(command.equals("reset")){
+        	//TODO: faz o reset
+        	answer = "Your credits were reseted to ";//+user.credits+"Cr";
+        }
+        else if(command.equals("bet")){
+        	//TODO: check if next token is integer, collect the remaining infos check them 
+        	//if successful result="bet done!"
+        }
+        else {
+        	answer = "Unknown command";
+        }
+    	
+		return answer;
+    }
 }

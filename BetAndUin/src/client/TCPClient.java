@@ -4,8 +4,6 @@ import java.io.*;
 
 import server.ConnectionLock;
 
-
-
 public class TCPClient {
     public static void main(String args[]) {
 		// args[0] <- hostname of destination
@@ -27,8 +25,10 @@ public class TCPClient {
 		int retrying = 0; //Tests if we are retrying for the first or second time.
 		int WAITING_TIME = 1000; //The time the thread sleeps.
 		int NO_RETRIES = 10; //The maximum amount of retries for a given port.
-		String user=null,pass=null;
-		boolean loggedIn=false;
+		
+		/* Variables used for the login authentication. */
+		String username = "",password = "";
+		boolean loggedIn = false;
 		
 		/*The thread related variables.*/
 		ConnectionLock connectionLock = new ConnectionLock();
@@ -75,34 +75,79 @@ public class TCPClient {
 			    
 			    writeThread.setSocket(s);
 			    readThread.setSocket(s);
-			    
-				String temp;
-				boolean error=false;
 				
+			    String serverAnswer;
+				boolean error = false;
+			    
+				/* Login authentication. */
 				while(!loggedIn){
-					if((user!=null && pass!=null) && !error){
-						writeThread.out.writeUTF(user+" "+pass);
-						temp=readThread.in.readUTF();
-					} else {
-			        	System.out.print("Login\nuser: ");
-			        	user = writeThread.reader.readLine();
-			        	System.out.print("pass: ");
-			        	pass = writeThread.reader.readLine();
-			        	writeThread.out.writeUTF(user+" "+pass);
-			        	temp=readThread.in.readUTF();
+					
+					/*TODO: GAIOSO DUM RAIO!!! :P Mete cometários para cada um deste if's.
+					 * 		Ficava muuuuuuuito mais fácil para eu rapidamente entender o que estás
+					 * 		aqui a fazer. E são comentários do tipo para que servem e em que situação
+					 * 		é que entras aqui.
+					 * 		MAIS!!!
+					 * 		Nunca escrevas tudo seguido, tornas-se ilegível! Coisas como
+					 * 		
+					 * 		temp=(error==true)&&(5<3);
+					 * 
+					 * 		Ficam melhores se puseres espaços:
+					 * 
+					 * 		temp = (error == true) && (5 < 3);
+					 * 
+					 * 		Não metas a declarações das variáveis onde te apetece, espalhadas ao longo
+					 * 		do código. Se é para usar na classe toda, então lá em cima, junto das outras.
+					 * 		Faz como eu tenho estado a fazer, separá-las por secções (todas as variáveis
+					 * 		ligadas ao login juntas e separadas das outras com um pequeno comentário).
+					 * 		Se é só dentro do scope de um if ou while, faz o mesmo, mas no início desse mesmo
+					 * 		scope.
+					 * 
+					 * 		E uma vez mais, FAZ COMENTÁRIOS DE JEITO!!!!!!!	
+					 * 
+					 * 		Um sincero obrigado do teu colaborador,
+					 * 
+					 * 															Ivo
+					 * 
+					 *      P.S.: Por favor, não uses 'temp' e afins, só mesmo quando necessário!!!!!
+					 *      Por exemplo, quando usas 'temp', faz muito mais sentido e torna-se muito
+					 *      mais compreensível se usares 'serverAnswer' ou coisa do género.
+					 */
+					
+					/* When the server goes down, the client keep the data related to a successful login
+					 * When the server is up again, the client application directly sends that information
+					 * so the end user won't have to reinsert them once again.
+					 */
+					if(!(username.equals("") && password.equals("")) && !error){
+						writeThread.out.writeUTF(username + " " + password);
+						serverAnswer = readThread.in.readUTF();
 					}
-		        	if(temp.equals("log error")){
-		        		temp="";
-		        		error=true;
-		        		System.out.println("user or password incorrect. Please try again...");
-		        	} else if(temp.equals("log successful")){
-		        		loggedIn=true;
+					/* The information needed for a valid login hasn't been inserted yet. */
+					else {
+			        	System.out.print("LOGIN\nUsername: ");
+			        	username = writeThread.reader.readLine();
+			        	System.out.print("Password: ");
+			        	password = writeThread.reader.readLine();
+			        	
+			        	/* Write into the socket connected to the server. */
+			        	writeThread.out.writeUTF(username + " " + password);
+			        	/* Now, it waits for the answer from the server. */
+			        	serverAnswer = readThread.in.readUTF();
+					}
+					
+					/* The server informs the client that there was so kind of error in the login. */
+		        	if(serverAnswer.equals("log error")){
+		        		serverAnswer = "";
+		        		error = true;
+		        		System.out.println("\nUsername or password incorrect. Please try again...\n");
+		        	}
+		        	/* The login has been validated, so the client can now proceed. */
+		        	else if(serverAnswer.equals("log successful")){
+		        		loggedIn = true;
 		        		System.out.println("You are now logged in!");
 		        	}
 				}
 	        	
-	        	// 3o passo
-			    //Resets the counters and the lock flags.
+			    /* Resets the counters, the lock flags and the login variables. */
 			    synchronized(connectionLock){
 			    	connectionLock.setConnectionDown(false);
 			    	connectionLock.notifyAll();
@@ -118,6 +163,7 @@ public class TCPClient {
 				loggedIn = false;
 				error = false;
 			    
+			/* The list of possible exceptions to be handled. */
 			} catch (UnknownHostException e) {
 				if (debugging){
 					System.out.println("Sock:" + e.getMessage());

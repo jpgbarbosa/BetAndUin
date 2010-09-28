@@ -84,6 +84,10 @@ public class ActiveClients {
 	    }
 	}
 	
+	/* This method is used when we have a valid login for this client and consequently,
+	 * we can use his/her username to send messages from the system to the respective
+	 * owner of the account.
+	 */
 	public void sendMessageUser(String message, String username){
 		/* Sends a message to a specific user. */
 		DataOutputStream out;
@@ -95,7 +99,23 @@ public class ActiveClients {
 			out = new DataOutputStream(element.getSocket().getOutputStream());
 			out.writeUTF(message);
 		} catch (IOException e) {
-			System.out.println("IO from sendMessageAll (ActiveClients): " + e);
+			System.out.println("IO from sendMessageUser (ActiveClients): " + e);
+		}
+		
+	}
+	
+	/* This method is used when we still don't have a valid login and we want to send
+	 * a message to the client (e.g. the login fails).
+	 */
+	public void sendMessageBySocket(String message, Socket clientSocket){
+		/* Sends a message to a specific user, using directly the socket connection. */
+		DataOutputStream out;
+		
+		try {
+			out = new DataOutputStream(clientSocket.getOutputStream());
+			out.writeUTF(message);
+		} catch (IOException e) {
+			System.out.println("IO from sendMessageBySocket (ActiveClients): " + e);
 		}
 		
 	}

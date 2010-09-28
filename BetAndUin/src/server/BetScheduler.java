@@ -7,10 +7,10 @@ import pt.uc.dei.sd.IMatch;
 public class BetScheduler extends Thread{
 	int TIME_BETWEEN_ROUNDS = 10000;
 	String message, lastMatches="";
-	ThreadCounter threadCounter;
+	ActiveClients activeClients;
 	
-	public BetScheduler(ThreadCounter counter){
-		threadCounter = counter;
+	public BetScheduler(ActiveClients activeClients){
+		this.activeClients = activeClients;
 		this.start();
 	}
 	
@@ -54,7 +54,7 @@ public class BetScheduler extends Thread{
 	        }
 	
 	        /*Send the results to all the active clients.*/
-	        threadCounter.sendMessageAll(message, null);
+	        activeClients.sendMessageAll(message, null);
 	        /* Creates a new batch of games. */
 	        man.refreshMatches();
         }
