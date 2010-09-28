@@ -96,14 +96,26 @@ class ConnectionChat extends Thread {
                 userInfo = in.readUTF();
                 strToken = new StringTokenizer (userInfo);
                 
-                if((username = strToken.nextToken()).equals(user)
-                		&& (password = strToken.nextToken()).equals(pass)){
+                /* Collects the information sent by the client. */
+                username = strToken.nextToken();
+                password = strToken.nextToken();
+                
+                /* It's a valid login. */
+                if(username.equals(user) && password.equals(pass)){
                 	
-                	loggedIn=true;
-                	activeClients.addClient(username, clientSocket);
-                	activeClients.sendMessageUser("log successful",username);
+                	/* However, the user was already validated in some other machine. */
+                	if (activeClients.isClientLoggedIn(username)){
+                		activeClients.sendMessageBySocket("log repeated",clientSocket);
+                	}
+                	/* The validation process can be concluded. */
+                	else{
+                		loggedIn=true;
+                		activeClients.addClient(username, clientSocket);
+                		activeClients.sendMessageUser("log successful",username);
+                	}
                 	
                 }
+                /* This user isn't registered in the system. */
                 else{
                 	activeClients.sendMessageBySocket("log error",clientSocket);
                 }
@@ -120,10 +132,10 @@ class ConnectionChat extends Thread {
                 }*/
             }
         }catch(EOFException e){
-        	/*TODO: Verify if when the closed is closed, this won't be executed too.
-        	 * 		If it does in any occassion, we also have to remove the clients
-        	 * 		here.
+        	/* The client is leaving. Consequently, we have to remove it from the list
+        	 * of active clients.
         	 */
+        	activeClients.removeClient(username);
         	System.out.println("EOF in here:" + e);
         }catch(IOException e){
         	/* The client is leaving. Consequently, we have to remove it from the list

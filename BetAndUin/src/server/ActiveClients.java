@@ -61,6 +61,21 @@ public class ActiveClients {
 		
 	}
 	
+	/* Method to check whether a given client is already logged in or not. */
+	public synchronized Boolean isClientLoggedIn(String username){
+		ClientListElement element;
+		element = clientHash.get(username);
+		
+		if (element == null){
+			/* The client couldn't be found in the hash table, so it means it isn't logged in. */
+			return false;
+		}
+		else{
+			/* There is already an entry in the active clients' hash table. */
+			return true;
+		}
+	}
+	
 	public synchronized void sendMessageAll(String message, Socket clientSocket){
 		/* Sends a message to all the clients. */
 		
