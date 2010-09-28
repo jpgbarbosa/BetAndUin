@@ -3,6 +3,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -117,9 +118,32 @@ public class ActiveClients {
 		} catch (IOException e) {
 			System.out.println("IO from sendMessageBySocket (ActiveClients): " + e);
 		}
-		
 	}
 	
+	/*This method returns a String with all the activeUsers*/
+	public String getUsersList(){
+		String usersList="";
+		
+		int i=0;
+		while(i<clientList.size() - 1){
+			usersList+=clientList.get(i).getUsername()+"\n";
+			i++;
+		}
+		usersList+=clientList.get(i).getUsername();
+		
+		return usersList;
+	}
+	
+	/**@return true if user exists in clientList*/
+	public boolean checkUser(String user){
+		int i=0;
+		while(i<clientList.size()){
+			if(clientList.get(i).getUsername().equals(user))
+				return true;
+			i++;
+		}
+		return false;
+	}
 }
 
 /* Class used to insert active elements in the list. */

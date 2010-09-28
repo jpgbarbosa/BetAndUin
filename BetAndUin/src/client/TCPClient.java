@@ -38,9 +38,11 @@ public class TCPClient {
 		/*The variables related to the server ports available.*/
 		int []serverPorts = new int[2]; //The array with the two different ports.
 		int serverPos = 0; //The position array, which corresponds to active port.
+		int noServerPorts = serverPorts.length; //Total number of possible servers ports.
 		//Places the two ports in the array.
 		serverPorts[0] = 6000;
 		serverPorts[1] = 7000;
+		
 		
 		writeThread =  new ClientWriteTCP(connectionLock);
 		readThread = new ClientReadTCP(connectionLock);
@@ -80,39 +82,7 @@ public class TCPClient {
 				boolean error = false;
 			    
 				/* Login authentication. */
-				while(!loggedIn){
-					
-					/*TODO: GAIOSO DUM RAIO!!! :P Mete cometários para cada um deste if's.
-					 * 		Ficava muuuuuuuito mais fácil para eu rapidamente entender o que estás
-					 * 		aqui a fazer. E são comentários do tipo para que servem e em que situação
-					 * 		é que entras aqui.
-					 * 		MAIS!!!
-					 * 		Nunca escrevas tudo seguido, tornas-se ilegível! Coisas como
-					 * 		
-					 * 		temp=(error==true)&&(5<3);
-					 * 
-					 * 		Ficam melhores se puseres espaços:
-					 * 
-					 * 		temp = (error == true) && (5 < 3);
-					 * 
-					 * 		Não metas a declarações das variáveis onde te apetece, espalhadas ao longo
-					 * 		do código. Se é para usar na classe toda, então lá em cima, junto das outras.
-					 * 		Faz como eu tenho estado a fazer, separá-las por secções (todas as variáveis
-					 * 		ligadas ao login juntas e separadas das outras com um pequeno comentário).
-					 * 		Se é só dentro do scope de um if ou while, faz o mesmo, mas no início desse mesmo
-					 * 		scope.
-					 * 
-					 * 		E uma vez mais, FAZ COMENTÁRIOS DE JEITO!!!!!!!	
-					 * 
-					 * 		Um sincero obrigado do teu colaborador,
-					 * 
-					 * 															Ivo
-					 * 
-					 *      P.S.: Por favor, não uses 'temp' e afins, só mesmo quando necessário!!!!!
-					 *      Por exemplo, quando usas 'temp', faz muito mais sentido e torna-se muito
-					 *      mais compreensível se usares 'serverAnswer' ou coisa do género.
-					 */
-					
+				while(!loggedIn){		
 					/* When the server goes down, the client keep the data related to a successful login
 					 * When the server is up again, the client application directly sends that information
 					 * so the end user won't have to reinsert them once again.
@@ -181,7 +151,7 @@ public class TCPClient {
 			     * So, we will pass immediately to the next one and retry this one later.
 			     */
 			    if (retries == 1 && retrying == 0){
-			    	serverPos = (++serverPos)%2;
+			    	serverPos = (++serverPos)%noServerPorts;
 			    	if (debugging){
 			    		System.out.println("Trying to connect to server in port " + serverPorts[serverPos] + ".");
 			    	}
@@ -199,7 +169,7 @@ public class TCPClient {
 			    else if (retries == 10 && retrying == 1){
 			    	//Resets the number of retries and passes to the serverPort of the other server.
 			    	retries = 0;
-			    	serverPos = (++serverPos)%2;
+			    	serverPos = (++serverPos)%noServerPorts;
 			    	System.out.println("Trying to connect to server in port " + serverPorts[serverPos] + ".");
 			    	retrying++;
 			    }
