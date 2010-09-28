@@ -33,7 +33,7 @@ public class ActiveClients {
 		 noActiveClients = 0;
 	}
 	
-	public void addClient(String username, Socket socket){
+	public synchronized void addClient(String username, Socket socket){
 		/* This method adds a client to both the hash table and the list.*/
 		ClientListElement element = new ClientListElement(username,socket);
 		
@@ -43,7 +43,7 @@ public class ActiveClients {
 		noActiveClients++;
 	}
 	
-	public void removeClient(String username){
+	public synchronized void removeClient(String username){
 		/* This method must remove a client, because we are only passing
 		 * usernames that are registered as active users in the system.
 		 */
@@ -61,7 +61,7 @@ public class ActiveClients {
 		
 	}
 	
-	public void sendMessageAll(String message, Socket clientSocket){
+	public synchronized void sendMessageAll(String message, Socket clientSocket){
 		/* Sends a message to all the clients. */
 		
 		ClientListElement element;
@@ -88,7 +88,7 @@ public class ActiveClients {
 	 * we can use his/her username to send messages from the system to the respective
 	 * owner of the account.
 	 */
-	public void sendMessageUser(String message, String username){
+	public synchronized void sendMessageUser(String message, String username){
 		/* Sends a message to a specific user. */
 		DataOutputStream out;
 		
@@ -107,7 +107,7 @@ public class ActiveClients {
 	/* This method is used when we still don't have a valid login and we want to send
 	 * a message to the client (e.g. the login fails).
 	 */
-	public void sendMessageBySocket(String message, Socket clientSocket){
+	public synchronized void sendMessageBySocket(String message, Socket clientSocket){
 		/* Sends a message to a specific user, using directly the socket connection. */
 		DataOutputStream out;
 		

@@ -27,7 +27,7 @@ public class ClientWriteTCP extends Thread {
     }
 
     public String printMenu(){    	
-    	return "\tMenu:\n-> Show the current credit of the user: show credits" +
+    	return "\tMAIN MENU:\n-> Show the current credit of the user: show credits" +
     			"\n-> Reset user credits to 100Cr: reset" +
     			"\n-> View Current Matches: show matches" +
     			"\n-> Make a Bet: bet [match number] [1 x 2] [credits]" +
@@ -53,6 +53,7 @@ public class ClientWriteTCP extends Thread {
 	
 	        	System.out.println(printMenu());
 	            while(true){
+	            	System.out.println(" >>> ");
 	            	userInput = reader.readLine();
 	                out.writeUTF(userInput);
 	            }
