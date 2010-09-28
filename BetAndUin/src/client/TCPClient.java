@@ -46,7 +46,7 @@ public class TCPClient {
 		
 		writeThread =  new ClientWriteTCP(connectionLock);
 		readThread = new ClientReadTCP(connectionLock);
-		//Five attemps to reconnect the connection.
+		//Five attempts to reconnect the connection.
 		while (retries < NO_RETRIES){
 			try {			
 				/* We haven't retried yet, so, it's useless to sleep for WAITING_TIME miliseconds. */
@@ -104,14 +104,23 @@ public class TCPClient {
 			        	serverAnswer = readThread.in.readUTF();
 					}
 					
-					/* The server informs the client that there was so kind of error in the login. */
-		        	if(serverAnswer.equals("log error")){
+					/* The server informs the client that there was some kind of error in the validation
+					 * process. */
+		        	if (!serverAnswer.equals("log successful")){
+		        		/* This client isn't registered in the system. */
+		        		if (serverAnswer.equals("log error")){
+		        			System.out.println("\nUsername or password incorrect. Please try again...\n");
+		        		}
+		        		/* This client is logged in in another machine. */
+		        		else if (serverAnswer.equals("log repeated")){
+		        			System.out.println("\nSorry, but this user is already logged in...\n");
+		        		}
+		        		
 		        		serverAnswer = "";
 		        		error = true;
-		        		System.out.println("\nUsername or password incorrect. Please try again...\n");
 		        	}
 		        	/* The login has been validated, so the client can now proceed. */
-		        	else if(serverAnswer.equals("log successful")){
+		        	else if (serverAnswer.equals("log successful")){
 		        		loggedIn = true;
 		        		System.out.println("You are now logged in!");
 		        	}
