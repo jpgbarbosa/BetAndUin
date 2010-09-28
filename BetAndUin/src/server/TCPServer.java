@@ -155,34 +155,45 @@ class ConnectionChat extends Thread {
         	while(!loggedIn){
         		
         		StringTokenizer strToken;
-            	String userInfo;
+            	String option, userInfo;
                 
                 userInfo = in.readUTF();
                 strToken = new StringTokenizer (userInfo);
-
-                /*needs to be fixed: server will search at the registered clients (SQL database or in some
-                 * memory struct)
-                 * if the username do not exist it must be registered first. if not it will be
-                 * added to the activeClients*/
-                if((username = strToken.nextToken()).equals(user)
-                		&& (password = strToken.nextToken()).equals(pass)){
-
                 	
-                	/* However, the user was already validated in some other machine. */
-                	if (activeClients.isClientLoggedIn(username)){
-                		activeClients.sendMessageBySocket("log repeated",clientSocket);
-                	}
-                	/* The validation process can be concluded. */
-                	else{
-                		loggedIn=true;
-                		activeClients.addClient(username, clientSocket);
-                		activeClients.sendMessageUser("log successful",username);
-                	}
+                option = strToken.nextToken();
+                System.out.println(option);
+                if(option.equals("register")){
+                	ClientInfo client = new ClientInfo(strToken.nextToken(),strToken.nextToken(),
+                			strToken.nextToken(), 100);
                 	
-                }
-                /* This user isn't registered in the system. */
-                else{
-                	activeClients.sendMessageBySocket("log error",clientSocket);
+                	/*TODO: Adicionar à lista de clientes!!!!*/
+                	
+                	activeClients.addClient(client.getUsername(), clientSocket);
+                	
+                	activeClients.sendMessageUser("log successful",username);
+                } else if(option.equals("login")){
+	                /*needs to be fixed: server will search at the registered clients (SQL database or in some
+	                 * memory struct)
+	                 * if the username do not exist it must be registered first. if not it will be
+	                 * added to the activeClients*/
+	                if((username = strToken.nextToken()).equals(user)
+	                		&& (password = strToken.nextToken()).equals(pass)){
+	
+	                	
+	                	/* However, the user was already validated in some other machine. */
+	                	if (activeClients.isClientLoggedIn(username)){
+	                		activeClients.sendMessageBySocket("log repeated",clientSocket);
+	                	}
+	                	/* The validation process can be concluded. */
+	                	else{
+	                		loggedIn=true;
+	                		activeClients.addClient(username, clientSocket);
+	                		activeClients.sendMessageUser("log successful",username);
+	                	}
+	                }
+	                else{
+	                	activeClients.sendMessageBySocket("log error",clientSocket);
+	                }
                 }
         	}
             while(true){

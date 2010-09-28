@@ -1,10 +1,20 @@
 package client;
 import java.net.*;
+import java.util.StringTokenizer;
 import java.io.*;
 
 import server.ConnectionLock;
 
 public class TCPClient {
+	/*TODO: We should avoid this static function*/
+	public static boolean checkCommand(String command, int size){
+		if((command.equals("register") && size==3) 
+				|| (command.equals("login") && size==2)){
+			return true;
+		}
+		return false;
+	}
+	
     public static void main(String args[]) {
 		// args[0] <- hostname of destination
 		if (args.length == 0) {
@@ -43,6 +53,8 @@ public class TCPClient {
 		serverPorts[0] = 6000;
 		serverPorts[1] = 7000;
 		
+		StringTokenizer strToken;
+		String command="";
 		
 		writeThread =  new ClientWriteTCP(connectionLock);
 		readThread = new ClientReadTCP(connectionLock);
@@ -93,13 +105,23 @@ public class TCPClient {
 					}
 					/* The information needed for a valid login hasn't been inserted yet. */
 					else {
-			        	System.out.print("LOGIN\nUsername: ");
-			        	username = writeThread.reader.readLine();
-			        	System.out.print("Password: ");
-			        	password = writeThread.reader.readLine();
+						error=false;
+			        	System.out.println("to log in: login [user] [pass]\n" +
+			        			"to register in: register [user] [pass] [email]");
+			        	command=writeThread.reader.readLine();
+			        	strToken = new StringTokenizer(command);
+			        	
+			        	/*if command is invalid the program will ask it again, before sending it to server*/
+			        	if(!checkCommand(strToken.nextToken(),strToken.countTokens())){
+			        		error=true;
+			        		continue;
+			        	}
+			        	
+			        	username = strToken.nextToken();
+			        	password = strToken.nextToken();
 			        	
 			        	/* Write into the socket connected to the server. */
-			        	writeThread.out.writeUTF(username + " " + password);
+			        	writeThread.out.writeUTF(command);
 			        	/* Now, it waits for the answer from the server. */
 			        	serverAnswer = readThread.in.readUTF();
 					}
