@@ -19,6 +19,9 @@ public class ClientsStorage {
 	/*Set to true if you want the program to display debugging messages.*/
 	Boolean debugging = false;
 	
+	/* The number of default credits for a user.*/
+	int defaultCredits = 100;
+	
 	public ClientsStorage(){
 		clientsDatabase = (Hashtable <String, ClientInfo>)readFromFile();
 		
@@ -37,8 +40,8 @@ public class ClientsStorage {
 		}
 	}
 	
-	/* The reading method. */
-	public Object readFromFile(){
+	/* The reading method. This method can only be used by the class. */
+	private Object readFromFile(){
 		ObjectInputStream iS;
 		
 		try {
@@ -74,40 +77,43 @@ public class ClientsStorage {
 	/* Method to add a client. If the client is already in the database, it returns
 	 * false. Else, it returns true.
 	 */
-	public boolean addClient(String user, String pass, String mail){
+	public ClientInfo addClient(String user, String pass, String mail){
 		ClientInfo element;
-		element = clientsDatabase.get(user);
-		
-		/* The client was found in the list, so we can't add a client with the same
-		 * username.
-		 */
-		if (element != null){
-			return false;
-		}
+		/* We have checked already that this isn't a repeated login. */
+
 		/* The client wasn't found in the list, so we can proceed. */
-		element = new ClientInfo(user, pass, mail, 100); //By default, we give 100 credits to a user.
-		clientsDatabase.put(user,element);
+		element = new ClientInfo(user, pass, mail, defaultCredits);
+		synchronized(clientsDatabase){
+			clientsDatabase.put(user,element);
+		}
 		
-		return true;
+		return element;
 	}
 	
 	/* Method to remove a client from the database. Returns true if it succeeded, false otherwise. */
 	public boolean removeClient(String user){
 		ClientInfo element;
-		element = clientsDatabase.get(user);
-		
+		synchronized(clientsDatabase){
+			element = clientsDatabase.get(user);
+		}
+
 		/* The client was not found in the list, so we can't removing process fails. */
 		if (element == null){
 			return false;
 		}
 		/* The client was found in the hash table, so we can proceed. */
-		clientsDatabase.remove(user);
+		synchronized(clientsDatabase){
+			clientsDatabase.remove(user);
+		}
 		
 		return true;
 	}
 	
 	/* Find a specific client by his/her user name. */
 	public ClientInfo findClient(String user){
-		return clientsDatabase.get(user);
+		synchronized(clientsDatabase){
+			return clientsDatabase.get(user);
+		}
+		
 	}
 }

@@ -6,10 +6,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-import server.ConnectionLock;
 
 
 public class ClientWriteTCP extends Thread {
+	/*Set to true if you want the program to display debugging messages.*/
+	Boolean debugging = true;
+	
 	//This thread will be responsible for handling problems with the link to the server.
 	String user=null,pass=null;
 	boolean loggedIn=false;
@@ -45,8 +47,9 @@ public class ClientWriteTCP extends Thread {
 	        			try {
 	        				connectionLock.wait();
 						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							if (debugging){
+								System.out.println("ClientWriteTCP Thread interrupted.");
+							}
 						}
 	        		}
 	        	}
@@ -58,9 +61,15 @@ public class ClientWriteTCP extends Thread {
 	                out.writeUTF(userInput);
 	            }
 	        }catch(EOFException e){
-	        	System.out.println("EOF:" + e);
+	        	if (debugging){
+	        		System.out.println("ClientWriteTCP EOF:" + e);
+				}
+	        	
 	        }catch(IOException e){
-	        	System.out.println("IO:" + e);
+	        	if (debugging){
+	        		System.out.println("ClientWriteTCP IO:" + e);
+				}
+	        	
 	        }
     	}
     }

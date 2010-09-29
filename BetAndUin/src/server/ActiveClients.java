@@ -111,6 +111,8 @@ public class ActiveClients {
 	/* This method is used when we have a valid login for this client and consequently,
 	 * we can use his/her username to send messages from the system to the respective
 	 * owner of the account.
+	 * It can also be used when we want to send a message concerning a bet. That's why
+	 * we need to verify if the client is still logged in or not.
 	 */
 	public synchronized void sendMessageUser(String message, String username){
 		/* Sends a message to a specific user. */
@@ -119,11 +121,13 @@ public class ActiveClients {
 		/* Get the element using the hash table. */
 		ClientListElement element = clientHash.get(username);
 		
-		try {
-			out = new DataOutputStream(element.getSocket().getOutputStream());
-			out.writeUTF(message);
-		} catch (IOException e) {
-			System.out.println("IO from sendMessageUser (ActiveClients): " + e);
+		if (element != null){
+			try {
+				out = new DataOutputStream(element.getSocket().getOutputStream());
+				out.writeUTF(message);
+			} catch (IOException e) {
+				System.out.println("IO from sendMessageUser (ActiveClients): " + e);
+			}
 		}
 		
 	}

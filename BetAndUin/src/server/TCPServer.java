@@ -1,5 +1,4 @@
 package server;
-// TCPServer2.java: Multithreaded server
 
 import java.net.*;
 import java.util.StringTokenizer;
@@ -24,7 +23,7 @@ public class TCPServer{
         /* The object responsible for maintaining the communication with the partner server. */
         ConnectionWithServerManager connectionWithServerManager;
         /* The object responsible for maintaining the clients' database. */
-        ClientsStorage database;
+        ClientsStorage database = new ClientsStorage();
         /* The lock we are going to use when the connection manager wants to inform that server that its status
          * (i.e. primary or secondary server) has changed.
          */
@@ -87,8 +86,6 @@ public class TCPServer{
     		/* We are not the primary server, so we are going to sleep and not attend any clients.
     		 * We will eventually be awaken if our status changes.
     		 */
-    		
-    		//TODO: We have to be assure about this part!
     		synchronized (changeStatusLock){
     			while (!changeStatusLock.isPrimaryServer()){
 	    			try{
@@ -104,6 +101,11 @@ public class TCPServer{
 					}
 	    		}
     		}
+    		
+    		/* We now create the database. */
+    		database.addClient("gaia", "fixe", "barbosa");
+    		database.addClient("ivo", "fixe", "correia");
+    		
     		
             ServerSocket listenSocket = new ServerSocket(serverPort);
             if (debugging){
@@ -129,7 +131,7 @@ public class TCPServer{
                 if (debugging){
                 	System.out.println("CLIENT_SOCKET = " + clientSocket);
                 }
-                new ConnectionChat(clientSocket, activeClients, betScheduler = null);
+                new ConnectionChat(clientSocket, activeClients, betScheduler, database);
             }
         }catch(IOException e){
         	System.out.println("Listen:" + e.getMessage());
@@ -138,23 +140,25 @@ public class TCPServer{
 }
 /* Thread used to take care of each communication channel between the active server and a given client. */
 class ConnectionChat extends Thread {
+	/*Set to true if you want the program to display debugging messages.*/
+	Boolean debugging = false;
+	
 	/* The betScheduler so we can send the matches' information back to the client. */
 	BetScheduler betScheduler; 
-	ClientInfo clientInfo; //Will be easier to access client's info. -> this is just a reference
-	/*TODO: ATTENTION!!! we must initialize clientInfo once database is running.*/
-	
-	String user="gaia",pass="fixe";
+	/* A pointer to the information block related to this client. */
+	ClientInfo clientInfo;
 	
 	/* This two variables keep the values inserted by the user, so we can use it later. */
 	String username, password;
 	
-
     DataInputStream in;
     Socket clientSocket;
     ActiveClients activeClients;
+    ClientsStorage database;
 
-    public ConnectionChat (Socket aClientSocket, ActiveClients activeClients, BetScheduler betScheduler) {
+    public ConnectionChat (Socket aClientSocket, ActiveClients activeClients, BetScheduler betScheduler, ClientsStorage database) {
         this.betScheduler=betScheduler;
+        this.database = database;
         try{
             clientSocket = aClientSocket;
             in = new DataInputStream(clientSocket.getInputStream());
@@ -180,56 +184,90 @@ class ConnectionChat extends Thread {
                 option = strToken.nextToken();
                 System.out.println(option);
                 if(option.equals("register")){
-                	ClientInfo client = new ClientInfo(strToken.nextToken(),strToken.nextToken(),
-                			strToken.nextToken(), 100);
+                	username = strToken.nextToken();
+                	password = strToken.nextToken();
+                	String mail = strToken.nextToken();
                 	
-                	/*TODO: Adicionar à lista de clientes!!!!*/
+                	/* This username hasn't been found in the database, so we can add this new client. */
+                	if (database.findClient(username) == null){
+                		/* Creates the register for this new client and adds it to the database. */
+                		 clientInfo = database.addClient(username, password, mail);
+                		
+                		/* Registers in the client as an active client and informs the success of the
+                		 * operation.
+                		 */
+                		activeClients.addClient(clientInfo.getUsername(), clientSocket);
+                		activeClients.sendMessageBySocket("log successful",clientSocket);
+                		loggedIn = true;
+                	}
+                	/* This username is already being used. */
+                	else{
+                		/* Resets the variables and writes to the client. */
+                		username = "";
+                		password = "";
+                		activeClients.sendMessageBySocket("log taken",clientSocket);
+                	}
                 	
-                	activeClients.addClient(client.getUsername(), clientSocket);
-                	
-                	activeClients.sendMessageUser("log successful",username);
                 } else if(option.equals("login")){
 	                /*needs to be fixed: server will search at the registered clients (SQL database or in some
 	                 * memory struct)
 	                 * if the username do not exist it must be registered first. if not it will be
 	                 * added to the activeClients*/
-	                if((username = strToken.nextToken()).equals(user)
-	                		&& (password = strToken.nextToken()).equals(pass)){
-	
-	                	
-	                	/* However, the user was already validated in some other machine. */
-	                	if (activeClients.isClientLoggedIn(username)){
-	                		activeClients.sendMessageBySocket("log repeated",clientSocket);
-	                	}
-	                	/* The validation process can be concluded. */
-	                	else{
-	                		loggedIn=true;
-	                		activeClients.addClient(username, clientSocket);
-	                		activeClients.sendMessageUser("log successful",username);
-	                	}
-	                }
-	                else{
-	                	activeClients.sendMessageBySocket("log error",clientSocket);
-	                }
+                	ClientInfo client;
+                	username = strToken.nextToken();
+                	password = strToken.nextToken();
+                	
+                	client = database.findClient(username);
+                	/* This username hasn't been found on the database. */
+                	if (client == null){
+                		activeClients.sendMessageBySocket("log error",clientSocket);
+                	}
+                	/* This username has been found on the database. Let's check if the password matches
+                	 * with it.
+                	 */
+                	else{
+		                if(password.equals(client.getPassword())){
+		                	/* However, the user was already validated in some other machine. */
+		                	if (activeClients.isClientLoggedIn(username)){
+		                		activeClients.sendMessageBySocket("log repeated",clientSocket);
+		                	}
+		                	/* The validation process can be concluded. */
+		                	else{
+		                		loggedIn=true;
+		                		clientInfo = client;
+		                		activeClients.addClient(username, clientSocket);
+		                		activeClients.sendMessageUser("log successful",username);
+		                	}
+		                }
+                	}
                 }
         	}
             while(true){
                 /* Now, the server can communicate with the client, receiving the requests
                  * and sending back the respective information.
                  */
-                String data = in.readUTF();
-                System.out.println("T["+ username + "] has received: "+data);
-                //TODO: parseFunction(data)...
-                /*synchronized (activeClients){
-                	activeClients.sendMessageUser(data, username);
-                }*/
+                String clientInput = in.readUTF();
+                System.out.println("T[" + username + "] has received: " + clientInput);
+                /* Interprets the commands sent by the client and performs the respective
+                 * action.
+                 */
+                String data = parseFunction(clientInput);
+                /* Replies to the client. */
+                /* We only reply if data != "". If we received "", it means we were sending a message
+                 * to all the users.
+                 */
+                if (!data.equals("")){
+                	activeClients.sendMessageBySocket(data, clientSocket);
+                }
             }
         }catch(EOFException e){
         	/* The client is leaving. Consequently, we have to remove it from the list
         	 * of active clients.
         	 */
         	activeClients.removeClient(username);
-        	System.out.println("EOF in here:" + e);
+        	if (debugging){
+        		System.out.println("ConnectionChat EOF:" + e);
+        	}
         }catch(IOException e){
         	/* The client is leaving. Consequently, we have to remove it from the list
         	 * of active clients.
@@ -237,10 +275,12 @@ class ConnectionChat extends Thread {
         	/*TODO: we must save the user's current state, i.e., current bets and all finished bets
         	 * during this last session.*/
         	activeClients.removeClient(username);
-        	System.out.println("IO:" + e);
+        	if (debugging){
+        		System.out.println("ConnectionChat IO:" + e);
+        	}
         	/*TODO: When user is offline, we should also record messages of finished games, 
         	 * where user made some bets, and non-delivered messages from other users so that, 
-        	 * in the next session, the user can check this informations*/
+        	 * in the next session, the user can check this informations.*/
         }
     }
     
@@ -250,22 +290,24 @@ class ConnectionChat extends Thread {
     public String parseFunction(String input){
     	String answer = "";
     	String command;
+    	/* So we can keep the original String and don't destroy it with the tokenizer. */
+    	String copyInput = input;
     	
     	StringTokenizer strToken;
-        strToken = new StringTokenizer(input);
+        strToken = new StringTokenizer(copyInput);
         command = strToken.nextToken();
         
         if(command.equals("show")){
         	command = strToken.nextToken();
         	
         	if(command.equals("matches")){ //show all current matches
-        		activeClients.sendMessageAll(betScheduler.getMatches(), clientSocket);
+        		answer = betScheduler.getMatches();
         	}
         	else if(command.equals("credits")){ //show user's credits
-        		activeClients.sendMessageBySocket(""+clientInfo.getCredits(), clientSocket);
+        		answer = "" + clientInfo.getCredits();
         	}
         	else if(command.equals("users")){ //show all active users
-        		activeClients.sendMessageBySocket(activeClients.getUsersList(), clientSocket);
+        		answer = activeClients.getUsersList();
         	}
         	else{
         		answer = "Unknow Command";
@@ -275,33 +317,37 @@ class ConnectionChat extends Thread {
         	command=strToken.nextToken();
         	
         	if(command.equals("all")){ //send a message to all users
-            	command = "";
-            	
-            	while(strToken.countTokens() - 1 > 0){
-            		command += strToken.nextToken() + " ";
-            	}
-            	command += strToken.nextToken();
-            	
-        		activeClients.sendMessageAll(command, clientSocket);
+            	/* "send all " occupies 9 characters. Consequently, the message goes from
+            	 * input[9] to the size of the input.
+            	 */
+        		activeClients.sendMessageAll(input.substring(9), clientSocket);
+        		answer = "";
         	}
-        	else if(activeClients.checkUser(command)){ //send a message to a specific user
-        		String user=command;
-            	command = "";
-            	
-            	while(strToken.countTokens() - 1 > 0){
-            		command += strToken.nextToken() + " ";
-            	}
-            	command += strToken.nextToken();
-            	
-            	activeClients.sendMessageUser(command, user);
-        	}
+        	/* We are sending a message to a user. */
         	else{
-        		answer = "Invalid Command or user Unknow";
+        		/* Send a message to a specific user. */
+        		
+        		/* This client is online. */
+	        	if(activeClients.checkUser(command)){
+	        		int size = command.length();
+	            	/* "send " occupies 5 characters. Adding the size of 'command' to it, we have to cut
+	            	 * that part to get the message to send.
+	            	 * The token command corresponds to the user.
+	            	 */
+	            	activeClients.sendMessageUser(input.substring(5 + size), command);
+	            	answer = "";
+	        	}
+	        	else if(database.findClient(command) != null){
+	        		answer = "This client if offline at the moment.";
+	        	}
+	        	else{
+	        		answer = "Username not registered.";
+	        	}
         	}
         }
         else if(command.equals("reset")){ //resets user's credits to 100Cr
         	clientInfo.setCredits(100);
-        	answer = "Your credits were reseted to "+clientInfo.getCredits()+"Cr";
+        	answer = "Your credits were reseted to " + clientInfo.getCredits() + "Cr";
         }
         else if(command.equals("bet")){
         	//TODO: check if next token is integer, collect the remaining infos check them 

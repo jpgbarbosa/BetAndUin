@@ -3,7 +3,6 @@ import java.net.*;
 import java.util.StringTokenizer;
 import java.io.*;
 
-import server.ConnectionLock;
 
 public class TCPClient {
 	/*TODO: We should avoid this static function*/
@@ -137,6 +136,10 @@ public class TCPClient {
 		        		else if (serverAnswer.equals("log repeated")){
 		        			System.out.println("\nSorry, but this user is already logged in...\n");
 		        		}
+		        		/* This username is already taken by another client. */
+		        		else if (serverAnswer.equals("log taken")){
+		        			System.out.println("\nSorry, but this username isn't available, choose another.\n");
+		        		}
 		        		
 		        		serverAnswer = "";
 		        		error = true;
@@ -155,7 +158,6 @@ public class TCPClient {
 			    	try {
 						connectionLock.wait();
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 			    }
