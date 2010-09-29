@@ -47,22 +47,26 @@ public class ActiveClients {
 	public synchronized void removeClient(String username){
 		/* This method removes a client. */
 		
+		/* We have to check it because if the client ends the connection before sending data,
+		 * we will have a null element as username.
+		 */
+		
+		if (username.equals("")){
+			return;
+		}
+		
 		/* Gets the element from the hash table. */
 		ClientListElement element = clientHash.get(username);
 		
-		/* We have to check it because if the client ends the connection before sending data,
-		 * we will have a null element.
+		
+		/* Removes it first from the hash table and then from the list of active
+		 * clients, decrementing their number afterwards.
 		 */
-		if (element != null){
-			/* Removes it first from the hash table and then from the list of active
-			 * clients, decrementing their number afterwards.
-			 */
-			
-			clientHash.remove(username);
-			clientList.remove(element);
-			
-			noActiveClients--;
-		}
+		
+		clientHash.remove(username);
+		clientList.remove(element);
+		
+		noActiveClients--;
 		
 	}
 	

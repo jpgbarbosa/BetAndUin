@@ -5,6 +5,12 @@ import java.net.*;
 import java.util.StringTokenizer;
 import java.io.*;
 
+/*TODO: There's a major bug in this moment. As we are starting several threads and only then, 
+ *      we are trying to create the socket, if we accidentally run two servers in the same ports,
+ *      the main thread will eventually die and detect the error, raising the port already in use exception,
+ *      but the other threads will keep going. We have to take a look at this.
+ */
+
 public class TCPServer{
     public static void main(String args[]){
     	
@@ -59,6 +65,12 @@ public class TCPServer{
     		synchronized(changeStatusLock){
     			try{
             		if (!changeStatusLock.isInitialProcessConcluded()){
+            			if (debugging){
+            				System.out.println("We are temporarily sleeping while the primary server is elected...");
+            			}
+            			/* If this server is elected as secondary server, we won't move from here till
+            			 * our status changes once again.
+            			 */
             			changeStatusLock.wait();
             		}
 				} catch (InterruptedException e) {
@@ -66,14 +78,19 @@ public class TCPServer{
 				}
     		}
     		
+    		if (debugging){
+				System.out.println("We are moving to the next step...");
+			}
+    		
     		/* Now, we have to check whether we are the primary server or not. */
     		
     		/* We are not the primary server, so we are going to sleep and not attend any clients.
     		 * We will eventually be awaken if our status changes.
     		 */
+    		
     		//TODO: We have to be assure about this part!
     		synchronized (changeStatusLock){
-	    		while (!changeStatusLock.isPrimaryServer()){
+    			while (!changeStatusLock.isPrimaryServer()){
 	    			try{
 	    				if (debugging){
 							System.out.println("The server is going to sleep...");
