@@ -74,7 +74,7 @@ public class ClientsStorage {
 	/* Method to add a client. If the client is already in the database, it returns
 	 * false. Else, it returns true.
 	 */
-	public Boolean addClient(String user, String pass, String mail){
+	public boolean addClient(String user, String pass, String mail){
 		ClientInfo element;
 		element = clientsDatabase.get(user);
 		
@@ -92,7 +92,7 @@ public class ClientsStorage {
 	}
 	
 	/* Method to remove a client from the database. Returns true if it succeeded, false otherwise. */
-	public Boolean removeClient(String user){
+	public boolean removeClient(String user){
 		ClientInfo element;
 		element = clientsDatabase.get(user);
 		
