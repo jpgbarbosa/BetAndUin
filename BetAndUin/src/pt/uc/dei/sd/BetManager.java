@@ -16,6 +16,7 @@ public class BetManager implements IBetManager {
     public List<IMatch> getMatches() {
         return matches;
     }
+    
     public Result getResult(IMatch m) {
         // Dont't tell LSilva about this, ok?
         if (m.getHomeTeam().equals("Sporting")) return Result.AWAY;

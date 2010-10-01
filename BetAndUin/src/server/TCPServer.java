@@ -352,10 +352,39 @@ class ConnectionChat extends Thread {
         else if(command.equals("reset")){ //resets user's credits to 100Cr
         	clientInfo.setCredits(100);
         	answer = "Your credits were reseted to " + clientInfo.getCredits() + "Cr";
+        	database.saveToFile();
         }
         else if(command.equals("bet")){
-        	//TODO: check if next token is integer, collect the remaining info check them 
-        	//if successful result="bet done!"
+
+        	String game;
+        	int gameNumber,credits;
+        	try {
+        		gameNumber = Integer.parseInt(strToken.nextToken());
+        	    game = strToken.nextToken();
+        	    credits = Integer.parseInt(strToken.nextToken());
+        	    
+        	}
+        	catch(NumberFormatException nFE) {
+        	    System.out.println("Not an Integer");
+        	    answer = "Invalid game number or amount of credits!";
+        	    return answer;
+        	}
+        	        	
+        	if((game.equals("1") || game.compareToIgnoreCase("x")==0 || game.equals("2"))
+        			/*&& betScheduler.isValidGame(x1)*/){
+        		
+        		clientInfo.setCredits(clientInfo.getCredits()-credits);
+        		database.betList.add(new Bet(clientInfo.getUsername(),gameNumber,game,credits));
+        		database.saveToFile();
+        		
+        		
+        		
+        		
+        		answer = "Bet done!";
+        	}
+        	else {
+        		answer = "Invalid command";
+        	}
         }
         else {
         	answer = "Unknown command";

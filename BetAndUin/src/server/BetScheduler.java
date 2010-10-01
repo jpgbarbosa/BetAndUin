@@ -8,16 +8,17 @@ public class BetScheduler extends Thread{
 	int TIME_BETWEEN_ROUNDS = 10000;
 	String message, lastMatches="";
 	ActiveClients activeClients;
+    IBetManager man;
 	
 	public BetScheduler(ActiveClients activeClients){
 		this.activeClients = activeClients;
+		man = new BetManager();
+		
 		this.start();
 	}
 	
 	public void run(){
-        IBetManager man = new BetManager();
         
-
         while (true){
         	message = "";
 	        message += "\n========= Batch of Matches =========\n";        
@@ -51,6 +52,10 @@ public class BetScheduler extends Thread{
 	                    break;
 	            }
 	        }
+	        
+	        //TODO: FUNCAO QUE VERIFICA OS JOGOS QUE ACABARAM
+	        // E NOTIFICA OS USERS ENVOLVIDOS FAZENDO DEPOIS 
+	        // AS RESPECTIVAS ALTERAÇOES
 	
 	        /*Send the results to all the active clients.*/
 	        activeClients.sendMessageAll(message, null);
@@ -61,5 +66,9 @@ public class BetScheduler extends Thread{
 	
 	public String getMatches(){
 		return lastMatches;
+	}
+	
+	public IBetManager getManager(){
+		return man;
 	}
 }

@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Vector;
 
 /* Class that holds all the information related to the users registed in the system.
  * In here, we can save the data, read it from a file and add/remove clients to/from
@@ -15,6 +18,7 @@ import java.util.Hashtable;
 public class ClientsStorage {
 	/* The hash table that will work as database. */
 	Hashtable <String, ClientInfo> clientsDatabase;
+	Vector <Bet> betList;
 	
 	/*Set to true if you want the program to display debugging messages.*/
 	Boolean debugging = false;
@@ -41,7 +45,7 @@ public class ClientsStorage {
 	}
 	
 	/* The reading method. This method can only be used by the class. */
-	private Object readFromFile(){
+	synchronized private Object readFromFile(){
 		ObjectInputStream iS;
 		
 		try {
@@ -60,7 +64,7 @@ public class ClientsStorage {
 	}
 	
 	/* The saving method. */
-	public void saveToFile(){
+	synchronized public void saveToFile(){
 		ObjectOutputStream oS;
 		
 		try {
@@ -114,6 +118,26 @@ public class ClientsStorage {
 		synchronized(clientsDatabase){
 			return clientsDatabase.get(user);
 		}
+	}
+	
+	/* Add a bet to the system */
+	public Bet addBet(String user, String bet, int gameNumber, int credits){
+		Bet newbet=new Bet(user,gameNumber,bet,credits);
 		
+		betList.add(newbet);
+		
+		return newbet;
+	}
+	
+	public List<Bet> searchBetsByUser(String user){
+		List<Bet> newList = new LinkedList<Bet>();
+		
+		for(int i=0;i<betList.size();i++){
+			if(betList.get(i).getUser().equals(user)){
+				newList.add(betList.get(i));
+			}
+		}
+		
+		return newList;
 	}
 }
