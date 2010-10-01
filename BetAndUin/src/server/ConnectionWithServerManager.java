@@ -38,7 +38,7 @@ public class ConnectionWithServerManager extends Thread{
 	int serverPort;
 	int partnerPort;
 	MessagesRepository msgToReceiveList;
-	ReceiveServerMessages receiveMensager;
+	ReceiveServerMessages receiveMessenger;
 	
 	/* The lock to synchronize with the server. */
 	ChangeStatusLock statusLock;
@@ -65,7 +65,7 @@ public class ConnectionWithServerManager extends Thread{
 		partnerPort = pPort;
 		this.isDefaultServer = isDefaultServer;
 		msgToReceiveList = new MessagesRepository();
-		receiveMensager = new ReceiveServerMessages(serverPort, msgToReceiveList, this);
+		receiveMessenger = new ReceiveServerMessages(serverPort, msgToReceiveList, this);
 		statusLock = lock;
 		
 		/* Initializes the UDP socket to send messages to the other server. */
@@ -118,18 +118,11 @@ public class ConnectionWithServerManager extends Thread{
 			}
 			synchronized(msgToReceiveList){
 				/* We have some messages to read. */
-				/* TODO: Here we have to check whether to use a while there are
-				 *       messages in the repository of keep the if as it is, believing
-				 *       that in this moment we shall only have one answer from the other
-				 *       server.
-				 *       VERY IMPORTANT: Don't forget to implement the timers!
-				 */
-				if (msgToReceiveList.listSize() > 0){
+				while (msgToReceiveList.listSize() > 0){
 					partnerAnswer = msgToReceiveList.getMsg();
 				}
 			}
 			
-			// TODO: Should we inform the server class that we are now the primary server?
 			/* We are now the primary server. */
 			if ((partnerAnswer.equals("OK") && isDefaultServer)
 					|| (partnerAnswer.equals("I_WILL_BE_PRIMARY_SERVER") && isDefaultServer)){
@@ -149,7 +142,13 @@ public class ConnectionWithServerManager extends Thread{
 					}
 				}
 				
-				// TODO: We can now terminate the receiveMensager, it won't be needed any longer.
+				/* We can now terminate the receiveMensager, it won't be needed any longer. */
+				if (debugging){
+					System.out.println("We are going to terminate the receive messenger thread.");
+				}
+				receiveMessenger.terminateThread();
+				sendTerminateMessage();
+				
 				while(true){
 					/* Once we are simultaneously the main server and default server,
 					 * we will only give up from that position if the server crashes.
@@ -359,6 +358,26 @@ public class ConnectionWithServerManager extends Thread{
 			
 		} catch (IOException e){
 			System.out.println("IO from sendMessage (ConnectionWithServerManager): " + e.getMessage());
+		}
+	}
+	
+	public void sendTerminateMessage(){
+		/* Sends a terminate thread message to our receive messenger. */
+		String message = "TERMINATE THREAD";
+		
+		if (debugging){
+			System.out.println("We are sending a terminate thread message.");
+		}
+		
+		try {
+			byte [] m = message.getBytes();
+			InetAddress aHost = InetAddress.getByName("localhost");
+
+			DatagramPacket request = new DatagramPacket(m,m.length,aHost,serverPort);
+			aSocket.send(request);
+			
+		} catch (IOException e){
+			System.out.println("IO from sendTerminateThread (ConnectionWithServerManager): " + e.getMessage());
 		}
 	}
 

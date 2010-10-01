@@ -25,19 +25,18 @@ public class ClientReadTCP extends Thread {
 		        			try {
 		        				connectionLock.wait();
 							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								System.out.println("The ClientReadTCP thread has been interrupted.");
 							}
 		        		}
 		        	}
 	                //an echo server
 	                String data = in.readUTF();
-	                System.out.println("MENSAGEM RECEBIDA:\n   "+data + "\nFIM DA MENSAGEM\n");
+	                System.out.println(data);
 	            }
 	        }catch(EOFException e){
-	        	System.out.println("EOF:" + e);
+	        	System.out.println("EOF in ClientReadTCP:" + e);
 	        }catch(IOException e){
-	        	System.out.println("IO:" + e);
+	        	System.out.println("IO in ClientReadTCP:" + e);
 	        	synchronized(connectionLock){
 	        		connectionLock.setConnectionDown(true);
 	        		connectionLock.notify();
@@ -52,7 +51,9 @@ public class ClientReadTCP extends Thread {
     	try{
             clientSocket = s;
             in = new DataInputStream(clientSocket.getInputStream());
-        }catch(IOException e){System.out.println("Connection:" + e.getMessage());}
+        }catch(IOException e){
+        	System.out.println("Connection in ClientReadTCP:" + e.getMessage());
+        }
     }
 }
 

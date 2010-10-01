@@ -22,9 +22,14 @@ public class TCPClient {
 		}
 	
 		/*Set to true if you want the program to display debugging messages.*/
-		Boolean debugging = false;
+		boolean debugging = true;
 		
-		Boolean firstConnection = false;
+		/* This is for knowing if we are connecting for the first time or instead, we
+		 * are trying to reconnect. It's only use is given a few lines down when we want
+		 * to display a message and so it is not necessary for the correct functioning of
+		 * the program.
+		 */
+		boolean firstConnection = false;
 		
 		/*The socket variable we shall use to connect to the server.*/
 		Socket s = null;
@@ -53,24 +58,24 @@ public class TCPClient {
 		serverPorts[1] = 7000;
 		
 		StringTokenizer strToken;
-		String command="";
+		String command = "";
 		
 		writeThread =  new ClientWriteTCP(connectionLock);
 		readThread = new ClientReadTCP(connectionLock);
 		//Five attempts to reconnect the connection.
 		while (retries < NO_RETRIES){
 			try {			
-				/* We haven't retried yet, so, it's useless to sleep for WAITING_TIME miliseconds. */
+				/* We haven't retried yet, so, it's useless to sleep for WAITING_TIME milliseconds. */
 				if (retrying > 0){
 				    try {
 						Thread.sleep(WAITING_TIME);
 					} catch (InterruptedException e) {
-						//TODO Auto-generated catch block
-						e.printStackTrace();
+						System.out.println("This thread was interrupted while sleeping.\n");
 						System.exit(0);
 					}
 				}
 			    // 1o passo
+				//TODO: Make sure you don't forget to change it again to the original, now commented.
 			    //s = new Socket(args[0], serversocket);
 				s = new Socket("localHost", serverPorts[serverPos]);
 				
@@ -86,31 +91,40 @@ public class TCPClient {
 					System.out.println("Has successfully reconnected to server, now in port " + serverPorts[serverPos] + ".");
 				}
 			    
+				if (debugging){
+					System.out.println("We passing the socket's reference to our threads.");
+				}
 			    writeThread.setSocket(s);
 			    readThread.setSocket(s);
 				
 			    String serverAnswer;
 				boolean error = false;
-			    
+				
 				/* Login authentication. */
 				while(!loggedIn){		
 					/* When the server goes down, the client keep the data related to a successful login
 					 * When the server is up again, the client application directly sends that information
 					 * so the end user won't have to reinsert them once again.
 					 */
-					if(!(username.equals("") && password.equals("")) && !error){
-						writeThread.out.writeUTF(username + " " + password);
+					if(!(command.equals("")) && !error){
+						if (debugging){
+							System.out.printf("We already have some data saved (%s).\n", command);
+						}
+						writeThread.out.writeUTF(command);
 						serverAnswer = readThread.in.readUTF();
 					}
 					/* The information needed for a valid login hasn't been inserted yet. */
 					else {
+						if (debugging){
+							System.out.println("We don't have any login saved.");
+						}
 						error=false;
 			        	System.out.println("to log in: login [user] [pass]\n" +
 			        			"to register in: register [user] [pass] [email]");
-			        	command=writeThread.reader.readLine();
+			        	command = writeThread.reader.readLine();
 			        	strToken = new StringTokenizer(command);
 			        	
-			        	/*if command is invalid the program will ask it again, before sending it to server*/
+			        	/* If command is invalid, the program will ask it again, before sending it to server*/
 			        	if(!checkCommand(strToken.nextToken(),strToken.countTokens())){
 			        		error=true;
 			        		continue;
@@ -141,6 +155,7 @@ public class TCPClient {
 		        			System.out.println("\nSorry, but this username isn't available, choose another.\n");
 		        		}
 		        		
+		        		/* Resets the variables. */
 		        		serverAnswer = "";
 		        		error = true;
 		        	}

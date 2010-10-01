@@ -52,6 +52,10 @@ public class TCPServer{
         else{
         	isDefaultServer = false;
         }
+
+        if (debugging){
+        	System.out.printf("We are server %d, our partner is %d.\n", serverPort, partnerPort);
+        }
         
         try{
             
@@ -350,7 +354,7 @@ class ConnectionChat extends Thread {
         	answer = "Your credits were reseted to " + clientInfo.getCredits() + "Cr";
         }
         else if(command.equals("bet")){
-        	//TODO: check if next token is integer, collect the remaining infos check them 
+        	//TODO: check if next token is integer, collect the remaining info check them 
         	//if successful result="bet done!"
         }
         else {

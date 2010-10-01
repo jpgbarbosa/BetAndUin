@@ -17,6 +17,7 @@ public class ReceiveServerMessages extends Thread{
 	int serverPort;
 	MessagesRepository msgList;
 	ConnectionWithServerManager parentThread;
+	boolean terminateThread = false;
 	
 	public ReceiveServerMessages(int sPort, MessagesRepository list, ConnectionWithServerManager thread){
 		serverPort = sPort;
@@ -40,6 +41,12 @@ public class ReceiveServerMessages extends Thread{
 				aSocket.receive(request);
 				msg=new String(request.getData(), 0, request.getLength());
 				
+				if (terminateThread){
+					if (debugging){
+						System.out.println("We are terminating the ReceiveServerMessages thread.");
+						return;
+					}
+				}
 				if (debugging){
 					System.out.println("This server has received a " + msg + ".");
 				}
@@ -53,11 +60,9 @@ public class ReceiveServerMessages extends Thread{
 		}catch (SocketException e) {
 			System.out.println("Socket: " + e.getMessage());
 		}catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("UnknownHostException in ReceiveServerMessages: " + e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("IOException in ReceiveServerMessages: " + e);
 		}finally {
 			if (aSocket != null)
 				aSocket.close();
@@ -69,7 +74,7 @@ public class ReceiveServerMessages extends Thread{
 	 * and stop using more resources.
 	 */
 	public void terminateThread(){
-		//TODO: We ought to implement this method!
+		terminateThread = true;
 	}
 
 }

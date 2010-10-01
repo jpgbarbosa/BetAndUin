@@ -31,8 +31,7 @@ public class BetScheduler extends Thread{
 	        try {
 				Thread.sleep(TIME_BETWEEN_ROUNDS);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println("BetScheduler has been interrupted while sleeping.");
 			}
 			
 			message = "";

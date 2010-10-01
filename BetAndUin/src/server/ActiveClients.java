@@ -3,7 +3,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -51,7 +50,7 @@ public class ActiveClients {
 		 * we will have a null element as username.
 		 */
 		
-		if (username.equals("")){
+		if (username == null || username.equals("")){
 			return;
 		}
 		

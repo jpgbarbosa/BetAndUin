@@ -10,7 +10,7 @@ import java.net.Socket;
 
 public class ClientWriteTCP extends Thread {
 	/*Set to true if you want the program to display debugging messages.*/
-	Boolean debugging = true;
+	boolean debugging = true;
 	
 	//This thread will be responsible for handling problems with the link to the server.
 	String user=null,pass=null;
