@@ -1,6 +1,7 @@
 package server;
 
 import java.net.*;
+import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.io.*;
 
@@ -12,6 +13,8 @@ import java.io.*;
 
 public class TCPServer{
     public static void main(String args[]){
+    	/*Number of Games per round*/
+    	int nGames=10; 
     	
     	/*Set to true if you want the program to display debugging messages.*/
 		Boolean debugging = true;
@@ -34,7 +37,7 @@ public class TCPServer{
         int serverPort, partnerPort;
         
         /* A testing variable, used when we want to disableBets so we won't get all those messages.*/
-        boolean disableBets = true;
+        boolean disableBets = false;
         
         /* The user has introduced less than three options by the command line, so we can't carry on. */
         if (args.length < 3){
@@ -123,12 +126,14 @@ public class TCPServer{
     		
             /* We can take this off later.*/
             if (!disableBets){
-            	betScheduler = new BetScheduler(activeClients);
+            	betScheduler = new BetScheduler(activeClients, nGames);
             }
             else{
             	betScheduler = null;
             }
 
+            database.setBetScheduler(betScheduler);
+            
             while(true) {
                 Socket clientSocket = listenSocket.accept(); // BLOQUEANTE
                 
@@ -251,7 +256,7 @@ class ConnectionChat extends Thread {
                  * and sending back the respective information.
                  */
                 String clientInput = in.readUTF();
-                System.out.println("T[" + username + "] has received: " + clientInput);
+               // System.out.println("T[" + username + "] has received: " + clientInput);
                 /* Interprets the commands sent by the client and performs the respective
                  * action.
                  */
@@ -369,21 +374,22 @@ class ConnectionChat extends Thread {
         	    answer = "Invalid game number or amount of credits!";
         	    return answer;
         	}
-        	        	
-        	if((game.equals("1") || game.compareToIgnoreCase("x")==0 || game.equals("2"))
-        			/*&& betScheduler.isValidGame(x1)*/){
-        		
-        		clientInfo.setCredits(clientInfo.getCredits()-credits);
-        		database.betList.add(new Bet(clientInfo.getUsername(),gameNumber,game,credits));
-        		database.saveToFile();
-        		
-        		
-        		
-        		
-        		answer = "Bet done!";
+        	catch(NoSuchElementException e){
+        		return "too few arguements: bet [game number] [bet] [credits]";
         	}
-        	else {
-        		answer = "Invalid command";
+        	synchronized(betScheduler.getManager()){
+	        	if((game.equals("1") || game.compareToIgnoreCase("x")==0 || game.equals("2"))
+	        			&& betScheduler.isValidGame(gameNumber)){
+	        		//TODO: WARNING!!!!!!!! betScheduler isn't being saved in file;
+	        		clientInfo.setCredits(clientInfo.getCredits()-credits);
+	        		betScheduler.addBet(new Bet(clientInfo.getUsername(),gameNumber,game,credits));
+	        		database.saveToFile();
+	
+	        		answer = "Bet done!";
+	        	}
+	        	else {
+	        		answer = "Invalid command or the game number that you entered is already finished";
+	        	}
         	}
         }
         else {

@@ -5,7 +5,7 @@ import java.util.List;
 
 public class BetManager implements IBetManager {
     private ArrayList<IMatch> matches = new ArrayList<IMatch>();
-    private int index = 0;
+    private int index = 1;
     private BetGenerator gen = new BetGenerator();
     private int size = 8;
     
@@ -31,4 +31,5 @@ public class BetManager implements IBetManager {
             matches.add(gen.getRandomMatch());
         }
     }
+    
 }

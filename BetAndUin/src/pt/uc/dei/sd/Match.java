@@ -17,6 +17,10 @@ public class Match implements IMatch, Serializable {
         return ""+code;
     }
     
+    public int getMatchCode(){
+    	return code;
+    }
+    
     public String getHomeTeam() {
         return home;
     }

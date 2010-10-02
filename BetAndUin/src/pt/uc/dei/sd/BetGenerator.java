@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class BetGenerator {
     
-    private int counter = 0;
+    private int counter = 1;
     
     private String[] teams = new String[]{ 
         "Benfica", "Porto", "Braga", "Sporting",
