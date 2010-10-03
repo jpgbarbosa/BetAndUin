@@ -13,18 +13,22 @@ public class ClientWriteTCP extends Thread {
 	boolean debugging = true;
 	
 	//This thread will be responsible for handling problems with the link to the server.
-	String user=null,pass=null;
-	boolean loggedIn=false;
+	String user = null,pass = null;
+	boolean loggedIn = false;
     DataOutputStream out;
     Socket clientSocket;
     String userInput;
     int serverSocketFirst = 6000, serverSocketSecond = 7000;
     ConnectionLock connectionLock;
+    ClientReadTCP readThread;
+    int userCredits;
+    int defaultCredits = 100;
     
     BufferedReader reader;
     
     public ClientWriteTCP (ConnectionLock lock) {
     	connectionLock = lock;
+    	userCredits = 0;
         this.start();
     }
 
@@ -58,7 +62,48 @@ public class ClientWriteTCP extends Thread {
 	            while(true){
 	            	System.out.println(" >>> ");
 	            	userInput = reader.readLine();
-	                out.writeUTF(userInput);
+	            	
+	            	/* The user is going to reset the number of credits.
+	            	 * In the case we have more than 100, we have to make sure
+	            	 * the client noticed this and willingly making an action
+	            	 * that will make him lost some credits.
+	            	 */
+	            	
+	            	if (userInput.equals("reset credits")){
+	            		readThread.setIsToPrint(false);
+	            		out.writeUTF("show credits");
+	            		try{
+	            			synchronized(this){
+	            				this.wait();
+	            			}
+	            		}catch (InterruptedException e){
+	            			/* Continues the work. */
+	            		}
+
+	            		if (userCredits > defaultCredits){
+	            			String finalAnswer = "";
+	            			System.out.printf("In this moment, you have %d, which means you are going to lose %d credits.\n" +
+	            					"Are you sure you want to continue with the process (Y/N)?\n", userCredits, userCredits - defaultCredits);
+	            			do{
+	            				try{
+	            					finalAnswer = reader.readLine().toUpperCase();
+	            				}catch (Exception e){
+	            					return;
+	            				}
+	            			}
+	            			while (!finalAnswer.equals("Y") && !finalAnswer.equals("N"));
+	            			
+	            			if (finalAnswer.equals("Y")){
+	            				out.writeUTF("reset");
+	            			}
+	            			else{
+	            				System.out.printf("Operation cancelled. You still have %d credits.\n", userCredits);
+	            			}
+	            		}
+	            	}
+	            	else{
+	            		out.writeUTF(userInput);
+	            	}
 	            }
 	        }catch(EOFException e){
 	        	if (debugging){
@@ -80,6 +125,14 @@ public class ClientWriteTCP extends Thread {
     		out = new DataOutputStream(clientSocket.getOutputStream());
     	    reader = new BufferedReader(new InputStreamReader(System.in));
         }catch(IOException e){System.out.println("Connection:" + e.getMessage());}
+    }
+    
+    public void setReadThread(ClientReadTCP thread){
+    	readThread = thread;
+    }
+    
+    public void setUserCredtis(int credits){
+    	userCredits = credits;
     }
 	
 }

@@ -9,7 +9,7 @@ import pt.uc.dei.sd.IMatch;
 
 public class BetScheduler extends Thread{
 	int TIME_BETWEEN_ROUNDS = 60000;
-	String message, lastMatches="";
+	String message, lastMatches = "";
 	ActiveClients activeClients;
     IBetManager man;
     int gamesPerRound;

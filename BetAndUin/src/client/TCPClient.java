@@ -61,7 +61,8 @@ public class TCPClient {
 		String command = "";
 		
 		writeThread =  new ClientWriteTCP(connectionLock);
-		readThread = new ClientReadTCP(connectionLock);
+		readThread = new ClientReadTCP(connectionLock, writeThread);
+		writeThread.setReadThread(readThread);
 		//Five attempts to reconnect the connection.
 		while (retries < NO_RETRIES){
 			try {			
@@ -122,7 +123,12 @@ public class TCPClient {
 			        	System.out.println("to log in: login [user] [pass]\n" +
 			        			"to register in: register [user] [pass] [email]");
 			        	command = writeThread.reader.readLine();
-			        	strToken = new StringTokenizer(command);
+			        	try{
+			        		strToken = new StringTokenizer(command);
+			        	}catch(Exception e){
+			        		return;
+			        	}
+			        	
 			        	
 			        	/* If command is invalid, the program will ask it again, before sending it to server*/
 			        	if(!checkCommand(strToken.nextToken(),strToken.countTokens())){

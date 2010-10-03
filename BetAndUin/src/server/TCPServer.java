@@ -14,7 +14,7 @@ import java.io.*;
 public class TCPServer{
     public static void main(String args[]){
     	/*Number of Games per round*/
-    	int nGames=10; 
+    	int nGames = 10; 
     	
     	/*Set to true if you want the program to display debugging messages.*/
 		Boolean debugging = true;
@@ -164,6 +164,8 @@ class ConnectionChat extends Thread {
     Socket clientSocket;
     ActiveClients activeClients;
     ClientsStorage database;
+    
+    int defaultCredits = 100;
 
     public ConnectionChat (Socket aClientSocket, ActiveClients activeClients, BetScheduler betScheduler, ClientsStorage database) {
         this.betScheduler=betScheduler;
@@ -248,6 +250,10 @@ class ConnectionChat extends Thread {
 		                		activeClients.sendMessageUser("log successful",username);
 		                	}
 		                }
+		                else {
+	                		activeClients.sendMessageBySocket("log error",clientSocket);
+	                	}
+
                 	}
                 }
         	}
@@ -307,7 +313,14 @@ class ConnectionChat extends Thread {
         command = strToken.nextToken();
         
         if(command.equals("show")){
-        	command = strToken.nextToken();
+        	try{
+        		command = strToken.nextToken();
+        	}catch(Exception e){
+        		/* This may happen if the user does not send enough commands
+        		 * and consequently, nextToken has nothing to analyze.
+        		 */
+        		command = "";
+        	}
         	
         	if(command.equals("matches")){ //show all current matches
         		answer = betScheduler.getMatches();
@@ -323,17 +336,25 @@ class ConnectionChat extends Thread {
         	}
         }
         else if(command.equals("send")){
-        	command=strToken.nextToken();
+        	try{
+        		command=strToken.nextToken();
+        	}catch(Exception e){
+        		/* The client may insert insuficient data and consequently,
+        		 * we must prevent from this action to cause an exception.
+        		 */
+        		
+        		command = "";
+        	}
         	
         	if(command.equals("all")){ //send a message to all users
             	/* "send all " occupies 9 characters. Consequently, the message goes from
             	 * input[9] to the size of the input.
             	 */
-        		activeClients.sendMessageAll(input.substring(9), clientSocket);
+        		activeClients.sendMessageAll(clientInfo.getUsername() + "says to everyone: " + input.substring(9), clientSocket);
         		answer = "";
         	}
         	/* We are sending a message to a user. */
-        	else{
+        	else if (!command.equals("")){
         		/* Send a message to a specific user. */
         		
         		/* This client is online. */
@@ -343,7 +364,7 @@ class ConnectionChat extends Thread {
 	            	 * that part to get the message to send.
 	            	 * The token command corresponds to the user.
 	            	 */
-	            	activeClients.sendMessageUser(input.substring(5 + size), command);
+	            	activeClients.sendMessageUser(clientInfo.getUsername() + "says: " + input.substring(5 + size), command);
 	            	answer = "";
 	        	}
 	        	else if(database.findClient(command) != null){
@@ -353,9 +374,13 @@ class ConnectionChat extends Thread {
 	        		answer = "Username not registered.";
 	        	}
         	}
+        	/* The user has just inserted the keyword send. */
+        	else{
+        		answer = "Unknown command";
+        	}
         }
         else if(command.equals("reset")){ //resets user's credits to 100Cr
-        	clientInfo.setCredits(100);
+        	clientInfo.setCredits(defaultCredits);
         	answer = "Your credits were reseted to " + clientInfo.getCredits() + "Cr";
         	database.saveToFile();
         }
