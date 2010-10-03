@@ -9,8 +9,9 @@ public class BetManager implements IBetManager {
     private BetGenerator gen = new BetGenerator();
     private int size = 8;
     
-    public BetManager() {
+    public BetManager(int gamesPerRound) {
         refreshMatches();
+        size=gamesPerRound;
     }
     
     public List<IMatch> getMatches() {

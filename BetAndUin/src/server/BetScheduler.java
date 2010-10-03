@@ -1,4 +1,5 @@
 package server;
+
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -18,8 +19,8 @@ public class BetScheduler extends Thread{
 	
 	public BetScheduler(ActiveClients activeClients, int gamesPerRound){
 		this.activeClients = activeClients;
-		man = new BetManager();
 		this.gamesPerRound=gamesPerRound;
+		man = new BetManager(gamesPerRound);
 		gameResults = new int [gamesPerRound];
 		betList = new Vector<Bet>(0);
 		
@@ -67,7 +68,7 @@ public class BetScheduler extends Thread{
 		            nGame++;
 		        }
 		        
-		        /*Check all the bets and sends the result to the respectiv user*/
+		        /*Check all the bets and sends the result to the respective user*/
 		        notifyBets();
 		        
 		        betList.clear();

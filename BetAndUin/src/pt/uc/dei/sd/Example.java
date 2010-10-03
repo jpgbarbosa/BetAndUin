@@ -3,7 +3,7 @@ package pt.uc.dei.sd;
 
 public class Example {
     public static void main(String[] args) {
-        IBetManager man = new BetManager();
+        IBetManager man = new BetManager(10);
 
         System.out.println("========= First Batch of Matches =========");        
         for (IMatch m : man.getMatches()) {
