@@ -1,8 +1,6 @@
 package server;
 
 import java.net.*;
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
 import java.io.*;
 
 /*TODO: There's a major bug in this moment. As we are starting several threads and only then, 
@@ -110,6 +108,7 @@ public class TCPServer{
     		}
     		
     		/* We now create the database. */
+    		//TODO: Remove these when the project is over!
     		database.addClient("gaia", "fixe", "barbosa");
     		database.addClient("ivo", "fixe", "correia");
     		
@@ -185,22 +184,25 @@ class ConnectionChat extends Thread {
         try{
         	/* Performs login authentication. */
         	while(!loggedIn){
-        		
-        		StringTokenizer strToken;
-            	String option, userInfo;
-                
-                userInfo = in.readUTF();
-                strToken = new StringTokenizer (userInfo);
+        		String [] stringSplitted;
+
+                /* Reads and splits the input. */
+                stringSplitted = in.readUTF().split(" ");
                 	
-                option = strToken.nextToken();
-                System.out.println(option);
-                if(option.equals("register")){
-                	username = strToken.nextToken();
-                	password = strToken.nextToken();
-                	String mail = strToken.nextToken();
+                if(stringSplitted.length == 4 && stringSplitted[0].equals("register")){
+                	username = stringSplitted[1];
+                	password = stringSplitted[2];
+                	String mail = stringSplitted[3];
                 	
+                	/* We don't permit that a user registers under the name of 'all',
+                	 * because it would interfere with the analysis of the commands
+                	 * sent to the server.
+                	 */
+                	if (username.equals("all")){
+                		activeClients.sendMessageBySocket("username all",clientSocket);
+                	}
                 	/* This username hasn't been found in the database, so we can add this new client. */
-                	if (database.findClient(username) == null){
+                	else if (database.findClient(username) == null){
                 		/* Creates the register for this new client and adds it to the database. */
                 		 clientInfo = database.addClient(username, password, mail);
                 		
@@ -219,14 +221,14 @@ class ConnectionChat extends Thread {
                 		activeClients.sendMessageBySocket("log taken",clientSocket);
                 	}
                 	
-                } else if(option.equals("login")){
-	                /*needs to be fixed: server will search at the registered clients (SQL database or in some
+                } else if(stringSplitted.length == 3 && stringSplitted[0].equals("login")){
+	                /*TODO: needs to be fixed: server will search at the registered clients (SQL database or in some
 	                 * memory struct)
 	                 * if the username do not exist it must be registered first. if not it will be
 	                 * added to the activeClients*/
                 	ClientInfo client;
-                	username = strToken.nextToken();
-                	password = strToken.nextToken();
+                	username = stringSplitted[1];
+                	password = stringSplitted[2];
                 	
                 	client = database.findClient(username);
                 	/* This username hasn't been found on the database. */
@@ -262,7 +264,6 @@ class ConnectionChat extends Thread {
                  * and sending back the respective information.
                  */
                 String clientInput = in.readUTF();
-               // System.out.println("T[" + username + "] has received: " + clientInput);
                 /* Interprets the commands sent by the client and performs the respective
                  * action.
                  */
@@ -288,14 +289,11 @@ class ConnectionChat extends Thread {
         	 * of active clients.
         	 */
         	/*TODO: we must save the user's current state, i.e., current bets and all finished bets
-        	 * during this last session.*/
+        	 * during this last session???*/
         	activeClients.removeClient(username);
         	if (debugging){
         		System.out.println("ConnectionChat IO:" + e);
         	}
-        	/*TODO: When user is offline, we should also record messages of finished games, 
-        	 * where user made some bets, and non-delivered messages from other users so that, 
-        	 * in the next session, the user can check this informations.*/
         }
     }
     
@@ -303,119 +301,99 @@ class ConnectionChat extends Thread {
      * and get the right information, so the thread can send it to the client.
      */
     public String parseFunction(String input){
+    	/* The answer from the server to the client. */
     	String answer = "";
-    	String command;
-    	/* So we can keep the original String and don't destroy it with the tokenizer. */
-    	String copyInput = input;
     	
-    	StringTokenizer strToken;
-        strToken = new StringTokenizer(copyInput);
-        command = strToken.nextToken();
+    	/* Splits the input. */
+    	String [] stringSplitted = input.split(" ");
         
-        if(command.equals("show")){
-        	try{
-        		command = strToken.nextToken();
-        	}catch(Exception e){
-        		/* This may happen if the user does not send enough commands
-        		 * and consequently, nextToken has nothing to analyze.
-        		 */
-        		command = "";
-        	}
-        	
-        	if(command.equals("matches")){ //show all current matches
+        /* The client has sent two keywords and the first is "show".*/
+        if(stringSplitted.length == 2 && stringSplitted[0].equals("show")){        	
+        	if(stringSplitted[1].equals("matches")){ //show all current matches
         		answer = betScheduler.getMatches();
         	}
-        	else if(command.equals("credits")){ //show user's credits
+        	else if(stringSplitted[1].equals("credits")){ //show user's credits
         		answer = "" + clientInfo.getCredits();
         	}
-        	else if(command.equals("users")){ //show all active users
+        	else if(stringSplitted[1].equals("users")){ //show all active users
         		answer = activeClients.getUsersList();
         	}
         	else{
         		answer = "Unknow Command";
         	}
         }
-        else if(command.equals("send")){
-        	try{
-        		command=strToken.nextToken();
-        	}catch(Exception e){
-        		/* The client may insert insuficient data and consequently,
-        		 * we must prevent from this action to cause an exception.
-        		 */
-        		
-        		command = "";
-        	}
-        	
-        	if(command.equals("all")){ //send a message to all users
-            	/* "send all " occupies 9 characters. Consequently, the message goes from
-            	 * input[9] to the size of the input.
-            	 */
-        		activeClients.sendMessageAll(clientInfo.getUsername() + "says to everyone: " + input.substring(9), clientSocket);
+        else if(stringSplitted.length == 3 && stringSplitted[0].equals("send")){
+        	if(stringSplitted[1].equals("all")){ //send a message to all users
+        		activeClients.sendMessageAll(clientInfo.getUsername() + " says to everyone: " + stringSplitted[2], clientSocket);
         		answer = "";
         	}
         	/* We are sending a message to a user. */
-        	else if (!command.equals("")){
-        		/* Send a message to a specific user. */
-        		
+        	else{
         		/* This client is online. */
-	        	if(activeClients.checkUser(command)){
-	        		int size = command.length();
-	            	/* "send " occupies 5 characters. Adding the size of 'command' to it, we have to cut
-	            	 * that part to get the message to send.
-	            	 * The token command corresponds to the user.
-	            	 */
-	            	activeClients.sendMessageUser(clientInfo.getUsername() + "says: " + input.substring(5 + size), command);
-	            	answer = "";
+	        	if(activeClients.checkUser(stringSplitted[1])){
+	        		/* Checks if client isn't sending a message to himself/herself. */
+	        		if (stringSplitted[1].equals(clientInfo.getUsername())){
+	        			activeClients.sendMessageUser("What's the point of sending messages to yourself?", stringSplitted[1]);
+	        		}
+	        		else{
+	        			activeClients.sendMessageUser(clientInfo.getUsername() + " says: " + stringSplitted[2], stringSplitted[1]);
+	        		}
+	        		answer = "";
 	        	}
-	        	else if(database.findClient(command) != null){
+	        	else if(database.findClient(stringSplitted[1]) != null){
 	        		answer = "This client if offline at the moment.";
 	        	}
 	        	else{
 	        		answer = "Username not registered.";
 	        	}
         	}
-        	/* The user has just inserted the keyword send. */
-        	else{
-        		answer = "Unknown command";
-        	}
         }
-        else if(command.equals("reset")){ //resets user's credits to 100Cr
+        else if(input.equals("reset")){ //resets user's credits to 100Cr
+        	System.out.println("Here");
         	clientInfo.setCredits(defaultCredits);
         	answer = "Your credits were reseted to " + clientInfo.getCredits() + "Cr";
         	database.saveToFile();
         }
-        else if(command.equals("bet")){
-
-        	String game;
+        else if(stringSplitted.length == 4 && stringSplitted[0].equals("bet")){
+        	/* Variables to save the values inserted by the client. */
+        	String resultBet;
         	int gameNumber,credits;
+        	
         	try {
-        		gameNumber = Integer.parseInt(strToken.nextToken());
-        	    game = strToken.nextToken();
-        	    credits = Integer.parseInt(strToken.nextToken());
+        		gameNumber = Integer.parseInt(stringSplitted[1]);
+        		resultBet = stringSplitted[2];
+        	    credits = Integer.parseInt(stringSplitted[3]);
         	    
         	}
         	catch(NumberFormatException nFE) {
-        	    System.out.println("Not an Integer");
+        		/* The user hasn't inserted a number for one of the required arguments. */
+        		if (debugging){
+        			System.out.println("Not an integer.");
+        		}
+        		
         	    answer = "Invalid game number or amount of credits!";
         	    return answer;
         	}
-        	catch(NoSuchElementException e){
-        		return "too few arguements: bet [game number] [bet] [credits]";
-        	}
+        	
         	synchronized(betScheduler.getManager()){
-	        	if((game.equals("1") || game.compareToIgnoreCase("x")==0 || game.equals("2"))
+	        	if((resultBet.equals("1") || resultBet.compareToIgnoreCase("x")==0 || resultBet.equals("2"))
 	        			&& betScheduler.isValidGame(gameNumber)){
 	        		//TODO: WARNING!!!!!!!! betScheduler isn't being saved in file;
-	        		clientInfo.setCredits(clientInfo.getCredits()-credits);
-	        		betScheduler.addBet(new Bet(clientInfo.getUsername(),gameNumber,game,credits));
+	        		/* Takes the credits bet from the client's account. */
+	        		clientInfo.setCredits(clientInfo.getCredits() - credits);
+	        		/* Creates the new bet and saves the new database into file. */
+	        		betScheduler.addBet(new Bet(clientInfo.getUsername(),gameNumber,resultBet,credits));
 	        		database.saveToFile();
 	
 	        		answer = "Bet done!";
 	        	}
 	        	else {
-	        		answer = "Invalid command or the game number that you entered is already finished";
+	        		answer = "Invalid command or the game number that you entered isn't available.";
 	        	}
         	}
+        }
+        else if(stringSplitted.length > 0 && stringSplitted[0].equals("bet")){
+        	answer =  "Wrong number of arguments: bet [game number] [bet] [credits]";
         }
         else {
         	answer = "Unknown command";

@@ -71,44 +71,57 @@ public class ClientWriteTCP extends Thread {
 	            	 * that will make him lost some credits.
 	            	 */
 	            	
-	            	if (userInput.equals("reset credits")){
-	            		readThread.setIsToPrint(false);
-	            		out.writeUTF("show credits");
-	            		try{
-	            			synchronized(this){
-	            				this.wait();
-	            			}
-	            		}catch (InterruptedException e){
-	            			/* Continues the work. */
-	            		}
-
-	            		if (userCredits > defaultCredits){
-	            			String finalAnswer = "";
-	            			System.out.printf("In this moment, you have %d, which means you are going to lose %d credits.\n" +
-	            					"Are you sure you want to continue with the process (Y/N)?\n", userCredits, userCredits - defaultCredits);
-	            			do{
-	            				try{
-	            					finalAnswer = reader.readLine().toUpperCase();
-	            				}catch (Exception e){
-	            					return;
-	            				}
-	            			}
-	            			while (!finalAnswer.equals("Y") && !finalAnswer.equals("N"));
-	            			
-	            			if (finalAnswer.equals("Y")){
-	            				out.writeUTF("reset");
-	            			}
-	            			else{
-	            				System.out.printf("Operation cancelled. You still have %d credits.\n", userCredits);
-	            			}
-	            		}
-	            	}
-	            	else if (userInput.equals("menu")){
-	            		printMenu();
-	            	}
-	            	else{
-	            		out.writeUTF(userInput);
-	            	}
+	            	try{
+		            	if (userInput.equals("reset")){
+		            		readThread.setIsToPrint(false);
+		            		out.writeUTF("show credits");
+		            		try{
+		            			synchronized(this){
+		            				this.wait();
+		            			}
+		            		}catch (InterruptedException e){
+		            			/* Continues the work. */
+		            		}
+		            		
+		            		if (userCredits > defaultCredits){
+		            			String finalAnswer = "";
+		            			System.out.printf("In this moment, you have %d, which means you are going to lose %d credits.\n" +
+		            					"Are you sure you want to continue with the process (Y/N)?\n", userCredits, userCredits - defaultCredits);
+		            			do{
+		            				try{
+		            					finalAnswer = reader.readLine().toUpperCase();
+		            				}catch (Exception e){
+		            					return;
+		            				}
+		            			}
+		            			while (!finalAnswer.equals("Y") && !finalAnswer.equals("N"));
+		            			
+		            			if (finalAnswer.equals("Y")){
+		            				out.writeUTF("reset");
+		            			}
+		            			else{
+		            				System.out.printf("Operation cancelled. You still have %d credits.\n", userCredits);
+		            			}
+		            		}
+		            		else{
+		            			out.writeUTF("reset");
+		            		}
+		            	}
+		            	else if (userInput.equals("menu")){
+		            		System.out.println(printMenu());
+		            	}
+		            	else{
+		            		/* We verify the validity of the commands' on the client side
+		            		 * in order to avoid unnecessary transmission and don't push
+		            		 * too much the server with this checking.
+		            		 */
+		            		//TODO: Check if we are going to implement this last comment or
+		            		//		not.
+		            		out.writeUTF(userInput);
+		            	}
+		            }catch(Exception e){
+			        	return;
+			        }
 	            }
 	        }catch(EOFException e){
 	        	if (debugging){

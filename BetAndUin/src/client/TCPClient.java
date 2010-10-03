@@ -14,7 +14,7 @@ public class TCPClient {
 		}
 	
 		/*Set to true if you want the program to display debugging messages.*/
-		boolean debugging = true;
+		boolean debugging = false;
 		
 		/* This is for knowing if we are connecting for the first time or instead, we
 		 * are trying to reconnect. It's only use is given a few lines down when we want
@@ -49,7 +49,7 @@ public class TCPClient {
 		serverPorts[0] = 6000;
 		serverPorts[1] = 7000;
 		
-		StringTokenizer strToken;
+		String [] stringSplitted;
 		String command = "";
 		
 		writeThread =  new ClientWriteTCP(connectionLock);
@@ -93,6 +93,12 @@ public class TCPClient {
 			    String serverAnswer;
 				boolean error = false;
 				
+				/* Prints on the screen the information necessary to take the first step
+				 * into making the login or register in the system.
+				 */
+	        	System.out.println("\nTo log in: login [user] [pass]\n" +
+    			"To register in: register [user] [pass] [email]");
+				
 				/* Login authentication. */
 				while(!loggedIn){		
 					/* When the server goes down, the client keep the data related to a successful login
@@ -112,25 +118,15 @@ public class TCPClient {
 							System.out.println("We don't have any login saved.");
 						}
 						error=false;
-			        	System.out.println("to log in: login [user] [pass]\n" +
-			        			"to register in: register [user] [pass] [email]");
 			        	command = writeThread.reader.readLine();
-			        	try{
-			        		strToken = new StringTokenizer(command);
-			        	}catch(Exception e){
-			        		return;
-			        	}
-			        	
-			        	/* temp saves the first token. size gives the number of tokens. */
-			        	String temp = strToken.nextToken();
-			        	int size = strToken.countTokens();
+			        	stringSplitted = command.split(" ");
 			        	
 			        	/* If the client is registering and hasn't inserted four keywords,
 			        	 * or if the client is logging and hasn't inserted three keywords
 			        	 * or if he has entered and unknown command, we try again.
 			        	 */
-			        	if(!((temp.equals("register") && size == 3) 
-			    				|| (temp.equals("login") && size == 2))){
+			        	if(!((stringSplitted.length == 4 && stringSplitted[0].equals("register")) 
+			    				|| (stringSplitted.length == 3 && stringSplitted[0].equals("login")))){
 			        		System.out.println("Unknown command.");
 			        		error=true;
 			        		continue;
@@ -156,6 +152,9 @@ public class TCPClient {
 		        		/* This username is already taken by another client. */
 		        		else if (serverAnswer.equals("log taken")){
 		        			System.out.println("\nSorry, but this username isn't available, choose another.\n");
+		        		}
+		        		else if (serverAnswer.equals("username all")){
+		        			System.out.println("Sorry, but the keyword 'all' is reserved, pick another name.");
 		        		}
 		        		
 		        		/* Resets the variables. */
