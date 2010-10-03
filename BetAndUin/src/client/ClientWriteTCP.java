@@ -33,13 +33,15 @@ public class ClientWriteTCP extends Thread {
     }
 
     public String printMenu(){    	
-    	return "\tMAIN MENU:\n-> Show the current credit of the user: show credits" +
-    			"\n-> Reset user credits to 100Cr: reset" +
-    			"\n-> View Current Matches: show matches" +
-    			"\n-> Make a Bet: bet [match number] [1 x 2] [credits]" +
-    			"\n-> Show Online Users: show users" +
-    			"\n-> Send messagen to specific user: send [user] '[message]'" +
-    			"\n-> Send message to all users: send all '[message]'";    	
+    	return "\nMAIN MENU:" +
+    			"\n1. Show the current credit of the user: show credits" +
+    			"\n2. Reset user credits to 100Cr:\n\treset" +
+    			"\n3. View Current Matches:\n\tshow matches" +
+    			"\n4. Make a Bet:\n\tbet [match number] [1 x 2] [credits]" +
+    			"\n5. Show Online Users:\n\tshow users" +
+    			"\n6. Send messagen to specific user:\n\tsend [user] '[message]'" +
+    			"\n7. Send message to all users:\n\tsend all '[message]'" + 
+    			"\n8. Print the menu options:\n\tmenu";    	
     }
     
     //=============================
@@ -100,6 +102,9 @@ public class ClientWriteTCP extends Thread {
 	            				System.out.printf("Operation cancelled. You still have %d credits.\n", userCredits);
 	            			}
 	            		}
+	            	}
+	            	else if (userInput.equals("menu")){
+	            		printMenu();
 	            	}
 	            	else{
 	            		out.writeUTF(userInput);

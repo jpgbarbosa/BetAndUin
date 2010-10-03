@@ -5,15 +5,7 @@ import java.io.*;
 
 
 public class TCPClient {
-	/*TODO: We should avoid this static function*/
-	public static boolean checkCommand(String command, int size){
-		if((command.equals("register") && size==3) 
-				|| (command.equals("login") && size==2)){
-			return true;
-		}
-		return false;
-	}
-	
+
     public static void main(String args[]) {
 		// args[0] <- hostname of destination
 		if (args.length == 0) {
@@ -41,7 +33,7 @@ public class TCPClient {
 		int NO_RETRIES = 10; //The maximum amount of retries for a given port.
 		
 		/* Variables used for the login authentication. */
-		String username = "",password = "";
+		//String username = "",password = "";
 		boolean loggedIn = false;
 		
 		/*The thread related variables.*/
@@ -129,15 +121,20 @@ public class TCPClient {
 			        		return;
 			        	}
 			        	
+			        	/* temp saves the first token. size gives the number of tokens. */
+			        	String temp = strToken.nextToken();
+			        	int size = strToken.countTokens();
 			        	
-			        	/* If command is invalid, the program will ask it again, before sending it to server*/
-			        	if(!checkCommand(strToken.nextToken(),strToken.countTokens())){
+			        	/* If the client is registering and hasn't inserted four keywords,
+			        	 * or if the client is logging and hasn't inserted three keywords
+			        	 * or if he has entered and unknown command, we try again.
+			        	 */
+			        	if(!((temp.equals("register") && size == 3) 
+			    				|| (temp.equals("login") && size == 2))){
+			        		System.out.println("Unknown command.");
 			        		error=true;
 			        		continue;
-			        	}
-			        	
-			        	username = strToken.nextToken();
-			        	password = strToken.nextToken();
+			    		}
 			        	
 			        	/* Write into the socket connected to the server. */
 			        	writeThread.out.writeUTF(command);
