@@ -89,20 +89,16 @@ public class BetScheduler extends Thread{
 		while(it.hasNext()){
 			bet=it.next();
 			
-			if(gameResults[(bet.getGameNumber()-1)%gamesPerRound]==0 && bet.bet.compareToIgnoreCase("X")==0){
-				activeClients.sendMessageUser("Congratulations, it looks like your guess was right about game " +
-						bet.gameNumber+". You won: "+bet.credits*3+" Credits!", bet.getUser());
-			}
-			else if(gameResults[(bet.getGameNumber()-1)%gamesPerRound]==1 && bet.bet.compareTo("1")==0){
-				activeClients.sendMessageUser("Congratulations, it looks like your guess was right about game " +
-						bet.gameNumber+". You won: "+bet.credits*3+" Credits!", bet.getUser());
-			}
-			else if(gameResults[(bet.getGameNumber()-1)%gamesPerRound]==2 && bet.bet.compareTo("2")==0){
+			if(gameResults[(bet.getGameNumber()-1)%gamesPerRound]==0 && bet.bet.compareToIgnoreCase("X")==0
+					|| gameResults[(bet.getGameNumber()-1)%gamesPerRound]==1 && bet.bet.compareTo("1")==0
+					|| gameResults[(bet.getGameNumber()-1)%gamesPerRound]==2 && bet.bet.compareTo("2")==0){
+				
+				/* The client has won. */
 				activeClients.sendMessageUser("Congratulations, it looks like your guess was right about game " +
 						bet.gameNumber+". You won: "+bet.credits*3+" Credits!", bet.getUser());
 			}
 			else {
-				activeClients.sendMessageUser("Sorry, it looks like your guess wans't right about game " +
+				activeClients.sendMessageUser("Sorry, it looks like your guess wasn't right about game " +
 						+bet.gameNumber+"... Please try again!", bet.getUser());
 			}
 		}
