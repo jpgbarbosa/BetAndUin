@@ -37,4 +37,8 @@ public class ClientInfo {
 		this.credits = credits;
 	}
 	
+	public void increaseCredits(int credits){
+		this.credits += credits;
+	}
+	
 }

@@ -118,6 +118,16 @@ public class ClientsStorage {
 	}
 	
 	public void setBetScheduler(BetScheduler betS){
-		this.betScheduler=betS;
+		this.betScheduler = betS;
+	}
+	
+	public void increaseCredits(String user, int creditsWon){
+		ClientInfo client;
+		
+		synchronized(clientsDatabase){
+			client =  clientsDatabase.get(user);
+			client.increaseCredits(creditsWon);
+		}
+		
 	}
 }

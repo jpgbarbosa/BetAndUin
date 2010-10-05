@@ -16,13 +16,15 @@ public class BetScheduler extends Thread{
     int gamesPerRound;
     int [] gameResults;
     Vector<Bet> betList;
+    ClientsStorage database;
 	
-	public BetScheduler(ActiveClients activeClients, int gamesPerRound){
+	public BetScheduler(ActiveClients activeClients, int gamesPerRound, ClientsStorage clientsStorage){
 		this.activeClients = activeClients;
 		this.gamesPerRound=gamesPerRound;
 		man = new BetManager(gamesPerRound);
 		gameResults = new int [gamesPerRound];
 		betList = new Vector<Bet>(0);
+		this.database = clientsStorage;
 		
 		this.start();
 	}
@@ -94,12 +96,17 @@ public class BetScheduler extends Thread{
 					|| gameResults[(bet.getGameNumber()-1)%gamesPerRound]==2 && bet.bet.compareTo("2")==0){
 				
 				/* The client has won. */
+				
+				/* We first update the value in the persistent memory, by informing the database. */
+				database.increaseCredits(bet.getUser(), bet.credits * 3);
+				
+				/* Then, we inform the client. */
 				activeClients.sendMessageUser("Congratulations, it looks like your guess was right about game " +
-						bet.gameNumber+". You won: "+bet.credits*3+" Credits!", bet.getUser());
+						bet.gameNumber + ". You won: " + bet.credits * 3 + " Credits!", bet.getUser());
 			}
 			else {
 				activeClients.sendMessageUser("Sorry, it looks like your guess wasn't right about game " +
-						+bet.gameNumber+"... Please try again!", bet.getUser());
+						+ bet.gameNumber + "... Please try again!", bet.getUser());
 			}
 		}
 	}

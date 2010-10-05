@@ -125,7 +125,7 @@ public class TCPServer{
     		
             /* We can take this off later.*/
             if (!disableBets){
-            	betScheduler = new BetScheduler(activeClients, nGames);
+            	betScheduler = new BetScheduler(activeClients, nGames, database);
             }
             else{
             	betScheduler = null;
