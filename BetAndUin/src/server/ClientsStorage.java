@@ -23,6 +23,13 @@ public class ClientsStorage {
 	/* The number of default credits for a user.*/
 	int defaultCredits = 100;
 	
+	/* The number of the last game, so the BetScheduler can keep track of it
+	 * even when the server goes down and is restarted. If not successful, we
+	 * use the default initial number.
+	 */
+	//TODO: We have to save and read this variable.
+	int lastGameNumber = 0;
+	
 	public ClientsStorage(){
 		clientsDatabase = (Hashtable <String, ClientInfo>)readFromFile();
 		betScheduler = null;
@@ -45,6 +52,10 @@ public class ClientsStorage {
 	synchronized private Object readFromFile(){
 		ObjectInputStream iS;
 		
+		/* We read the value for the variable related to the last game. */
+		//TODO: Implement this, as well as the saving.
+		
+		/* We now read the list of clients. */
 		try {
 			iS = new ObjectInputStream(new FileInputStream("clientsDatabase.bin"));
 			return iS.readObject();
@@ -58,6 +69,7 @@ public class ClientsStorage {
 			System.out.println("IO in readFromFile (ClientsStorage): " + e);
 			return null;
 		}
+
 	}
 	
 	/* The saving method. */
@@ -129,5 +141,13 @@ public class ClientsStorage {
 			client.increaseCredits(creditsWon);
 		}
 		
+	}
+	
+	public int getLastGameNumber(){
+		return lastGameNumber;
+	}
+	
+	public void setLastGameNumber(int value){
+		lastGameNumber = value;
 	}
 }

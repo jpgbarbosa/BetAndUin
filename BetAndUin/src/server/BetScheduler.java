@@ -9,15 +9,24 @@ import pt.uc.dei.sd.IMatch;
 
 
 public class BetScheduler extends Thread{
+	/* The variable that controls the time of a round. */
 	int TIME_BETWEEN_ROUNDS = 60000;
+	/* Variables to save information related to the current matches. */
 	String message, lastMatches = "";
+	
+	/* References to the list of active clients and the database. */
 	ActiveClients activeClients;
-    IBetManager man;
+	ClientsStorage database;
+    
+	/* Variables to keep track of the game results and how to manage them. */
+	IBetManager man;
     int gamesPerRound;
     int [] gameResults;
     Vector<Bet> betList;
-    ClientsStorage database;
+    
 	
+    //TODO: Guardar o número dos jogos.
+    
 	public BetScheduler(ActiveClients activeClients, int gamesPerRound, ClientsStorage clientsStorage){
 		this.activeClients = activeClients;
 		this.gamesPerRound=gamesPerRound;
@@ -40,7 +49,7 @@ public class BetScheduler extends Thread{
 	        synchronized(lastMatches){
 	        	lastMatches=new String(message);
 	        }
-	        //System.out.println(message);
+	        
 	        try {
 				Thread.sleep(TIME_BETWEEN_ROUNDS);
 			} catch (InterruptedException e) {
@@ -77,8 +86,8 @@ public class BetScheduler extends Thread{
 		
 		        /*Send the results to all the active clients.*/
 		        activeClients.sendMessageAll(message, null);
-		        /* Creates a new batch of games. */
 		        
+		        /* Creates a new batch of games. */
 		        man.refreshMatches();
 			}
         }
@@ -91,11 +100,10 @@ public class BetScheduler extends Thread{
 		while(it.hasNext()){
 			bet=it.next();
 			
+			/* The client has won. */
 			if(gameResults[(bet.getGameNumber()-1)%gamesPerRound]==0 && bet.bet.compareToIgnoreCase("X")==0
 					|| gameResults[(bet.getGameNumber()-1)%gamesPerRound]==1 && bet.bet.compareTo("1")==0
 					|| gameResults[(bet.getGameNumber()-1)%gamesPerRound]==2 && bet.bet.compareTo("2")==0){
-				
-				/* The client has won. */
 				
 				/* We first update the value in the persistent memory, by informing the database. */
 				database.increaseCredits(bet.getUser(), bet.credits * 3);
