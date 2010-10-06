@@ -109,8 +109,8 @@ public class TCPServer{
     		
     		/* We now create the database. */
     		//TODO: Remove these when the project is over!
-    		database.addClient("gaia", "fixe", "barbosa");
-    		database.addClient("ivo", "fixe", "correia");
+    		//database.addClient("gaia", "fixe", "barbosa");
+    		//database.addClient("ivo", "fixe", "correia");
     		
     		
             ServerSocket listenSocket = new ServerSocket(serverPort);
@@ -333,6 +333,7 @@ class ConnectionChat extends Thread {
 	        	if(activeClients.checkUser(stringSplitted[1])){
 	        		/* Checks if client isn't sending a message to himself/herself. */
 	        		if (stringSplitted[1].equals(clientInfo.getUsername())){
+	        			/* Alternative: Are you feeling alone? */
 	        			activeClients.sendMessageUser("What's the point of sending messages to yourself?", stringSplitted[1]);
 	        		}
 	        		else{
@@ -352,7 +353,7 @@ class ConnectionChat extends Thread {
         	System.out.println("Here");
         	clientInfo.setCredits(defaultCredits);
         	answer = "Your credits were reseted to " + clientInfo.getCredits() + "Cr";
-        	database.saveToFile();
+        	database.saveObjectToFile("clientsDatabase.bin", database.getClientsDatabase());
         }
         else if(stringSplitted.length == 4 && stringSplitted[0].equals("bet")){
         	/* Variables to save the values inserted by the client. */
@@ -375,20 +376,33 @@ class ConnectionChat extends Thread {
         	    return answer;
         	}
         	
-        	synchronized(betScheduler.getManager()){
-	        	if((resultBet.equals("1") || resultBet.compareToIgnoreCase("x")==0 || resultBet.equals("2"))
-	        			&& betScheduler.isValidGame(gameNumber)){
-	        		//TODO: WARNING!!!!!!!! betScheduler isn't being saved in file;
-	        		/* Takes the credits bet from the client's account. */
-	        		clientInfo.setCredits(clientInfo.getCredits() - credits);
-	        		/* Creates the new bet and saves the new database into file. */
-	        		betScheduler.addBet(new Bet(clientInfo.getUsername(),gameNumber,resultBet,credits));
-	        		database.saveToFile();
-	
-	        		answer = "Bet done!";
-	        	}
-	        	else {
-	        		answer = "Invalid command or the game number that you entered isn't available.";
+        	/* If the client is betting more credits than he/she has on his/her account,
+        	 * we cannot conclude the bet. Consequently, we have to send a message
+        	 * warning the user about it.
+        	 */
+        	if (clientInfo.getCredits() < credits){
+        		answer = "You don't have enough credits!";
+        	}
+        	/* The client tried to bet 0 credits. */
+        	else if (credits == 0){
+        		answer = "Are you kidding?! You have bet no credits!";
+        	}
+        	else{
+	        	synchronized(betScheduler.getManager()){
+		        	if((resultBet.equals("1") || resultBet.compareToIgnoreCase("x")==0 || resultBet.equals("2"))
+		        			&& betScheduler.isValidGame(gameNumber)){
+		        		//TODO: WARNING!!!!!!!! betScheduler isn't being saved in file;
+		        		/* Takes the credits bet from the client's account. */
+		        		clientInfo.setCredits(clientInfo.getCredits() - credits);
+		        		/* Creates the new bet and saves the new database into file. */
+		        		betScheduler.addBet(new Bet(clientInfo.getUsername(),gameNumber,resultBet,credits));
+		        		database.saveObjectToFile("clientsDatabase.bin", database.getClientsDatabase());
+		
+		        		answer = "Bet done!";
+		        	}
+		        	else {
+		        		answer = "Invalid command or the game number that you entered isn't available.";
+		        	}
 	        	}
         	}
         }

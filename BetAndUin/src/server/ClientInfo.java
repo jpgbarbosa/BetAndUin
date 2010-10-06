@@ -1,9 +1,12 @@
 package server;
+
+import java.io.Serializable;
+
 /* The class that saves all the information related to the client,
  * including username, password, e-mail address and the number of
  * credits.
  */
-public class ClientInfo {
+public class ClientInfo implements Serializable{
 	String username, password, email;
 	int credits;
 	

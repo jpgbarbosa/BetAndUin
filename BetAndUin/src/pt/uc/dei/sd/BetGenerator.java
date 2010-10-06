@@ -4,7 +4,11 @@ import java.util.Random;
 
 public class BetGenerator {
     
-    private int counter = 1;
+    private int counter;
+    
+    public BetGenerator(int number){
+    	counter = number;
+    }
     
     private String[] teams = new String[]{ 
         "Benfica", "Porto", "Braga", "Sporting",
@@ -42,14 +46,7 @@ public class BetGenerator {
         return teams[index];
     }
     
-    public static Match createRandomMatch() {
-        BetGenerator betgen = new BetGenerator();
-        return betgen.getRandomMatch();
-    }
-    
-    public static void main(String[] args) {
-        BetGenerator bet = new BetGenerator();
-        Match m = bet.getRandomMatch();
-        System.out.println(m);
+    public int getCounter(){
+    	return counter;
     }
 }

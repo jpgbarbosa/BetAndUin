@@ -23,17 +23,15 @@ public class BetScheduler extends Thread{
     int gamesPerRound;
     int [] gameResults;
     Vector<Bet> betList;
-    
-	
-    //TODO: Guardar o número dos jogos.
+ 
     
 	public BetScheduler(ActiveClients activeClients, int gamesPerRound, ClientsStorage clientsStorage){
 		this.activeClients = activeClients;
 		this.gamesPerRound=gamesPerRound;
-		man = new BetManager(gamesPerRound);
 		gameResults = new int [gamesPerRound];
 		betList = new Vector<Bet>(0);
 		this.database = clientsStorage;
+		man = new BetManager(gamesPerRound, database);
 		
 		this.start();
 	}

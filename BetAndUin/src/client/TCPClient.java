@@ -4,6 +4,8 @@ import java.util.StringTokenizer;
 import java.io.*;
 
 
+//TODO: Client can have negative credits!
+
 public class TCPClient {
 
     public static void main(String args[]) {

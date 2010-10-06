@@ -3,15 +3,20 @@ package pt.uc.dei.sd;
 import java.util.ArrayList;
 import java.util.List;
 
+import server.ClientsStorage;
+
 public class BetManager implements IBetManager {
     private ArrayList<IMatch> matches = new ArrayList<IMatch>();
-    private int index = 1;
-    private BetGenerator gen = new BetGenerator();
-    private int size = 8;
+    private BetGenerator gen;
+    private int size;
+    private ClientsStorage database;
     
-    public BetManager(int gamesPerRound) {
+    public BetManager(int gamesPerRound, ClientsStorage clientsStorage) {
         refreshMatches();
-        size=gamesPerRound;
+        size = gamesPerRound;
+        database = clientsStorage;
+        /* The next game will start one number after the last game recorded. */
+        gen = new BetGenerator(database.getLastGameNumber() + 1);
     }
     
     public List<IMatch> getMatches() {
@@ -31,6 +36,8 @@ public class BetManager implements IBetManager {
         for(int i=0; i < size; i++) {
             matches.add(gen.getRandomMatch());
         }
+        
+        database.saveIntToFile("lastGameNumber.bin", gen.getCounter());
     }
     
 }
