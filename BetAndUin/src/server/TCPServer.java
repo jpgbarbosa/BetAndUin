@@ -1,13 +1,14 @@
 package server;
 
 import java.net.*;
+import java.rmi.RemoteException;
 import java.io.*;
 
 /*TODO: We still have to save the last batch of matches. In case the server goes down,
  * 		the new server will have to read these files.
  */
 
-public class TCPServer{
+public class TCPServer implements ClientOperations{
     public static void main(String args[]){
     	/*Number of Games per round*/
     	int nGames = 10; 
@@ -138,6 +139,68 @@ public class TCPServer{
         	System.out.println("Listen:" + e.getMessage());
         }
     }
+
+	@Override
+	public String clientLogin(String user, String pass) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String clientMakeBet(int nGame, int bet, int credits)
+			throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String clientRegister(String user, String pass)
+			throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String clientResetCredits() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String clientSendMsgAll() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String clientSendMsgUser(String user) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String clientShowCredits() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String clientShowMatches() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String clientShowMenu() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String clientShowUsers() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 /* Thread used to take care of each communication channel between the active server and a given client. */
 class ConnectionChat extends Thread {

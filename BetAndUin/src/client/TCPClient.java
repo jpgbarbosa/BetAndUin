@@ -1,10 +1,6 @@
 package client;
 import java.net.*;
-import java.util.StringTokenizer;
 import java.io.*;
-
-
-//TODO: Client can have negative credits!
 
 public class TCPClient {
 
