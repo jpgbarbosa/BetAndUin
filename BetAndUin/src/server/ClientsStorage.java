@@ -29,14 +29,14 @@ public class ClientsStorage {
 	 * even when the server goes down and is restarted. If not successful, we
 	 * use the default initial number.
 	 */
-	int lastGameNumber = 0;
+	int nextGameNumber = 0;
 	int readResult;
 	
 	public ClientsStorage(){
 		clientsDatabase = (Hashtable <String, ClientInfo>)readObjectFromFile("clientsDatabase.bin");
 		readResult = (int )readIntFromFile("lastGameNumber.bin");
 		if (readResult != -1){
-			lastGameNumber = readResult;
+			nextGameNumber = readResult;
 		}
 		
 		betScheduler = null;
@@ -236,12 +236,12 @@ public class ClientsStorage {
 		
 	}
 	
-	public int getLastGameNumber(){
-		return lastGameNumber;
+	public int getNextGameNumber(){
+		return nextGameNumber;
 	}
 	
-	public void setLastGameNumber(int value){
-		lastGameNumber = value;
+	public void setNextGameNumber(int value){
+		nextGameNumber = value;
 	}
 	
 	public Object getClientsDatabase(){
