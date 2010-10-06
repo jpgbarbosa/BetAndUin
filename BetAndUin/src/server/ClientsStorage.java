@@ -34,7 +34,7 @@ public class ClientsStorage {
 	
 	public ClientsStorage(){
 		clientsDatabase = (Hashtable <String, ClientInfo>)readObjectFromFile("clientsDatabase.bin");
-		readResult = (int )readIntFromFile("lastGameNumber.bin");
+		readResult = (int )readIntFromFile("nextGameNumber.bin");
 		if (readResult != -1){
 			nextGameNumber = readResult;
 		}
