@@ -3,10 +3,8 @@ package server;
 import java.net.*;
 import java.io.*;
 
-/*TODO: There's a major bug in this moment. As we are starting several threads and only then, 
- *      we are trying to create the socket, if we accidentally run two servers in the same ports,
- *      the main thread will eventually die and detect the error, raising the port already in use exception,
- *      but the other threads will keep going. We have to take a look at this.
+/*TODO: We still have to save the last batch of matches. In case the server goes down,
+ * 		the new server will have to read these files.
  */
 
 public class TCPServer{
@@ -21,8 +19,6 @@ public class TCPServer{
         ActiveClients activeClients;
         /* The object responsible for creating the matches and setting the results. */
         BetScheduler betScheduler;
-        /* The object responsible for maintaining the communication with the partner server. */
-        ConnectionWithServerManager connectionWithServerManager;
         /* The object responsible for maintaining the clients' database. */
         ClientsStorage database = new ClientsStorage();
         /* The lock we are going to use when the connection manager wants to inform that server that its status
@@ -60,7 +56,8 @@ public class TCPServer{
         
         try{
             
-            connectionWithServerManager = new ConnectionWithServerManager(serverPort, partnerPort, isDefaultServer, changeStatusLock);
+        	/* In here, we initialize the process of exchanging messages between servers. */
+            new ConnectionWithServerManager(serverPort, partnerPort, isDefaultServer, changeStatusLock);
     		/* Before going to wait, we have to see whether the manager has concluded its operations
     		 * or not yet. Otherwise, we may wait forever if it concluded before we entered here.
     		 * This step is used in order not to accept any clients before we know whether we are
@@ -107,11 +104,7 @@ public class TCPServer{
 	    		}
     		}
     		
-    		/* We now create the database. */
-    		//TODO: Remove these when the project is over!
-    		//database.addClient("gaia", "fixe", "barbosa");
-    		//database.addClient("ivo", "fixe", "correia");
-    		
+    		/* We now create the database. */    		
     		
             ServerSocket listenSocket = new ServerSocket(serverPort);
             if (debugging){
@@ -222,10 +215,6 @@ class ConnectionChat extends Thread {
                 	}
                 	
                 } else if(stringSplitted.length == 3 && stringSplitted[0].equals("login")){
-	                /*TODO: needs to be fixed: server will search at the registered clients (SQL database or in some
-	                 * memory struct)
-	                 * if the username do not exist it must be registered first. if not it will be
-	                 * added to the activeClients*/
                 	ClientInfo client;
                 	username = stringSplitted[1];
                 	password = stringSplitted[2];

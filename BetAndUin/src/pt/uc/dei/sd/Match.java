@@ -3,7 +3,10 @@ package pt.uc.dei.sd;
 import java.io.Serializable;
 
 public class Match implements IMatch, Serializable {
-    private String home;
+
+	private static final long serialVersionUID = 1L;
+	
+	private String home;
     private String away;
     private int code;
     

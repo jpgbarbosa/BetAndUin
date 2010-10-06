@@ -54,7 +54,7 @@ public class ConnectionWithServerManager extends Thread{
 	/* Times to trigger the message timers. */
 	int KEEP_ALIVE_TIME = 5000; //The time between two consecutive KEEP_ALIVE's.
 	int WAITING_TIME = 15000; //The time needed to consider the other server dead.
-	int FIRST_WAITING_TIME = 5000; //The time the server waits before sending the intial message again.
+	int FIRST_WAITING_TIME = 5000; //The time the server waits before sending the initial message again.
 	
 	/*Variables related to the sending action.*/
 	DatagramSocket aSocket = null;

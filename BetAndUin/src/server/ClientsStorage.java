@@ -1,12 +1,10 @@
 package server;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -31,15 +29,14 @@ public class ClientsStorage {
 	 * even when the server goes down and is restarted. If not successful, we
 	 * use the default initial number.
 	 */
-	//TODO: We have to save and read this variable.
 	int lastGameNumber = 0;
-	int readResult[];
+	int readResult;
 	
 	public ClientsStorage(){
 		clientsDatabase = (Hashtable <String, ClientInfo>)readObjectFromFile("clientsDatabase.bin");
-		readResult = (int [])readIntFromFile("lastGameNumber.bin");
-		if (readResult[0] != -1){
-			lastGameNumber = readResult[1];
+		readResult = (int )readIntFromFile("lastGameNumber.bin");
+		if (readResult != -1){
+			lastGameNumber = readResult;
 		}
 		
 		betScheduler = null;
@@ -59,53 +56,95 @@ public class ClientsStorage {
 	}
 	
 	/* The reading method for an integer. */
-	private int[] readIntFromFile(String filename){
-		BufferedReader fR;
-		
-		int[] result = new int[2];
-		
+	private int readIntFromFile(String filename){
 		try{
-			fR = new BufferedReader(new FileReader(filename));
-			String st = fR.readLine();
-			
-			if ( st != null){
-				result[0] = 0;
-				result[1] = Integer.parseInt(st);
-			}
-			else{
-				result[0] = -1;
-			}
-			
-		}catch(IOException i){
-			/* There's an error. */
-			result[0] = -1;
-		}		
-		
-		return result;
+	      //create FileInputStream object
+	      FileInputStream fin = new FileInputStream(filename);
+	 
+	      /*
+	       * To create DataInputStream object, use
+	       * DataInputStream(InputStream in) constructor.
+	       */
+	 
+	       DataInputStream din = new DataInputStream(fin);
+	 
+	       /*
+	        * To read a Java integer primitive from file, use
+	        * byte readInt() method of Java DataInputStream class.
+	        *
+	        * This method reads 4 bytes and returns it as a int value.
+	        */
+	 
+	        int valueRead = din.readInt();
+	 
+	        /*
+	         * To close DataInputStream, use
+	         * void close() method.
+	         */
+	        
+	        din.close();
+	        
+	        return valueRead;
+	 
+	    }
+	    catch(FileNotFoundException fe){
+	    	if (debugging){
+	    		System.out.println("FileNotFoundException : " + fe);
+	    	}
+	    	return -1;
+	    }
+	    catch(IOException ioe){
+	    	if (debugging){
+	    		System.out.println("IOException in ClientsStorage (saveIntToFile) : " + ioe);
+	    	}
+	    	return -1;
+	    }
 
 	}
 	
 	/* The saving method for an integer. */
 	public void saveIntToFile(String filename, int valueToSave){
-		BufferedWriter fW;
-		
-		String st = String.valueOf(valueToSave);
-		
-		try{
-			fW = new BufferedWriter(new FileWriter(filename));
-			fW.write(st,0,st.length());
-			fW.newLine();
-		}catch(IOException i){
+		try
+	    {
+	      //create FileOutputStream object
+	      FileOutputStream fos = new FileOutputStream(filename);
+	 
+	      /*
+	       * To create DataOutputStream object from FileOutputStream use,
+	       * DataOutputStream(OutputStream os) constructor.
+	       *
+	       */
+	 
+	       DataOutputStream dos = new DataOutputStream(fos);
+	 
+	       /*
+	        * To write an int value to a file, use
+	        * void writeInt(int i) method of Java DataOutputStream class.
+	        *
+	        * This method writes specified int to output stream as 4 bytes value.
+	        */
+	 
+	        dos.writeInt(valueToSave);
+	 
+	        /*
+	         * To close DataOutputStream use,
+	         * void close() method.
+	         *
+	         */
+	 
+	         dos.close();
+	 
+	    }catch(IOException e){
 			/* There was an error. */
+			if (debugging){
+				System.out.println("IOException in ClientsStorage (saveIntToFile): " + e);
+			}
 		}
 	}
 	
 	/* The reading method for an object. This method can only be used by the class. */
 	synchronized private Object readObjectFromFile(String filename){
 		ObjectInputStream iS;
-		
-		/* We read the value for the variable related to the last game. */
-		//TODO: Implement this, as well as the saving.
 		
 		/* We now read the list of clients. */
 		try {

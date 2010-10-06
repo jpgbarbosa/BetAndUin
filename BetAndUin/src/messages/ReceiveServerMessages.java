@@ -58,7 +58,10 @@ public class ReceiveServerMessages extends Thread{
 			}
 			
 		}catch (SocketException e) {
-			System.out.println("Socket: " + e.getMessage());
+			System.out.println("Socket in ReceiveServerMessages: " + e.getMessage());
+			/* If we cannot bind, we terminate the program. */
+			System.out.println("The system will shutdown.");
+			System.exit(0);
 		}catch (UnknownHostException e) {
 			System.out.println("UnknownHostException in ReceiveServerMessages: " + e);
 		} catch (IOException e) {

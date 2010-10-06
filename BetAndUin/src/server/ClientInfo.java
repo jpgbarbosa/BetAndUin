@@ -7,6 +7,9 @@ import java.io.Serializable;
  * credits.
  */
 public class ClientInfo implements Serializable{
+
+	private static final long serialVersionUID = 1L;
+	
 	String username, password, email;
 	int credits;
 	

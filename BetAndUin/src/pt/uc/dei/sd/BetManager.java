@@ -12,11 +12,12 @@ public class BetManager implements IBetManager {
     private ClientsStorage database;
     
     public BetManager(int gamesPerRound, ClientsStorage clientsStorage) {
-        refreshMatches();
         size = gamesPerRound;
         database = clientsStorage;
         /* The next game will start one number after the last game recorded. */
         gen = new BetGenerator(database.getLastGameNumber() + 1);
+        
+        refreshMatches();
     }
     
     public List<IMatch> getMatches() {
@@ -37,7 +38,8 @@ public class BetManager implements IBetManager {
             matches.add(gen.getRandomMatch());
         }
         
-        database.saveIntToFile("lastGameNumber.bin", gen.getCounter());
+        System.out.println("We are going to save " + gen.getCounter());
+        database.saveIntToFile("lastGameNumber.bin", gen.getCounter() - 1);
     }
     
 }
