@@ -17,12 +17,15 @@ public class Server  extends UnicastRemoteObject implements ClientOperations{
 	 */
 	private static final long serialVersionUID = 1L;
 
+	ActiveClients activeClientsRMI;
+	BetScheduler betSchedulerRMI;
+	ClientsStorage databaseRMI;
 	
-	
-	public Server() throws RemoteException{
-		super();
-		
-
+	public Server(ActiveClients activeClients, BetScheduler betScheduler, ClientsStorage database) throws RemoteException{
+        this.activeClientsRMI=activeClients;
+        this.betSchedulerRMI=betScheduler;
+        this.databaseRMI=database;
+        
 	}
 	
     public static void main(String args[]){
@@ -130,7 +133,7 @@ public class Server  extends UnicastRemoteObject implements ClientOperations{
             
             /* Now, we prepare the connection to handle requests from RMI clients. */
     		try {
-    			Server rmiServices = new Server();
+    			Server rmiServices = new Server(activeClients,betScheduler,database);
     			Registry registry = LocateRegistry.createRegistry(12000);
     			registry.rebind("BetAndUinServer", rmiServices);
     			
@@ -163,59 +166,67 @@ public class Server  extends UnicastRemoteObject implements ClientOperations{
 	}
 	
 	@Override
-	public String clientRegister(String user, String pass)
-			throws RemoteException {
+	public String clientRegister(String user, String pass) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String clientMakeBet(int nGame, int bet, int credits)
-			throws RemoteException {
-		// TODO Auto-generated method stub
+	public String clientMakeBet(int nGame, int bet, int credits) throws RemoteException {
 		return null;
 	}
 
-	@Override
-	public String clientResetCredits() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+	//TODO: Colocar defaultCredits noutro sitio
+	public String clientResetCredits(String user) throws RemoteException {
+		databaseRMI.findClient(user).setCredits(100);
+		return "Your credits were reseted to "+100+"Cr.";
 	}
 
 	@Override
-	public String clientSendMsgAll() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+	public String clientSendMsgAll(String user, String message) throws RemoteException {
+		//TODO: ERRO NO TERCEIRO PARAMETRO
+		activeClientsRMI.sendMessageAll(user + " says to everyone: " + message, null);
+		return  "Message ["+message+"] delivered!";
 	}
 
 	@Override
-	public String clientSendMsgUser(String user) throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+	public String clientSendMsgUser(String userSender, String userDest, String message) throws RemoteException {
+		String answer="";
+		
+		if(activeClientsRMI.checkUser(userDest)){
+    		/* Checks if client isn't sending a message to himself/herself. */
+    		if(userDest.equals(userSender)){
+    			answer = "What's the point of sending messages to yourself?";
+    		} else {
+    			activeClientsRMI.sendMessageUser(userSender + " says: " + message, userDest);
+    			answer = "Message ["+message+"] delivered!";
+    		}
+    	}else if(databaseRMI.findClient(userDest) != null){
+    		answer = "This client if offline at the moment.";
+    	} else {
+    		answer = "Username not registered.";
+    	}
+		
+    	return answer;
 	}
 
-	@Override
-	public String clientShowCredits() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+	public String clientShowCredits(String user) throws RemoteException {
+		return "" + databaseRMI.findClient(user).getCredits();
 	}
 
-	@Override
+
 	public String clientShowMatches() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+		return betSchedulerRMI.getMatches();
 	}
 
-	@Override
+	//TODO: show menu
 	public String clientShowMenu() throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public String clientShowUsers() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+		return activeClientsRMI.getUsersList();
 	}
 }
 

@@ -1,29 +1,13 @@
 package server;
 
+import java.io.IOException;
 import java.net.*;
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
-import java.io.*;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 
 /*TODO: We still have to save the last batch of matches. In case the server goes down,
  * 		the new server will have to read these files.
  */
 
-public class TCPServer  extends UnicastRemoteObject implements ClientOperations{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	
-	
-	public TCPServer() throws RemoteException{
-		super();
-		
-
-	}
+public class TCPServer{
 	
     public static void main(String args[]){
     	/*Number of Games per round*/
@@ -141,17 +125,7 @@ public class TCPServer  extends UnicastRemoteObject implements ClientOperations{
             	betScheduler = null;
             }
 
-            database.setBetScheduler(betScheduler);
-            
-    		try {
-    			TCPServer h = new TCPServer();
-    			Registry r = LocateRegistry.createRegistry(7000);
-    			r.rebind("benfica", h);
-    			System.out.println("RMI Server ready.");
-    		} catch (RemoteException re) {
-    			System.out.println("Exception in HelloImpl.main: " + re);
-    		}
-            
+            database.setBetScheduler(betScheduler);        
             
             while(true) {
                 Socket clientSocket = listenSocket.accept(); // BLOQUEANTE
@@ -165,68 +139,5 @@ public class TCPServer  extends UnicastRemoteObject implements ClientOperations{
         	System.out.println("Listen:" + e.getMessage());
         }
     }
-
-
-	@Override
-	public String clientLogin(String user, String pass) throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String clientMakeBet(int nGame, int bet, int credits)
-			throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String clientRegister(String user, String pass)
-			throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String clientResetCredits() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String clientSendMsgAll() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String clientSendMsgUser(String user) throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String clientShowCredits() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String clientShowMatches() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String clientShowMenu() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String clientShowUsers() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
 
