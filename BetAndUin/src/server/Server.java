@@ -7,11 +7,13 @@ import java.io.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+import clientRMI.ServerOperations;
+
 /*TODO: We still have to save the last batch of matches. In case the server goes down,
  * 		the new server will have to read these files.
  */
 
-public class Server  extends UnicastRemoteObject implements ClientOperations{
+public class Server extends UnicastRemoteObject implements ClientOperations{
 	/**
 	 * 
 	 */
@@ -160,19 +162,19 @@ public class Server  extends UnicastRemoteObject implements ClientOperations{
 
     /* METHODS RELATED TO THE RMI */
 	@Override
-	public String clientLogin(String user, String pass) throws RemoteException {
+	public String clientLogin(String user, String pass, ServerOperations client) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	@Override
-	public String clientRegister(String user, String pass) throws RemoteException {
+	public String clientRegister(String user, String pass, String email, ServerOperations client) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String clientMakeBet(int nGame, int bet, int credits) throws RemoteException {
+	public String clientMakeBet(int nGame, String bet, int credits) throws RemoteException {
 		return null;
 	}
 
