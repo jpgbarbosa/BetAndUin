@@ -1,8 +1,9 @@
 package server;
 
+import java.rmi.Remote;
 import clientRMI.RMIClient;
 
-public interface ClientOperations {
+public interface ClientOperations extends Remote{
 	public String clientLogin(String user, String pass, RMIClient client) throws java.rmi.RemoteException;
 	public String clientRegister(String user, String pass, String email, RMIClient client) throws java.rmi.RemoteException;
 	

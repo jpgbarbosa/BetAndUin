@@ -32,27 +32,28 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 		String [] stringSplitted = null;
 		String username="",password="";
 		String serverAnswer = "";
-		
+				
 		boolean loggedIn = false;
 		ClientOperations server = null;
 		RMIClient client = null;
 		
 		try {
-			
 			server = (ClientOperations) LocateRegistry.getRegistry(12000).lookup("BetAndUinServer");
-			
 		} catch (Exception e) {
 			System.out.println("Exception in main: " + e);
 			e.printStackTrace();
 		}
 		
 		while(true){
-			//OPERATIONS
+
 			while (!loggedIn){
 				/* The user hasn't made a successful login yet. */
 				if (username.equals("") && password.equals("")){
 	                /* Reads and splits the input. */
 	                try {
+	    	        	System.out.println("\nTo log in: login [user] [pass]\n" +
+	        			"To register in: register [user] [pass] [email]");
+	    	        	
 						stringSplitted = reader.readLine().split(" ");
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
@@ -78,7 +79,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 	                	try {
 							serverAnswer = server.clientLogin(username, password, (RMIClient) this);
 						} catch (RemoteException e) {
-							// TODO Auto-generated catch block
+							System.out.println("remote login function");
 							e.printStackTrace();
 						}
 	                }
