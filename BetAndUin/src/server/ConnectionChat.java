@@ -68,7 +68,7 @@ class ConnectionChat extends Thread {
                 		/* Registers in the client as an active client and informs the success of the
                 		 * operation.
                 		 */
-                		activeClients.addClient(clientInfo.getUsername(), clientSocket);
+                		activeClients.addClient(clientInfo.getUsername(), clientSocket, null);
                 		activeClients.sendMessageBySocket("log successful",clientSocket);
                 		loggedIn = true;
                 	}
@@ -103,14 +103,13 @@ class ConnectionChat extends Thread {
 		                	else{
 		                		loggedIn=true;
 		                		clientInfo = client;
-		                		activeClients.addClient(username, clientSocket);
+		                		activeClients.addClient(username, clientSocket, null);
 		                		activeClients.sendMessageUser("log successful",username);
 		                	}
 		                }
 		                else {
 	                		activeClients.sendMessageBySocket("log error",clientSocket);
 	                	}
-
                 	}
                 }
         	}
@@ -173,13 +172,24 @@ class ConnectionChat extends Thread {
         	else if(stringSplitted[1].equals("users")){ //show all active users
         		answer = activeClients.getUsersList();
         	}
+        	else if(stringSplitted[1].equals("menu")){   	
+            	answer = "\nMAIN MENU:" +
+            			"\n1. Show the current credit of the user: show credits" +
+            			"\n2. Reset user credits to 100Cr:\n\treset" +
+            			"\n3. View Current Matches:\n\tshow matches" +
+            			"\n4. Make a Bet:\n\tbet [match number] [1 x 2] [credits]" +
+            			"\n5. Show Online Users:\n\tshow users" +
+            			"\n6. Send messagen to specific user:\n\tsend [user] '[message]'" +
+            			"\n7. Send message to all users:\n\tsend all '[message]'" + 
+            			"\n8. Print the menu options:\n\tshow menu";    	
+            }
         	else{
         		answer = "Unknow Command";
         	}
         }
         else if(stringSplitted.length == 3 && stringSplitted[0].equals("send")){
         	if(stringSplitted[1].equals("all")){ //send a message to all users
-        		activeClients.sendMessageAll(clientInfo.getUsername() + " says to everyone: " + stringSplitted[2], clientSocket);
+        		activeClients.sendMessageAll(clientInfo.getUsername() + " says to everyone: " + stringSplitted[2], clientSocket, null);
         		answer = "";
         	}
         	/* We are sending a message to a user. */

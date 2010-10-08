@@ -83,7 +83,7 @@ public class BetScheduler extends Thread{
 		        betList.clear();
 		
 		        /*Send the results to all the active clients.*/
-		        activeClients.sendMessageAll(message, null);
+		        activeClients.sendMessageAll(message, null, null);
 		        
 		        /* Creates a new batch of games. */
 		        man.refreshMatches();

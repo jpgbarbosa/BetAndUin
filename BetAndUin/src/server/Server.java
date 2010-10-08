@@ -1,13 +1,14 @@
 package server;
 
 import java.net.*;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.io.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import clientRMI.ServerOperations;
+import clientRMI.RMIClient;
 
 /*TODO: We still have to save the last batch of matches. In case the server goes down,
  * 		the new server will have to read these files.
@@ -22,6 +23,8 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 	ActiveClients activeClientsRMI;
 	BetScheduler betSchedulerRMI;
 	ClientsStorage databaseRMI;
+	
+	int defaultCredits = 100;
 	
 	public Server(ActiveClients activeClients, BetScheduler betScheduler, ClientsStorage database) throws RemoteException{
         this.activeClientsRMI=activeClients;
@@ -162,32 +165,108 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 
     /* METHODS RELATED TO THE RMI */
 	@Override
-	public String clientLogin(String user, String pass, ServerOperations client) throws RemoteException {
-		// TODO Auto-generated method stub
+	public String clientLogin(String username, String password, RMIClient client) throws RemoteException {
+    	
+		ClientInfo clientInfo = databaseRMI.findClient(username);
+    	/* This username hasn't been found on the database. */
+    	if (clientInfo == null){
+    		activeClientsRMI.sendMessageUser("log error",username);
+    	}
+    	/* This username has been found on the database. Let's check if the password matches
+    	 * with it.
+    	 */
+    	else{
+            if(password.equals(clientInfo.getPassword())){
+            	/* However, the user was already validated in some other machine. */
+            	if (activeClientsRMI.isClientLoggedIn(username)){
+            		activeClientsRMI.sendMessageUser("log repeated",username);
+            	}
+            	/* The validation process can be concluded. */
+            	else{
+            		activeClientsRMI.addClient(username, null, client);
+            		activeClientsRMI.sendMessageUser("log successful",username);
+            	}
+            }
+            else {
+        		activeClientsRMI.sendMessageUser("log error",username);
+        	}
+    	}
+    	
 		return null;
 	}
 	
 	@Override
-	public String clientRegister(String user, String pass, String email, ServerOperations client) throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+	public String clientRegister(String username, String password, String mail, RMIClient client) throws RemoteException {    	
+    	/* We don't permit that a user registers under the name of 'all',
+    	 * because it would interfere with the analysis of the commands
+    	 * sent to the server.
+    	 */
+    	if (username.equals("all")){
+    		return "username all";
+    	}
+    	/* This username hasn't been found in the database, so we can add this new client. */
+    	else if (databaseRMI.findClient(username) == null){
+    		/* Creates the register for this new client and adds it to the database. */
+    		 databaseRMI.addClient(username, password, mail);
+    		
+    		/* Registers in the client as an active client and informs the success of the
+    		 * operation.
+    		 */
+    		activeClientsRMI.addClient(username, null, client);
+    		return "log successful";
+    	}
+    	/* This username is already being used. */
+    	else{
+    		/* Writes to the client. */
+    		return "log taken";
+    	}
 	}
 
 	@Override
-	public String clientMakeBet(int nGame, String bet, int credits) throws RemoteException {
-		return null;
+	public String clientMakeBet(String user, int gameNumber, String bet, int credits) throws RemoteException {
+		/* Variables to save the values inserted by the client. */
+    	ClientInfo clientInfo = databaseRMI.findClient(user);
+    	
+    	/* If the client is betting more credits than he/she has on his/her account,
+    	 * we cannot conclude the bet. Consequently, we have to send a message
+    	 * warning the user about it.
+    	 */
+    	if (clientInfo.getCredits() < credits){
+    		return "You don't have enough credits!";
+    	}
+    	/* The client tried to bet 0 credits. */
+    	else if (credits == 0){
+    		return "Are you kidding?! You have bet no credits!";
+    	}
+    	else{
+        	synchronized(betSchedulerRMI.getManager()){
+	        	if((bet.equals("1") || bet.compareToIgnoreCase("x")==0 || bet.equals("2"))
+	        			&& betSchedulerRMI.isValidGame(gameNumber)){
+	        		/* Takes the credits bet from the client's account. */
+	        		clientInfo.setCredits(clientInfo.getCredits() - credits);
+	        		/* Creates the new bet and saves the new database into file. */
+	        		betSchedulerRMI.addBet(new Bet(clientInfo.getUsername(),gameNumber,bet,credits));
+	        		databaseRMI.saveObjectToFile("clientsDatabase.bin", databaseRMI.getClientsDatabase());
+	
+	        		return "Bet done!";
+	        	}
+	        	else {
+	        		return "Invalid command or the game number that you entered isn't available.";
+	        	}
+        	}
+    	}
 	}
 
 	//TODO: Colocar defaultCredits noutro sitio
 	public String clientResetCredits(String user) throws RemoteException {
-		databaseRMI.findClient(user).setCredits(100);
-		return "Your credits were reseted to "+100+"Cr.";
+		databaseRMI.findClient(user).setCredits(defaultCredits);
+		return "Your credits were reseted to "+ defaultCredits +"Cr.";
 	}
 
 	@Override
 	public String clientSendMsgAll(String user, String message) throws RemoteException {
-		//TODO: ERRO NO TERCEIRO PARAMETRO
-		activeClientsRMI.sendMessageAll(user + " says to everyone: " + message, null);
+		activeClientsRMI.sendMessageAll(user + " says to everyone: " + message, null,
+				activeClientsRMI.findUser(user).getRMIClient());
 		return  "Message ["+message+"] delivered!";
 	}
 
@@ -221,10 +300,16 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 		return betSchedulerRMI.getMatches();
 	}
 
-	//TODO: show menu
 	public String clientShowMenu() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+		return "\nMAIN MENU:" +
+				"\n1. Show the current credit of the user: show credits" +
+				"\n2. Reset user credits to 100Cr:\n\treset" +
+				"\n3. View Current Matches:\n\tshow matches" +
+				"\n4. Make a Bet:\n\tbet [match number] [1 x 2] [credits]" +
+				"\n5. Show Online Users:\n\tshow users" +
+				"\n6. Send messagen to specific user:\n\tsend [user] '[message]'" +
+				"\n7. Send message to all users:\n\tsend all '[message]'" + 
+				"\n8. Print the menu options:\n\tshow menu";
 	}
 
 	public String clientShowUsers() throws RemoteException {

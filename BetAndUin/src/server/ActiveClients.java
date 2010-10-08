@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+import clientRMI.RMIClient;
+
 /* This class holds all the active clients in the current session.
  * For efficiency, we use two structures for keeping the list:
  *     -> HASHTABLE: When we want to access a specific client (e.g. when
@@ -33,9 +35,9 @@ public class ActiveClients {
 		 noActiveClients = 0;
 	}
 	
-	public synchronized void addClient(String username, Socket socket){
+	public synchronized void addClient(String username, Socket socket, RMIClient client){
 		/* This method adds a client to both the hash table and the list.*/
-		ClientListElement element = new ClientListElement(username,socket);
+		ClientListElement element = new ClientListElement(username,socket, client);
 		
 		clientList.add(element);
 		clientHash.put(username, element);
@@ -84,7 +86,7 @@ public class ActiveClients {
 		}
 	}
 	
-	public synchronized void sendMessageAll(String message, Socket clientSocket){
+	public synchronized void sendMessageAll(String message, Socket clientSocket, RMIClient clientRMI){
 		/* Sends a message to all the clients. */
 		
 		ClientListElement element;
@@ -96,13 +98,16 @@ public class ActiveClients {
 	    {
 			element = (ClientListElement) iterator.next();
 			/* If this is the user who sends the message, it won't receive it back. */
-			if (element.getSocket() != clientSocket){	
+			if (element.getSocket() != null && element.getSocket() != clientSocket){	
 				try {
 					out = new DataOutputStream(element.getSocket().getOutputStream());
 					out.writeUTF(message);
 				} catch (IOException e) {
 					System.out.println("IO from sendMessageAll (ActiveClients): " + e);
 				}
+			}
+			else if(element.getRMIClient() != clientRMI){
+				clientRMI.printUserMessage(message);
 			}
 	    }
 	}
@@ -170,16 +175,29 @@ public class ActiveClients {
 		}
 		return false;
 	}
+	
+	public ClientListElement findUser(String user){
+		int i=0;
+		while(i<clientList.size()){
+			if(clientList.get(i).getUsername().equals(user))
+				return clientList.get(i);
+			i++;
+		}
+		return null;
+	}
+	
 }
 
 /* Class used to insert active elements in the list. */
 class ClientListElement{
 	String username;
 	Socket socket;
+	RMIClient rmiClient;
 	
-	public ClientListElement(String user, Socket s){
+	public ClientListElement(String user, Socket socketArg, RMIClient client){
 		username = user;
-		socket = s;
+		socket = socketArg;
+		rmiClient = client;
 	}
 
 	public String getUsername() {
@@ -188,6 +206,10 @@ class ClientListElement{
 
 	public Socket getSocket() {
 		return socket;
+	}
+	
+	public RMIClient getRMIClient() {
+		return rmiClient;
 	}
 
 }

@@ -65,7 +65,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 	                	String mail = stringSplitted[3];
 	                	
 	                	try {
-							serverAnswer = server.clientRegister(username, password, mail, (ServerOperations) this);
+							serverAnswer = server.clientRegister(username, password, mail, (RMIClient) this);
 						} catch (RemoteException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -76,7 +76,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 	                	password = stringSplitted[2];
 		                
 	                	try {
-							serverAnswer = server.clientLogin(username, password, (ServerOperations) this);
+							serverAnswer = server.clientLogin(username, password, (RMIClient) this);
 						} catch (RemoteException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -110,7 +110,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 				/* The client is logged in already. */
 				else{
                 	try {
-						serverAnswer = server.clientLogin(username, password, (ServerOperations) client);
+						serverAnswer = server.clientLogin(username, password, (RMIClient) client);
 					} catch (RemoteException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -187,7 +187,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
         	    return answer;
         	}
         	
-        	server.clientMakeBet(gameNumber, resultBet, credits);
+        	server.clientMakeBet(user,gameNumber, resultBet, credits);
         }
         else if(stringSplitted.length > 0 && stringSplitted[0].equals("bet")){
         	answer =  "Wrong number of arguments: bet [game number] [bet] [credits]";
