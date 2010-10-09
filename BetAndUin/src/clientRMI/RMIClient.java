@@ -31,13 +31,14 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 		boolean loggedIn = false;
 		ClientOperations server = null;
 		
-		try {
-			RMIClient client = new RMIClient();
-			server = (ClientOperations) Naming.lookup("rmi://localhost:12000/BetAndUinServer");
-		
-			System.out.println(server.clientShowMenu());
-			while(true){
-	
+		while(true) {
+			try{
+				RMIClient client = new RMIClient();
+				server = (ClientOperations) Naming.lookup("rmi://localhost:12000/BetAndUinServer");
+			
+				System.out.println(server.clientShowMenu());
+				
+				//TODO: caso haja erro no comando nao o estamos a distinguir
 				while (!loggedIn){
 					/* The user hasn't made a successful login yet. */
 					if (username.equals("") && password.equals("")){
@@ -63,6 +64,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 			        	if (!serverAnswer.equals("log successful")){
 			        		username = "";
 			        		password = "";
+			        		
 			        		/* This client isn't registered in the system. */
 			        		if (serverAnswer.equals("log error")){
 			        			System.out.println("\nUsername or password incorrect. Please try again...\n");
@@ -94,10 +96,11 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 				serverAnswer = client.parseFunction(username, reader.readLine(), server);
 				System.out.println(serverAnswer);
 				
-			} //while(true)
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} //while(true)
+
 	}
 
 	public void printUserMessage(String msg) throws java.rmi.RemoteException{

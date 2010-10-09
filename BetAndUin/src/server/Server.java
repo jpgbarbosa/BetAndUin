@@ -170,8 +170,9 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 	@Override
 	public String clientLogin(String username, String password, ServerOperations client) throws RemoteException {
 		System.out.println("We are here.");
-		if (database == null)
-			System.out.println("FUCK");
+		if (database == null){
+			System.out.println("database do 1o if do clientLogin esta a null");
+		}
 		ClientInfo clientInfo = database.findClient(username);
     	/* This username hasn't been found on the database. */
     	if (clientInfo == null){
@@ -180,6 +181,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     	/* This username has been found on the database. Let's check if the password matches
     	 * with it.
     	 */
+    	
     	else{
             if(password.equals(clientInfo.getPassword())){
             	/* However, the user was already validated in some other machine. */
