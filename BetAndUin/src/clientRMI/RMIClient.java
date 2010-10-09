@@ -13,17 +13,20 @@ import java.rmi.server.*;
 import server.ClientOperations;
 
 
+//TODO: A cena dos reset credits ainda falha, penso eu. O do send all também dá problemas.
+
 public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 
 	private static final long serialVersionUID = 1L;
-
+	private static int defaultCredits = 100;
+	
 	public RMIClient() throws RemoteException {
 		super();
 	}
 	
 	public static void main(String args[]) {
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));;
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		String [] stringSplitted = null;
 		String username="",password="";
 		String serverAnswer = "";
@@ -94,10 +97,11 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 				} //while(!loggedIn)
 				
 				System.out.println("\n>> ");
-				serverAnswer = client.parseFunction(username, reader.readLine(), server);
+				serverAnswer = client.parseFunction(username, reader.readLine(), server, reader);
 				System.out.println(serverAnswer);
 				
 			} catch (Exception e) {
+				//TODO
 				e.printStackTrace();
 			}
 		} //while(true)
@@ -108,7 +112,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 		System.out.println(msg);
 	}
 	
-    public String parseFunction(String user, String input, ClientOperations server) throws RemoteException{
+    public String parseFunction(String user, String input, ClientOperations server, BufferedReader reader) throws RemoteException{
     	/* The answer from the server to the client. */
     	String answer = "";
     	String [] stringSplitted = null;
@@ -126,7 +130,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
         		answer = server.clientShowMatches();
         	}
         	else if(stringSplitted[1].equals("credits")){ //show user's credits
-        		answer = server.clientResetCredits(user);
+        		answer = server.clientShowCredits(user);
         	}
         	else if(stringSplitted[1].equals("users")){ //show all active users
         		answer = server.clientShowUsers();
@@ -138,16 +142,24 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
         		answer = "Unknow Command";
         	}
         }
-        else if(stringSplitted.length == 3 && stringSplitted[0].equals("send")){
+        else if(stringSplitted.length >= 3 && stringSplitted[0].equals("send")){
         	if(stringSplitted[1].equals("all")){ //send a message to all users
-        		answer = server.clientSendMsgAll(user, stringSplitted[2]);
+        		/* We have to use again the input because the user may send the message with
+        		 * white spaces.
+        		 * 'send all ' has 9 characters. So, the message is from there till the end of
+        		 * input string.
+        		 */
+        		answer = server.clientSendMsgAll(user, input.substring(9));
         	}
         	else if (stringSplitted[1].equals(user)){
         		answer = "What's the point of sending messages to yourself?";
         	}
         	/* We are sending a message to a user. */
         	else{
-        		answer = server.clientSendMsgUser(user, stringSplitted[1], stringSplitted[2]);
+        		/* 'send ' has 5 characters. Then, we have to sum the size of the receiver name
+        		 * as well as a white space that separates this name from the message.
+        		 */
+        		answer = server.clientSendMsgUser(user, stringSplitted[1],input.substring(6 + stringSplitted[1].length()));
         	}
         }
         else if(input.equals("reset")){ //resets user's credits to 100Cr
@@ -171,10 +183,42 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
         	    return answer;
         	}
         	
-        	server.clientMakeBet(user,gameNumber, resultBet, credits);
+        	/* The user has made a bet of 0 credits. */
+        	if (credits == 0){
+        		return "Are you kidding?! You have bet no credits!";
+        	}
+        	
+        	answer = server.clientMakeBet(user,gameNumber, resultBet, credits);
         }
         else if(stringSplitted.length > 0 && stringSplitted[0].equals("bet")){
         	answer =  "Wrong number of arguments: bet [game number] [bet] [credits]";
+        }
+        else if (stringSplitted.length == 1 && stringSplitted[0].equals("reset")){
+        	/* First, we verify if the client has more or less than the default value of credits,
+        	 * make sure he/she won't lose credits accidentally.
+        	 */
+    		int userCredits = Integer.parseInt(server.clientShowCredits(user));
+    		
+    		if (userCredits > defaultCredits){
+    			String finalAnswer = "";
+    			System.out.printf("In this moment, you have %d, which means you are going to lose %d credits.\n" +
+    					"Are you sure you want to continue with the process (Y/N)?\n", userCredits, userCredits - defaultCredits);
+    			do{
+    				try{
+    					finalAnswer = reader.readLine().toUpperCase();
+    				}catch (Exception e){
+    					return "";
+    				}
+    			}
+    			while (!finalAnswer.equals("Y") && !finalAnswer.equals("N"));
+    			
+    			if (finalAnswer.equals("Y")){
+    				answer = server.clientResetCredits(user);
+    			}
+    			else{
+    				answer = "Operation cancelled. You still have " + userCredits+ " credits.\n";
+    			}
+        	}
         }
         else if(stringSplitted.length == 1 && stringSplitted[0].equals("exit")){
         	server.clientLeave(user);

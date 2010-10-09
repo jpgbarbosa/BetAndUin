@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.rmi.ConnectException;
 import java.rmi.RemoteException;
+import java.util.ConcurrentModificationException;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
@@ -83,41 +84,59 @@ public class ActiveClients {
 	}
 	
 	public synchronized void sendMessageAll(String message, Socket clientSocket, ServerOperations clientRMI){
-		/* Sends a message to all the clients. */
-		
-		ClientListElement element;
-		ListIterator <ClientListElement> iterator = clientList.listIterator();
-		DataOutputStream out;
-		
-		/* Uses an iterator over the list to send a message to all the active clients. */
-		while(iterator.hasNext())
-	    {
-			//TODO: Uma vez, deu aqui java.util.ConcurrentModificationException.
-			element = (ClientListElement) iterator.next();
-			/* If this is the user who sends the message, it won't receive it back. */
-			if (element.getSocket() != null && element.getSocket() != clientSocket){	
-				try {
-					out = new DataOutputStream(element.getSocket().getOutputStream());
-					out.writeUTF(message);
-				} catch (IOException e) {
-					System.out.println("IO from sendMessageAll (ActiveClients): " + e);
+		synchronized(clientList){
+			/* Sends a message to all the clients. */
+			
+			ClientListElement element;
+			//ListIterator <ClientListElement> iterator = clientList.listIterator();
+			DataOutputStream out;
+			
+			//TODO: Remove this stupid thing. It is used to try to avoid the mistakes down there.
+			/*while(iterator.hasNext())
+		    {
+				try{
+					element = (ClientListElement) iterator.next();
+				}catch(Exception e){
+					System.out.println("BUGGY");
+					break;
 				}
-			}
-			else if(element.getRMIClient() != clientRMI){
-				try {
-					element.getRMIClient().printUserMessage(message);
-				} catch (ConnectException e1){ 
-					//TODO: Eventually make sure this doesn't happen.
-					/* This means that the client has logged off and consequently, we can remove it
-					 * from the active list.
-					 */
-					removeClient(element.getUsername());
+		    }
+			
+			iterator = clientList.listIterator();*/
+			
+			/* Uses an iterator over the list to send a message to all the active clients. */
+			//while(iterator.hasNext())
+			for (int i = 0; i < clientList.size(); i++)
+		    {
+				//TODO: Uma vez, deu aqui java.util.ConcurrentModificationException, quando envia o resultado dos jogos.
+				//element = (ClientListElement) iterator.next();
+				element = clientList.get(i);
+				
+				/* If this is the user who sends the message, it won't receive it back. */
+				if (element.getSocket() != null && element.getSocket() != clientSocket){	
+					try {
+						out = new DataOutputStream(element.getSocket().getOutputStream());
+						out.writeUTF(message);
+					} catch (IOException e) {
+						System.out.println("IO from sendMessageAll (ActiveClients): " + e);
+					}
 				}
-				catch (RemoteException e) {
-					e.printStackTrace();
+				else if(element.getRMIClient() != clientRMI){
+					try {
+						element.getRMIClient().printUserMessage(message);
+					} catch (ConnectException e1){ 
+						//TODO: Eventually make sure this doesn't happen.
+						/* This means that the client has logged off and consequently, we can remove it
+						 * from the active list.
+						 */
+						removeClient(element.getUsername());
+					}
+					catch (RemoteException e) {
+						e.printStackTrace();
+					}
 				}
-			}
-	    }
+		    }
+		}
 	}
 	
 	/* This method is used when we have a valid login for this client and consequently,
@@ -168,7 +187,7 @@ public class ActiveClients {
 	}
 	
 	/*This method returns a String with all the activeUsers*/
-	public String getUsersList(){
+	public synchronized String getUsersList(){
 		String usersList="";
 		
 		int i=0;
@@ -181,18 +200,7 @@ public class ActiveClients {
 		return usersList;
 	}
 	
-	/**@return true if user exists in clientList*/
-	public boolean checkUser(String user){
-		int i=0;
-		while(i<clientList.size()){
-			if(clientList.get(i).getUsername().equals(user))
-				return true;
-			i++;
-		}
-		return false;
-	}
-	
-	public ClientListElement findUser(String user){
+	public synchronized ClientListElement findUser(String user){
 		int i=0;
 		while(i<clientList.size()){
 			if(clientList.get(i).getUsername().equals(user))

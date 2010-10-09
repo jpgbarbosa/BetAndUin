@@ -186,22 +186,30 @@ class TCPClientThread extends Thread {
         		answer = "Unknow Command";
         	}
         }
-        else if(stringSplitted.length == 3 && stringSplitted[0].equals("send")){
+        else if(stringSplitted.length >= 3 && stringSplitted[0].equals("send")){
         	if(stringSplitted[1].equals("all")){ //send a message to all users
-        		activeClients.sendMessageAll(clientInfo.getUsername() + " says to everyone: " + stringSplitted[2], clientSocket, null);
+        		/* We have to use again the input because the user may send the message with
+        		 * white spaces.
+        		 * 'send all ' has 9 characters. So, the message is from there till the end of
+        		 * input string.
+        		 */
+        		activeClients.sendMessageAll(clientInfo.getUsername() + " says to everyone: " + input.substring(9), clientSocket, null);
         		answer = "";
         	}
         	/* We are sending a message to a user. */
         	else{
         		/* This client is online. */
-	        	if(activeClients.checkUser(stringSplitted[1])){
+	        	if(activeClients.isClientLoggedIn(stringSplitted[1]) != null){
 	        		/* Checks if client isn't sending a message to himself/herself. */
 	        		if (stringSplitted[1].equals(clientInfo.getUsername())){
 	        			/* Alternative: Are you feeling alone? */
 	        			activeClients.sendMessageUser("What's the point of sending messages to yourself?", stringSplitted[1]);
 	        		}
 	        		else{
-	        			activeClients.sendMessageUser(clientInfo.getUsername() + " says: " + stringSplitted[2], stringSplitted[1]);
+	        			/* 'send ' has 5 characters. Then, we have to sum the size of the receiver name
+	            		 * as well as a white space that separates this name from the message.
+	            		 */
+	        			activeClients.sendMessageUser(clientInfo.getUsername() + " says: " + input.substring(6 + stringSplitted[1].length()), stringSplitted[1]);
 	        		}
 	        		answer = "";
 	        	}

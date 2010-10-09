@@ -189,8 +189,6 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     /* METHODS RELATED TO THE RMI */
 	@Override
 	public String clientLogin(String username, String password, ServerOperations client) throws RemoteException {
-		System.out.println("We are here.");
-
 		ClientInfo clientInfo = database.findClient(username);
     	/* This username hasn't been found on the database. */
     	if (clientInfo == null){
@@ -199,7 +197,6 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     	/* This username has been found on the database. Let's check if the password matches
     	 * with it.
     	 */
-    	
     	else{
             if(password.equals(clientInfo.getPassword())){
             	ClientListElement element;
@@ -209,11 +206,10 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
             			element.getRMIClient().testUser();
             		} catch(Exception e){
             			/* The client hasnt't passed on the test and consequently, it's inactive. */
-            			return "log successful";
+            			return "log repeated";
             		}
-            		
             		/* If we get here, the user has passed on the test and it is still active. */
-            		return "log repeated";
+            		return "log successful";
             	}
             	/* The validation process can be concluded. */
             	else{
@@ -305,14 +301,29 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 	@Override
 	public String clientSendMsgUser(String userSender, String userDest, String message) throws RemoteException {
 		String answer="";
+		ClientListElement element;
 		
-		if(activeClients.checkUser(userDest)){
+		if((element = activeClients.isClientLoggedIn(userDest)) != null){
     		/* Checks if client isn't sending a message to himself/herself. */
     		if(userDest.equals(userSender)){
     			answer = "What's the point of sending messages to yourself?";
     		} else {
-    			activeClients.sendMessageUser(userSender + " says: " + message, userDest);
-    			answer = "Message ["+message+"] delivered!";
+    			/* Now, we have check if this is a RMI Client and is still active. */
+    			if (element.getRMIClient() == null){
+    				activeClients.sendMessageUser(userSender + " says: " + message, userDest);
+        			answer = "Message ["+message+"] delivered!";
+    			}
+    			/* Is a RMI Client. */
+    			else{
+    				try{
+	    				element.getRMIClient().testUser();
+	    				activeClients.sendMessageUser(userSender + " says: " + message, userDest);
+	        			answer = "Message [" + message + "] delivered!";
+    				}catch(Exception e){
+    					answer = "This client if offline at the moment.";
+    				}
+    			}
+    			
     		}
     	}else if(database.findClient(userDest) != null){
     		answer = "This client if offline at the moment.";
