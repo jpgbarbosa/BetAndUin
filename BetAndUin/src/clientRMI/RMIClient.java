@@ -35,8 +35,6 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 			try{
 				RMIClient client = new RMIClient();
 				server = (ClientOperations) Naming.lookup("rmi://localhost:12000/BetAndUinServer");
-			
-				System.out.println(server.clientShowMenu());
 				
 				//TODO: caso haja erro no comando nao o estamos a distinguir
 				while (!loggedIn){
@@ -82,6 +80,8 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 			        		}
 			        	} else {
 			        		System.out.println("You're now logged in!");
+			        		/* Shows the main menu. */
+			        		System.out.println(server.clientShowMenu());
 			        		loggedIn = true;
 			        	}
 			        	
@@ -93,6 +93,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 					}
 				} //while(!loggedIn)
 				
+				System.out.println("\n>> ");
 				serverAnswer = client.parseFunction(username, reader.readLine(), server);
 				System.out.println(serverAnswer);
 				
@@ -104,7 +105,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 	}
 
 	public void printUserMessage(String msg) throws java.rmi.RemoteException{
-		System.out.println();
+		System.out.println(msg);
 	}
 	
     public String parseFunction(String user, String input, ClientOperations server) throws RemoteException{
@@ -125,6 +126,9 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
         	else if(stringSplitted[1].equals("users")){ //show all active users
         		answer = server.clientShowUsers();
         	}
+        	else if(stringSplitted[1].equals("menu")){//show the main menu.
+        		answer = server.clientShowMenu();
+        	}
         	else{
         		answer = "Unknow Command";
         	}
@@ -132,6 +136,9 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
         else if(stringSplitted.length == 3 && stringSplitted[0].equals("send")){
         	if(stringSplitted[1].equals("all")){ //send a message to all users
         		answer = server.clientSendMsgAll(user, stringSplitted[2]);
+        	}
+        	else if (stringSplitted[1].equals(user)){
+        		answer = "What's the point of sending messages to yourself?";
         	}
         	/* We are sending a message to a user. */
         	else{

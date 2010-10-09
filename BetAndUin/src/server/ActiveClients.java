@@ -2,6 +2,7 @@ package server;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.rmi.ConnectException;
 import java.rmi.RemoteException;
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -111,9 +112,15 @@ public class ActiveClients {
 			}
 			else if(element.getRMIClient() != clientRMI){
 				try {
-					clientRMI.printUserMessage(message);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
+					element.getRMIClient().printUserMessage(message);
+				} catch (ConnectException e1){ 
+					//TODO: Eventually make sure this doesn't happen.
+					/* This means that the client has logged off and consequently, we can remove it
+					 * from the active list.
+					 */
+					removeClient(element.getUsername());
+				}
+				catch (RemoteException e) {
 					e.printStackTrace();
 				}
 			}
@@ -135,8 +142,16 @@ public class ActiveClients {
 		
 		if (element != null){
 			try {
-				out = new DataOutputStream(element.getSocket().getOutputStream());
-				out.writeUTF(message);
+				/* This is a TCP Client. */
+				if (element.getSocket() != null){
+					out = new DataOutputStream(element.getSocket().getOutputStream());
+					out.writeUTF(message);
+				}
+				/* This is a RMI Client. */
+				else{
+					element.getRMIClient().printUserMessage(message);
+				}
+				
 			} catch (IOException e) {
 				System.out.println("IO from sendMessageUser (ActiveClients): " + e);
 			}
