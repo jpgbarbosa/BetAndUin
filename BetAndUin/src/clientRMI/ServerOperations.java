@@ -1,5 +1,7 @@
 package clientRMI;
 
-public interface ServerOperations {
-	public String printUserMessage(String msg);
+import java.rmi.Remote;
+
+public interface ServerOperations extends Remote{
+	public void printUserMessage(String msg) throws java.rmi.RemoteException;
 }

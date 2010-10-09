@@ -2,12 +2,14 @@ package server;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.rmi.RemoteException;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
 import clientRMI.RMIClient;
+
 
 /* This class holds all the active clients in the current session.
  * For efficiency, we use two structures for keeping the list:
@@ -107,7 +109,12 @@ public class ActiveClients {
 				}
 			}
 			else if(element.getRMIClient() != clientRMI){
-				clientRMI.printUserMessage(message);
+				try {
+					clientRMI.printUserMessage(message);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 	    }
 	}

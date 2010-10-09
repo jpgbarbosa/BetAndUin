@@ -1,33 +1,28 @@
 package clientRMI;
 
-import server.ClientOperations;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.server.UnicastRemoteObject;
+//import java.rmi.server.UnicastRemoteObject;
+import java.rmi.server.*;
+
+import server.ClientOperations;
 
 
 public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 
 	private static final long serialVersionUID = 1L;
 
-	protected RMIClient() throws RemoteException {
+	RMIClient() throws RemoteException {
 		super();
 	}
 	
 	public static void main(String args[]) {
-		try {
-			RMIClient client = new RMIClient();
-			client.run();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	public void run() {
+
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));;
 		String [] stringSplitted = null;
 		String username="",password="";
@@ -35,105 +30,78 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 				
 		boolean loggedIn = false;
 		ClientOperations server = null;
-		RMIClient client = null;
 		
 		try {
-			server = (ClientOperations) LocateRegistry.getRegistry(12000).lookup("BetAndUinServer");
+			RMIClient client = new RMIClient();
+			server = (ClientOperations) Naming.lookup("rmi://localhost:12000/BetAndUinServer");
+		
+			System.out.println(server.clientShowMenu());
+			while(true){
+	
+				while (!loggedIn){
+					/* The user hasn't made a successful login yet. */
+					if (username.equals("") && password.equals("")){
+		                /* Reads and splits the input. */
+						System.out.println("\nTo log in: login [user] [pass]\n" +
+	        			"To register in: register [user] [pass] [email]");
+						stringSplitted = reader.readLine().split(" ");
+		                	
+		                if(stringSplitted.length == 4 && stringSplitted[0].equals("register")){
+		                	username = stringSplitted[1];
+		                	password = stringSplitted[2];
+		                	String mail = stringSplitted[3];
+		                	
+		                	serverAnswer = server.clientRegister(username, password, mail, (ServerOperations) client);
+		                	
+		                } else if(stringSplitted.length == 3 && stringSplitted[0].equals("login")){
+		                	username = stringSplitted[1];
+		                	password = stringSplitted[2];
+			                
+		                	serverAnswer = (String) server.clientLogin(username, password, client);
+		                }
+		                
+			        	if (!serverAnswer.equals("log successful")){
+			        		username = "";
+			        		password = "";
+			        		/* This client isn't registered in the system. */
+			        		if (serverAnswer.equals("log error")){
+			        			System.out.println("\nUsername or password incorrect. Please try again...\n");
+			        		}
+			        		/* This client is logged in in another machine. */
+			        		else if (serverAnswer.equals("log repeated")){
+			        			System.out.println("\nSorry, but this user is already logged in...\n");
+			        		}
+			        		/* This username is already taken by another client. */
+			        		else if (serverAnswer.equals("log taken")){
+			        			System.out.println("\nSorry, but this username isn't available, choose another.\n");
+			        		}
+			        		else if (serverAnswer.equals("username all")){
+			        			System.out.println("Sorry, but the keyword 'all' is reserved, pick another name.");
+			        		}
+			        	} else {
+			        		System.out.println("You're now logged in!");
+			        		loggedIn = true;
+			        	}
+			        	
+					}
+					/* The client is logged in already. */
+					else{
+						serverAnswer = server.clientLogin(username, password, (ServerOperations) client);
+						
+					}
+				} //while(!loggedIn)
+				
+				serverAnswer = client.parseFunction(username, reader.readLine(), server);
+				System.out.println(serverAnswer);
+				
+			} //while(true)
 		} catch (Exception e) {
-			System.out.println("Exception in main: " + e);
 			e.printStackTrace();
 		}
-		
-		while(true){
-
-			while (!loggedIn){
-				/* The user hasn't made a successful login yet. */
-				if (username.equals("") && password.equals("")){
-	                /* Reads and splits the input. */
-	                try {
-	    	        	System.out.println("\nTo log in: login [user] [pass]\n" +
-	        			"To register in: register [user] [pass] [email]");
-	    	        	
-						stringSplitted = reader.readLine().split(" ");
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-	                	
-	                if(stringSplitted.length == 4 && stringSplitted[0].equals("register")){
-	                	username = stringSplitted[1];
-	                	password = stringSplitted[2];
-	                	String mail = stringSplitted[3];
-	                	
-	                	try {
-							serverAnswer = server.clientRegister(username, password, mail, (RMIClient) this);
-						} catch (RemoteException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-	                	
-	                } else if(stringSplitted.length == 3 && stringSplitted[0].equals("login")){
-	                	username = stringSplitted[1];
-	                	password = stringSplitted[2];
-		                
-	                	try {
-							serverAnswer = server.clientLogin(username, password, (RMIClient) this);
-						} catch (RemoteException e) {
-							System.out.println("remote login function");
-							e.printStackTrace();
-						}
-	                }
-	                
-		        	if (!serverAnswer.equals("log successful")){
-		        		username = "";
-		        		password = "";
-		        		/* This client isn't registered in the system. */
-		        		if (serverAnswer.equals("log error")){
-		        			System.out.println("\nUsername or password incorrect. Please try again...\n");
-		        		}
-		        		/* This client is logged in in another machine. */
-		        		else if (serverAnswer.equals("log repeated")){
-		        			System.out.println("\nSorry, but this user is already logged in...\n");
-		        		}
-		        		/* This username is already taken by another client. */
-		        		else if (serverAnswer.equals("log taken")){
-		        			System.out.println("\nSorry, but this username isn't available, choose another.\n");
-		        		}
-		        		else if (serverAnswer.equals("username all")){
-		        			System.out.println("Sorry, but the keyword 'all' is reserved, pick another name.");
-		        		}
-		        	} else {
-		        		System.out.println("You're now logged in!");
-		        		loggedIn = true;
-		        	}
-		        	
-				}
-				/* The client is logged in already. */
-				else{
-                	try {
-						serverAnswer = server.clientLogin(username, password, (RMIClient) client);
-					} catch (RemoteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			} //while(!loggedIn)
-			
-			try {
-				serverAnswer = parseFunction(username, reader.readLine(), server);
-				System.out.println(serverAnswer);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} //while(true)
 	}
 
-	public String printUserMessage(String msg) {
-		return msg;
+	public void printUserMessage(String msg) throws java.rmi.RemoteException{
+		System.out.println();
 	}
 	
     public String parseFunction(String user, String input, ClientOperations server) throws RemoteException{

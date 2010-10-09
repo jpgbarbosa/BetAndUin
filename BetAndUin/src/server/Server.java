@@ -9,12 +9,18 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 import clientRMI.RMIClient;
+import clientRMI.ServerOperations;
+
 
 /*TODO: We still have to save the last batch of matches. In case the server goes down,
  * 		the new server will have to read these files.
  */
 
 public class Server extends UnicastRemoteObject implements ClientOperations{
+	protected Server() throws RemoteException {
+		super();
+	}
+
 	/**
 	 * 
 	 */
@@ -25,13 +31,6 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 	ClientsStorage databaseRMI;
 	
 	int defaultCredits = 100;
-	
-	public Server(ActiveClients activeClients, BetScheduler betScheduler, ClientsStorage database) throws RemoteException{
-        this.activeClientsRMI=activeClients;
-        this.betSchedulerRMI=betScheduler;
-        this.databaseRMI=database;
-        
-	}
 	
     public static void main(String args[]){
     	/*Number of Games per round*/
@@ -138,7 +137,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
             
             /* Now, we prepare the connection to handle requests from RMI clients. */
     		try {
-    			Server rmiServices = new Server(activeClients,betScheduler,database);
+    			Server rmiServices = new Server();
     			Registry registry = LocateRegistry.createRegistry(12000);
     			registry.rebind("BetAndUinServer", rmiServices);
     			
@@ -165,12 +164,12 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 
     /* METHODS RELATED TO THE RMI */
 	@Override
-	public String clientLogin(String username, String password, RMIClient client) throws RemoteException {
-    	
+	public String clientLogin(String username, String password, ServerOperations client) throws RemoteException {
+		System.out.println("We are here.");
 		ClientInfo clientInfo = databaseRMI.findClient(username);
     	/* This username hasn't been found on the database. */
     	if (clientInfo == null){
-    		activeClientsRMI.sendMessageUser("log error",username);
+    		return "log error";
     	}
     	/* This username has been found on the database. Let's check if the password matches
     	 * with it.
@@ -179,24 +178,22 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
             if(password.equals(clientInfo.getPassword())){
             	/* However, the user was already validated in some other machine. */
             	if (activeClientsRMI.isClientLoggedIn(username)){
-            		activeClientsRMI.sendMessageUser("log repeated",username);
+            		return "log repeated";
             	}
             	/* The validation process can be concluded. */
             	else{
-            		activeClientsRMI.addClient(username, null, client);
-            		activeClientsRMI.sendMessageUser("log successful",username);
+            		activeClientsRMI.addClient(username, null, (RMIClient) client);
+            		return "log successful";
             	}
             }
             else {
-        		activeClientsRMI.sendMessageUser("log error",username);
+        		return "log error";
         	}
     	}
-    	
-		return null;
 	}
 	
 	@Override
-	public String clientRegister(String username, String password, String mail, RMIClient client) throws RemoteException {    	
+	public String clientRegister(String username, String password, String mail, ServerOperations client) throws RemoteException {    	
     	/* We don't permit that a user registers under the name of 'all',
     	 * because it would interfere with the analysis of the commands
     	 * sent to the server.
@@ -212,7 +209,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     		/* Registers in the client as an active client and informs the success of the
     		 * operation.
     		 */
-    		activeClientsRMI.addClient(username, null, client);
+    		activeClientsRMI.addClient(username, null, (RMIClient)client);
     		return "log successful";
     	}
     	/* This username is already being used. */
