@@ -25,35 +25,38 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	ActiveClients activeClientsRMI;
-	BetScheduler betSchedulerRMI;
-	ClientsStorage databaseRMI;
 	
-	int defaultCredits = 100;
+	/*Number of Games per round*/
+	static private int nGames = 10; 
+	
+	/*Set to true if you want the program to display debugging messages.*/
+	static private Boolean debugging = true;
+	
+	/* The object responsible for dealing with the information related to the clients logged in the system. */
+    static private ActiveClients activeClients;
+    /* The object responsible for creating the matches and setting the results. */
+    static private BetScheduler betScheduler;
+    /* The object responsible for maintaining the clients' database. */
+    static private ClientsStorage database;
+    /* The lock we are going to use when the connection manager wants to inform that server that its status
+     * (i.e. primary or secondary server) has changed.
+     */
+    static private ChangeStatusLock changeStatusLock = new ChangeStatusLock();
+    /* Variable to know whether we are the default server or not. */
+    static private boolean isDefaultServer;
+    /* The ports of the two servers. */
+    static private int serverPort, partnerPort;
+	
+    static private int defaultCredits = 100;
 	
     public static void main(String args[]){
-    	/*Number of Games per round*/
-    	int nGames = 10; 
-    	
-    	/*Set to true if you want the program to display debugging messages.*/
-		Boolean debugging = true;
-		
-    	/* The object responsible for dealing with the information related to the clients logged in the system. */
-        ActiveClients activeClients;
-        /* The object responsible for creating the matches and setting the results. */
-        BetScheduler betScheduler;
-        /* The object responsible for maintaining the clients' database. */
-        ClientsStorage database = new ClientsStorage();
-        /* The lock we are going to use when the connection manager wants to inform that server that its status
-         * (i.e. primary or secondary server) has changed.
-         */
-        ChangeStatusLock changeStatusLock = new ChangeStatusLock();
-        /* Variable to know whether we are the default server or not. */
-        boolean isDefaultServer;
-        /* The ports of the two servers. */
-        int serverPort, partnerPort;
-        
+    	try {
+			Server server = new Server();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
         /* The user has introduced less than three options by the command line, so we can't carry on. */
         if (args.length < 3){
         	System.out.println("java TCPServer serverPort partnerPort isPrimaryServer (for this last" +
@@ -131,7 +134,8 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     		/* We are the primary server, so we can communicate with clients. */
             
             /* There's the active clients' list to handle, the bets and the database. */
-    		activeClients = new ActiveClients();
+            database = new ClientsStorage();
+            activeClients = new ActiveClients();
     		betScheduler = new BetScheduler(activeClients, nGames, database);
     		database.setBetScheduler(betScheduler);
             
@@ -166,7 +170,9 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 	@Override
 	public String clientLogin(String username, String password, ServerOperations client) throws RemoteException {
 		System.out.println("We are here.");
-		ClientInfo clientInfo = databaseRMI.findClient(username);
+		if (database == null)
+			System.out.println("FUCK");
+		ClientInfo clientInfo = database.findClient(username);
     	/* This username hasn't been found on the database. */
     	if (clientInfo == null){
     		return "log error";
@@ -177,12 +183,12 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     	else{
             if(password.equals(clientInfo.getPassword())){
             	/* However, the user was already validated in some other machine. */
-            	if (activeClientsRMI.isClientLoggedIn(username)){
+            	if (activeClients.isClientLoggedIn(username)){
             		return "log repeated";
             	}
             	/* The validation process can be concluded. */
             	else{
-            		activeClientsRMI.addClient(username, null, (RMIClient) client);
+            		activeClients.addClient(username, null, (RMIClient) client);
             		return "log successful";
             	}
             }
@@ -202,14 +208,14 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     		return "username all";
     	}
     	/* This username hasn't been found in the database, so we can add this new client. */
-    	else if (databaseRMI.findClient(username) == null){
+    	else if (database.findClient(username) == null){
     		/* Creates the register for this new client and adds it to the database. */
-    		 databaseRMI.addClient(username, password, mail);
+    		 database.addClient(username, password, mail);
     		
     		/* Registers in the client as an active client and informs the success of the
     		 * operation.
     		 */
-    		activeClientsRMI.addClient(username, null, (RMIClient)client);
+    		activeClients.addClient(username, null, client);
     		return "log successful";
     	}
     	/* This username is already being used. */
@@ -222,7 +228,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 	@Override
 	public String clientMakeBet(String user, int gameNumber, String bet, int credits) throws RemoteException {
 		/* Variables to save the values inserted by the client. */
-    	ClientInfo clientInfo = databaseRMI.findClient(user);
+    	ClientInfo clientInfo = database.findClient(user);
     	
     	/* If the client is betting more credits than he/she has on his/her account,
     	 * we cannot conclude the bet. Consequently, we have to send a message
@@ -236,14 +242,14 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     		return "Are you kidding?! You have bet no credits!";
     	}
     	else{
-        	synchronized(betSchedulerRMI.getManager()){
+        	synchronized(betScheduler.getManager()){
 	        	if((bet.equals("1") || bet.compareToIgnoreCase("x")==0 || bet.equals("2"))
-	        			&& betSchedulerRMI.isValidGame(gameNumber)){
+	        			&& betScheduler.isValidGame(gameNumber)){
 	        		/* Takes the credits bet from the client's account. */
 	        		clientInfo.setCredits(clientInfo.getCredits() - credits);
 	        		/* Creates the new bet and saves the new database into file. */
-	        		betSchedulerRMI.addBet(new Bet(clientInfo.getUsername(),gameNumber,bet,credits));
-	        		databaseRMI.saveObjectToFile("clientsDatabase.bin", databaseRMI.getClientsDatabase());
+	        		betScheduler.addBet(new Bet(clientInfo.getUsername(),gameNumber,bet,credits));
+	        		database.saveObjectToFile("clientsDatabase.bin", database.getClientsDatabase());
 	
 	        		return "Bet done!";
 	        	}
@@ -256,14 +262,14 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 
 	//TODO: Colocar defaultCredits noutro sitio
 	public String clientResetCredits(String user) throws RemoteException {
-		databaseRMI.findClient(user).setCredits(defaultCredits);
+		database.findClient(user).setCredits(defaultCredits);
 		return "Your credits were reseted to "+ defaultCredits +"Cr.";
 	}
 
 	@Override
 	public String clientSendMsgAll(String user, String message) throws RemoteException {
-		activeClientsRMI.sendMessageAll(user + " says to everyone: " + message, null,
-				activeClientsRMI.findUser(user).getRMIClient());
+		activeClients.sendMessageAll(user + " says to everyone: " + message, null,
+				activeClients.findUser(user).getRMIClient());
 		return  "Message ["+message+"] delivered!";
 	}
 
@@ -271,15 +277,15 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 	public String clientSendMsgUser(String userSender, String userDest, String message) throws RemoteException {
 		String answer="";
 		
-		if(activeClientsRMI.checkUser(userDest)){
+		if(activeClients.checkUser(userDest)){
     		/* Checks if client isn't sending a message to himself/herself. */
     		if(userDest.equals(userSender)){
     			answer = "What's the point of sending messages to yourself?";
     		} else {
-    			activeClientsRMI.sendMessageUser(userSender + " says: " + message, userDest);
+    			activeClients.sendMessageUser(userSender + " says: " + message, userDest);
     			answer = "Message ["+message+"] delivered!";
     		}
-    	}else if(databaseRMI.findClient(userDest) != null){
+    	}else if(database.findClient(userDest) != null){
     		answer = "This client if offline at the moment.";
     	} else {
     		answer = "Username not registered.";
@@ -289,12 +295,12 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 	}
 
 	public String clientShowCredits(String user) throws RemoteException {
-		return "" + databaseRMI.findClient(user).getCredits();
+		return "" + database.findClient(user).getCredits();
 	}
 
 
 	public String clientShowMatches() throws RemoteException {
-		return betSchedulerRMI.getMatches();
+		return betScheduler.getMatches();
 	}
 
 	public String clientShowMenu() throws RemoteException {
@@ -310,7 +316,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 	}
 
 	public String clientShowUsers() throws RemoteException {
-		return activeClientsRMI.getUsersList();
+		return activeClients.getUsersList();
 	}
 }
 

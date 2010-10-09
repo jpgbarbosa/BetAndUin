@@ -17,7 +17,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 
 	private static final long serialVersionUID = 1L;
 
-	RMIClient() throws RemoteException {
+	public RMIClient() throws RemoteException {
 		super();
 	}
 	

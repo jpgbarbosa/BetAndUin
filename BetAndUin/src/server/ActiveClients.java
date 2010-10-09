@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import clientRMI.RMIClient;
+import clientRMI.ServerOperations;
 
 
 /* This class holds all the active clients in the current session.
@@ -37,7 +38,7 @@ public class ActiveClients {
 		 noActiveClients = 0;
 	}
 	
-	public synchronized void addClient(String username, Socket socket, RMIClient client){
+	public synchronized void addClient(String username, Socket socket, ServerOperations client){
 		/* This method adds a client to both the hash table and the list.*/
 		ClientListElement element = new ClientListElement(username,socket, client);
 		
@@ -88,7 +89,7 @@ public class ActiveClients {
 		}
 	}
 	
-	public synchronized void sendMessageAll(String message, Socket clientSocket, RMIClient clientRMI){
+	public synchronized void sendMessageAll(String message, Socket clientSocket, ServerOperations clientRMI){
 		/* Sends a message to all the clients. */
 		
 		ClientListElement element;
@@ -199,9 +200,9 @@ public class ActiveClients {
 class ClientListElement{
 	String username;
 	Socket socket;
-	RMIClient rmiClient;
+	ServerOperations rmiClient;
 	
-	public ClientListElement(String user, Socket socketArg, RMIClient client){
+	public ClientListElement(String user, Socket socketArg, ServerOperations client){
 		username = user;
 		socket = socketArg;
 		rmiClient = client;
@@ -215,7 +216,7 @@ class ClientListElement{
 		return socket;
 	}
 	
-	public RMIClient getRMIClient() {
+	public ServerOperations getRMIClient() {
 		return rmiClient;
 	}
 
