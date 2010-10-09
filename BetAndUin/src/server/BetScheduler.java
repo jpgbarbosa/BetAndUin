@@ -88,7 +88,9 @@ public class BetScheduler extends Thread{
 		        notifyBets();
 		        
 		        betList.clear();
-		
+		        /* Cleans the files with the batches. */
+		        database.saveObjectToFile("bets.bin", betList);
+		        
 		        /*Send the results to all the active clients.*/
 		        //TODO: Temos de mudar esta funçao. nao pode ser igual pq depois vai dar null ptr exception!
 		        activeClients.sendMessageAll(message, null, null);
@@ -107,9 +109,9 @@ public class BetScheduler extends Thread{
 			bet=it.next();
 			
 			/* The client has won. */
-			if(gameResults[(bet.getGameNumber()-1)%gamesPerRound]==0 && bet.bet.compareToIgnoreCase("X")==0
-					|| gameResults[(bet.getGameNumber()-1)%gamesPerRound]==1 && bet.bet.compareTo("1")==0
-					|| gameResults[(bet.getGameNumber()-1)%gamesPerRound]==2 && bet.bet.compareTo("2")==0){
+			if(gameResults[(bet.getGameNumber())%gamesPerRound]==0 && bet.bet.compareToIgnoreCase("X")==0
+					|| gameResults[(bet.getGameNumber())%gamesPerRound]==1 && bet.bet.equals("1")
+					|| gameResults[(bet.getGameNumber())%gamesPerRound]==2 && bet.bet.equals("2")){
 				
 				/* We first update the value in the persistent memory, by informing the database. */
 				database.increaseCredits(bet.getUser(), bet.credits * 3);

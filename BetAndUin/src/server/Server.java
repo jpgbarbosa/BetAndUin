@@ -206,10 +206,10 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
             			element.getRMIClient().testUser();
             		} catch(Exception e){
             			/* The client hasnt't passed on the test and consequently, it's inactive. */
-            			return "log repeated";
+            			return "log successful";
             		}
             		/* If we get here, the user has passed on the test and it is still active. */
-            		return "log successful";
+            		return "log repeated";
             	}
             	/* The validation process can be concluded. */
             	else{

@@ -13,7 +13,7 @@ import java.rmi.server.*;
 import server.ClientOperations;
 
 
-//TODO: A cena dos reset credits ainda falha, penso eu. O do send all também dá problemas.
+//TODO: As apostas no RMI estão mal. O do send all também dá problemas.
 
 public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 
@@ -162,9 +162,6 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
         		answer = server.clientSendMsgUser(user, stringSplitted[1],input.substring(6 + stringSplitted[1].length()));
         	}
         }
-        else if(input.equals("reset")){ //resets user's credits to 100Cr
-        	answer = server.clientResetCredits(user);
-        }
         else if(stringSplitted.length == 4 && stringSplitted[0].equals("bet")){
         	/* Variables to save the values inserted by the client. */
         	String resultBet;
@@ -193,12 +190,12 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
         else if(stringSplitted.length > 0 && stringSplitted[0].equals("bet")){
         	answer =  "Wrong number of arguments: bet [game number] [bet] [credits]";
         }
-        else if (stringSplitted.length == 1 && stringSplitted[0].equals("reset")){
+        else if (input.equals("reset")){
         	/* First, we verify if the client has more or less than the default value of credits,
         	 * make sure he/she won't lose credits accidentally.
         	 */
     		int userCredits = Integer.parseInt(server.clientShowCredits(user));
-    		
+
     		if (userCredits > defaultCredits){
     			String finalAnswer = "";
     			System.out.printf("In this moment, you have %d, which means you are going to lose %d credits.\n" +
@@ -219,6 +216,9 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
     				answer = "Operation cancelled. You still have " + userCredits+ " credits.\n";
     			}
         	}
+    		else{
+    			answer = server.clientResetCredits(user);
+    		}
         }
         else if(stringSplitted.length == 1 && stringSplitted[0].equals("exit")){
         	server.clientLeave(user);

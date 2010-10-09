@@ -1,6 +1,8 @@
 package server;
 
-public class Bet {
+import java.io.Serializable;
+
+public class Bet implements Serializable{
 	int credits;
 	int gameNumber;
 	String bet;
