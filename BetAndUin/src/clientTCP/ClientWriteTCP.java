@@ -31,18 +31,6 @@ public class ClientWriteTCP extends Thread {
     	userCredits = 0;
         this.start();
     }
-
-    public String printMenu(){    	
-    	return "\nMAIN MENU:" +
-    			"\n1. Show the current credit of the user: show credits" +
-    			"\n2. Reset user credits to 100Cr:\n\treset" +
-    			"\n3. View Current Matches:\n\tshow matches" +
-    			"\n4. Make a Bet:\n\tbet [match number] [1 x 2] [credits]" +
-    			"\n5. Show Online Users:\n\tshow users" +
-    			"\n6. Send messagen to specific user:\n\tsend [user] '[message]'" +
-    			"\n7. Send message to all users:\n\tsend all '[message]'" + 
-    			"\n8. Print the menu options:\n\tmenu";    	
-    }
     
     //=============================
     public void run(){
@@ -59,10 +47,10 @@ public class ClientWriteTCP extends Thread {
 						}
 	        		}
 	        	}
-	
-	        	System.out.println(printMenu());
+	        	
+	        	/* Shows the main menu. */
+	        	out.writeUTF("show menu");
 	            while(true){
-	            	System.out.println(" >>> ");
 	            	userInput = reader.readLine();
 	            	
 	            	/* The user is going to reset the number of credits.
@@ -107,8 +95,11 @@ public class ClientWriteTCP extends Thread {
 		            			out.writeUTF("reset");
 		            		}
 		            	}
-		            	else if (userInput.equals("menu")){
-		            		System.out.println(printMenu());
+		            	/* The user has selected the option to exit the program. */
+		            	else if (userInput.equals("exit")){
+		            		System.out.println("Thank you for using the BetAndUin serivce!\n"
+		            				+ "Have a nice day!");
+		            		System.exit(0);
 		            	}
 		            	else{
 		            		/* We verify the validity of the commands' on the client side

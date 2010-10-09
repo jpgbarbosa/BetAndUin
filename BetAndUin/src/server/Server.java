@@ -17,8 +17,26 @@ import clientRMI.ServerOperations;
  */
 
 public class Server extends UnicastRemoteObject implements ClientOperations{
-	protected Server() throws RemoteException {
+	protected Server(boolean defaultS, int sPort, int pPort) throws RemoteException{
 		super();
+		isDefaultServer = defaultS;
+		serverPort = sPort;
+		partnerPort = pPort;
+		
+    	/* In here, we initialize the process of exchanging messages between servers. */
+        new ConnectionWithServerManager(serverPort, partnerPort, isDefaultServer, changeStatusLock);
+		/* Before going to wait, we have to see whether the manager has concluded its operations
+		 * or not yet. Otherwise, we may wait forever if it concluded before we entered here.
+		 * This step is used in order not to accept any clients before we know whether we are
+		 * the primary server or not.
+		 */
+	}
+	
+	protected Server(ActiveClients active, BetScheduler bet, GlobalDataBase base) throws RemoteException {
+		super();
+		activeClients = active; 
+		betScheduler = bet;
+		database = base;
 	}
 
 	/**
@@ -33,60 +51,62 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 	static private Boolean debugging = true;
 	
 	/* The object responsible for dealing with the information related to the clients logged in the system. */
-    static private ActiveClients activeClients;
+    private ActiveClients activeClients;
     /* The object responsible for creating the matches and setting the results. */
-    static private BetScheduler betScheduler;
+    private BetScheduler betScheduler;
     /* The object responsible for maintaining the clients' database. */
-    static private ClientsStorage database;
+    private GlobalDataBase database;
     /* The lock we are going to use when the connection manager wants to inform that server that its status
      * (i.e. primary or secondary server) has changed.
      */
-    static private ChangeStatusLock changeStatusLock = new ChangeStatusLock();
+    private ChangeStatusLock changeStatusLock = new ChangeStatusLock();
     /* Variable to know whether we are the default server or not. */
-    static private boolean isDefaultServer;
+    private boolean isDefaultServer;
     /* The ports of the two servers. */
-    static private int serverPort, partnerPort;
+    private int serverPort, partnerPort;
 	
     static private int defaultCredits = 100;
 	
     public static void main(String args[]){
-    	try {
-			Server server = new Server();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-        /* The user has introduced less than three options by the command line, so we can't carry on. */
+    	boolean defaultS = false;
+    	int sPort = 0;
+    	int pPort = 0;
+    	Server server = null;
+    	
+    	 /* The user has introduced less than three options by the command line, so we can't carry on. */
         if (args.length < 3){
         	System.out.println("java TCPServer serverPort partnerPort isPrimaryServer (for this last" +
         			"option, type primary or secondary");
     	    System.exit(0);
         }
-        
+    	
         /* We read from the command line the two port numbers passed. */
-        serverPort = Integer.parseInt(args[0]);
-        partnerPort = Integer.parseInt(args[1]);
+        sPort = Integer.parseInt(args[0]);
+        pPort = Integer.parseInt(args[1]);
         if (args[2].toLowerCase().equals("primary")){
-        	isDefaultServer = true;
+        	defaultS = true;
         }
         else{
-        	isDefaultServer = false;
+        	defaultS = false;
         }
 
         if (debugging){
-        	System.out.printf("We are server %d, our partner is %d.\n", serverPort, partnerPort);
+        	System.out.printf("We are server %d, our partner is %d.\n", sPort, pPort);
         }
-        
+    	
+    	try {
+			server = new Server(defaultS, sPort, pPort);
+			server.run();
+		} catch (RemoteException e) {
+			System.out.println("Erro creating the server: " + e);
+			System.exit(-1);
+		}
+    	
+    }
+    	
+    public void run(){
         try{
-            
-        	/* In here, we initialize the process of exchanging messages between servers. */
-            new ConnectionWithServerManager(serverPort, partnerPort, isDefaultServer, changeStatusLock);
-    		/* Before going to wait, we have to see whether the manager has concluded its operations
-    		 * or not yet. Otherwise, we may wait forever if it concluded before we entered here.
-    		 * This step is used in order not to accept any clients before we know whether we are
-    		 * the primary server or not.
-    		 */
+        	
     		synchronized(changeStatusLock){
     			try{
             		if (!changeStatusLock.isInitialProcessConcluded()){
@@ -134,14 +154,14 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     		/* We are the primary server, so we can communicate with clients. */
             
             /* There's the active clients' list to handle, the bets and the database. */
-            database = new ClientsStorage();
+            database = new GlobalDataBase();
             activeClients = new ActiveClients();
     		betScheduler = new BetScheduler(activeClients, nGames, database);
     		database.setBetScheduler(betScheduler);
             
             /* Now, we prepare the connection to handle requests from RMI clients. */
     		try {
-    			Server rmiServices = new Server();
+    			Server rmiServices = new Server(activeClients, betScheduler, database);
     			Registry registry = LocateRegistry.createRegistry(12000);
     			registry.rebind("BetAndUinServer", rmiServices);
     			
@@ -159,7 +179,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
                 if (debugging){
                 	System.out.println("CLIENT_SOCKET = " + clientSocket);
                 }
-                new ConnectionChat(clientSocket, activeClients, betScheduler, database);
+                new TCPClientThread(this, clientSocket, activeClients, betScheduler, database);
             }
         }catch(IOException e){
         	System.out.println("Listen:" + e.getMessage());
@@ -170,9 +190,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 	@Override
 	public String clientLogin(String username, String password, ServerOperations client) throws RemoteException {
 		System.out.println("We are here.");
-		if (database == null){
-			System.out.println("database do 1o if do clientLogin esta a null");
-		}
+
 		ClientInfo clientInfo = database.findClient(username);
     	/* This username hasn't been found on the database. */
     	if (clientInfo == null){
@@ -184,13 +202,22 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     	
     	else{
             if(password.equals(clientInfo.getPassword())){
+            	ClientListElement element;
             	/* However, the user was already validated in some other machine. */
-            	if (activeClients.isClientLoggedIn(username)){
+            	if ((element = activeClients.isClientLoggedIn(username)) != null){
+            		try{
+            			element.getRMIClient().testUser();
+            		} catch(Exception e){
+            			/* The client hasnt't passed on the test and consequently, it's inactive. */
+            			return "log successful";
+            		}
+            		
+            		/* If we get here, the user has passed on the test and it is still active. */
             		return "log repeated";
             	}
             	/* The validation process can be concluded. */
             	else{
-            		activeClients.addClient(username, null, (RMIClient) client);
+            		activeClients.addClient(username, null, client);
             		return "log successful";
             	}
             }
@@ -295,16 +322,18 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 		
     	return answer;
 	}
-
+	
+	@Override
 	public String clientShowCredits(String user) throws RemoteException {
 		return "" + database.findClient(user).getCredits();
 	}
 
-
+	@Override
 	public String clientShowMatches() throws RemoteException {
 		return betScheduler.getMatches();
 	}
 
+	@Override
 	public String clientShowMenu() throws RemoteException {
 		return "\nMAIN MENU:" +
 				"\n1. Show the current credit of the user: show credits" +
@@ -314,11 +343,18 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 				"\n5. Show Online Users:\n\tshow users" +
 				"\n6. Send messagen to specific user:\n\tsend [user] '[message]'" +
 				"\n7. Send message to all users:\n\tsend all '[message]'" + 
-				"\n8. Print the menu options:\n\tshow menu";
+				"\n8. Print the menu options:\n\tshow menu" +
+				"\n9. Leave the program:\n\texit";
 	}
 
+	@Override
 	public String clientShowUsers() throws RemoteException {
 		return activeClients.getUsersList();
+	}
+	
+	@Override
+	public void clientLeave(String username) throws RemoteException {
+		activeClients.removeClient(username);
 	}
 }
 

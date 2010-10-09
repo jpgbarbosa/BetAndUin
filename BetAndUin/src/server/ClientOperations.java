@@ -1,6 +1,7 @@
 package server;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 import clientRMI.ServerOperations;
 
@@ -19,4 +20,5 @@ public interface ClientOperations extends Remote{
 	public String clientSendMsgAll(String userSender, String msg) throws java.rmi.RemoteException;
 	
 	public String clientMakeBet(String username, int gameNumber, String bet, int credits) throws java.rmi.RemoteException;
+	public void clientLeave(String username) throws java.rmi.RemoteException;
 }

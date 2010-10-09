@@ -3,15 +3,15 @@ package pt.uc.dei.sd;
 import java.util.ArrayList;
 import java.util.List;
 
-import server.ClientsStorage;
+import server.GlobalDataBase;
 
 public class BetManager implements IBetManager {
     private ArrayList<IMatch> matches = new ArrayList<IMatch>();
     private BetGenerator gen;
     private int size;
-    private ClientsStorage database;
+    private GlobalDataBase database;
     
-    public BetManager(int gamesPerRound, ClientsStorage clientsStorage) {
+    public BetManager(int gamesPerRound, GlobalDataBase clientsStorage) {
         size = gamesPerRound;
         database = clientsStorage;
         /* The next game will start one number after the last game recorded. */

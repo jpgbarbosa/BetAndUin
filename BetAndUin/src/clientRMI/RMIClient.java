@@ -111,9 +111,14 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
     public String parseFunction(String user, String input, ClientOperations server) throws RemoteException{
     	/* The answer from the server to the client. */
     	String answer = "";
+    	String [] stringSplitted = null;
     	
     	/* Splits the input. */
-    	String [] stringSplitted = input.split(" ");
+    	try{
+    		stringSplitted = input.split(" ");
+    	} catch(Exception e){
+    		return "";
+    	}
         
         /* The client has sent two keywords and the first is "show".*/
         if(stringSplitted.length == 2 && stringSplitted[0].equals("show")){        	
@@ -171,10 +176,21 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
         else if(stringSplitted.length > 0 && stringSplitted[0].equals("bet")){
         	answer =  "Wrong number of arguments: bet [game number] [bet] [credits]";
         }
+        else if(stringSplitted.length == 1 && stringSplitted[0].equals("exit")){
+        	server.clientLeave(user);
+        	System.out.println("Thank you for using the BetAndUin serivce!\n"
+    				+ "Have a nice day!");
+    		System.exit(0);
+        }
         else {
         	answer = "Unknown command";
         }
 
 		return answer;
+    }
+    
+    @Override
+    public boolean testUser() throws java.rmi.RemoteException{
+    	return true;
     }
 }

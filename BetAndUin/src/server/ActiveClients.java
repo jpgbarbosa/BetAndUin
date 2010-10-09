@@ -76,18 +76,10 @@ public class ActiveClients {
 	}
 	
 	/* Method to check whether a given client is already logged in or not. */
-	public synchronized Boolean isClientLoggedIn(String username){
-		ClientListElement element;
-		element = clientHash.get(username);
-		
-		if (element == null){
-			/* The client couldn't be found in the hash table, so it means it isn't logged in. */
-			return false;
-		}
-		else{
-			/* There is already an entry in the active clients' hash table. */
-			return true;
-		}
+	public synchronized ClientListElement isClientLoggedIn(String username){
+		/* The client couldn't be found in the hash table, so it means it isn't logged in -> null. */
+		/* There is already an entry in the active clients' hash table -> !null. */
+		return clientHash.get(username);
 	}
 	
 	public synchronized void sendMessageAll(String message, Socket clientSocket, ServerOperations clientRMI){
@@ -100,6 +92,7 @@ public class ActiveClients {
 		/* Uses an iterator over the list to send a message to all the active clients. */
 		while(iterator.hasNext())
 	    {
+			//TODO: Uma vez, deu aqui java.util.ConcurrentModificationException.
 			element = (ClientListElement) iterator.next();
 			/* If this is the user who sends the message, it won't receive it back. */
 			if (element.getSocket() != null && element.getSocket() != clientSocket){	

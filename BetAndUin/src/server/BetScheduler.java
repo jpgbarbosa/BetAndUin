@@ -16,7 +16,7 @@ public class BetScheduler extends Thread{
 	
 	/* References to the list of active clients and the database. */
 	ActiveClients activeClients;
-	ClientsStorage database;
+	GlobalDataBase database;
     
 	/* Variables to keep track of the game results and how to manage them. */
 	IBetManager man;
@@ -25,12 +25,19 @@ public class BetScheduler extends Thread{
     Vector<Bet> betList;
  
     
-	public BetScheduler(ActiveClients activeClients, int gamesPerRound, ClientsStorage clientsStorage){
+	public BetScheduler(ActiveClients activeClients, int gamesPerRound, GlobalDataBase clientsStorage){
 		this.activeClients = activeClients;
 		this.gamesPerRound=gamesPerRound;
 		gameResults = new int [gamesPerRound];
-		betList = new Vector<Bet>(0);
 		this.database = clientsStorage;
+		
+		/* Reads from a file all the bets made and verifies if there is a valid one. */
+		betList = (Vector<Bet>)database.readObjectFromFile("bets.bin");
+		if (betList == null){
+			betList = new Vector<Bet>(0);
+		}
+		
+		//TODO: save the current matches
 		man = new BetManager(gamesPerRound, database);
 		
 		this.start();
@@ -137,5 +144,8 @@ public class BetScheduler extends Thread{
 	
 	public void addBet(Bet bet){
 		betList.add(bet);
+		
+		/* Saves the list of bets into a file. */
+		database.saveObjectToFile("bets.bin", betList);
 	}
 }
