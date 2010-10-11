@@ -90,20 +90,7 @@ public class ActiveClients {
 			ClientListElement element;
 			//ListIterator <ClientListElement> iterator = clientList.listIterator();
 			DataOutputStream out;
-			
-			//TODO: Remove this stupid thing. It is used to try to avoid the mistakes down there.
-			/*while(iterator.hasNext())
-		    {
-				try{
-					element = (ClientListElement) iterator.next();
-				}catch(Exception e){
-					System.out.println("BUGGY");
-					break;
-				}
-		    }
-			
-			iterator = clientList.listIterator();*/
-			
+						
 			/* Uses an iterator over the list to send a message to all the active clients. */
 			//while(iterator.hasNext())
 			for (int i = 0; i < clientList.size(); i++)

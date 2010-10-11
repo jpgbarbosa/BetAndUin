@@ -13,7 +13,7 @@ import java.rmi.server.*;
 import server.ClientOperations;
 
 
-//TODO: As apostas no RMI estão mal. O do send all também dá problemas.
+//TODO: O do send all também dá problemas.
 
 public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 
@@ -101,8 +101,8 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 				System.out.println(serverAnswer);
 				
 			} catch (Exception e) {
-				//TODO
-				e.printStackTrace();
+				//TODO Auto-gen exception
+				e.printStackTrace(); 
 			}
 		} //while(true)
 

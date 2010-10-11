@@ -145,8 +145,6 @@ class TCPClientThread extends Thread {
         	/* The client is leaving. Consequently, we have to remove it from the list
         	 * of active clients.
         	 */
-        	/*TODO: we must save the user's current state, i.e., current bets and all finished bets
-        	 * during this last session???*/
         	activeClients.removeClient(username);
         	if (debugging){
         		System.out.println("ConnectionChat IO:" + e);
@@ -263,7 +261,6 @@ class TCPClientThread extends Thread {
 	        	synchronized(betScheduler.getManager()){
 		        	if((resultBet.equals("1") || resultBet.compareToIgnoreCase("x")==0 || resultBet.equals("2"))
 		        			&& betScheduler.isValidGame(gameNumber)){
-		        		//TODO: WARNING!!!!!!!! betScheduler isn't being saved in file;
 		        		/* Takes the credits bet from the client's account. */
 		        		clientInfo.setCredits(clientInfo.getCredits() - credits);
 		        		/* Creates the new bet and saves the new database into file. */
