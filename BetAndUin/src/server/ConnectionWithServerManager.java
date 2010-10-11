@@ -121,6 +121,7 @@ public class ConnectionWithServerManager extends Thread{
 				while (msgToReceiveList.listSize() > 0){
 					partnerAnswer = msgToReceiveList.getMsg();
 				}
+				//TODO: Nao estamos a ler sempre a ultima mensagem apenas com o while?
 			}
 			
 			/* We are now the primary server. */

@@ -12,7 +12,7 @@ import clientRMI.RMIClient;
 import clientRMI.ServerOperations;
 
 
-/*TODO: We still have to save the last batch of matches. In case the server goes down,
+/*TODO fixed (matches.bin no betscheduler a testar): We still have to save the last batch of matches. In case the server goes down,
  * 		the new server will have to read these files.
  */
 
