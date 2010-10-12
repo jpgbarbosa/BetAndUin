@@ -6,7 +6,7 @@ import java.util.List;
 import server.GlobalDataBase;
 
 public class BetManager implements IBetManager {
-    private ArrayList<IMatch> matches = new ArrayList<IMatch>();
+    private ArrayList<IMatch> matches;
     private BetGenerator gen;
     private int size;
     private GlobalDataBase database;
@@ -17,11 +17,12 @@ public class BetManager implements IBetManager {
         /* The next game will start one number after the last game recorded. */
         gen = new BetGenerator(database.getNextGameNumber());
         
-        /* TODO: NOT TESTED and fails if never occurred bets. Another solution is save always the last games
-         * and load them always if some server crash */
-        if(false /* betList.size()>0*/){
-        	matches = (ArrayList<IMatch>) database.readObjectFromFile("matches.bin");
-        } else {
+
+        matches = (ArrayList<IMatch>) database.readObjectFromFile("matches.bin");
+        
+        if(matches==null){
+        	/* There was an error reading matches from file. matches will be declared and refreshed*/
+        	matches = new ArrayList<IMatch>();
         	refreshMatches();
         }
     }
@@ -40,12 +41,13 @@ public class BetManager implements IBetManager {
     
     public void refreshMatches() {
         matches.clear();
+        database.saveObjectToFile("matches.bin", matches);
+        
         for(int i=0; i < size; i++) {
             matches.add(gen.getRandomMatch());
         }
         
         database.saveIntToFile("nextGameNumber.bin", gen.getCounter());
-        /*TODO: Saving current matches but we are reading them*/
         database.saveObjectToFile("matches.bin", matches);
     }
     

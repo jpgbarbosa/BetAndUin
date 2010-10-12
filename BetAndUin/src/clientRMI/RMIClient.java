@@ -222,7 +222,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
         }
         else if(stringSplitted.length == 1 && stringSplitted[0].equals("exit")){
         	server.clientLeave(user);
-        	System.out.println("Thank you for using the BetAndUin serivce!\n"
+        	System.out.println("Thank you for using the BetAndUin service!\n"
     				+ "Have a nice day!");
     		System.exit(0);
         }
