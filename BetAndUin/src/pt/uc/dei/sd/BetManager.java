@@ -17,7 +17,13 @@ public class BetManager implements IBetManager {
         /* The next game will start one number after the last game recorded. */
         gen = new BetGenerator(database.getNextGameNumber());
         
-        refreshMatches();
+        /* TODO: NOT TESTED and fails if never occurred bets. Another solution is save always the last games
+         * and load them always if some server crash */
+        if(false /* betList.size()>0*/){
+        	matches = (ArrayList<IMatch>) database.readObjectFromFile("matches.bin");
+        } else {
+        	refreshMatches();
+        }
     }
     
     public List<IMatch> getMatches() {
@@ -39,6 +45,8 @@ public class BetManager implements IBetManager {
         }
         
         database.saveIntToFile("nextGameNumber.bin", gen.getCounter());
+        /*TODO: Saving current matches but we are reading them*/
+        database.saveObjectToFile("matches.bin", matches);
     }
     
 }

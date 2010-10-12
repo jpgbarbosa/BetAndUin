@@ -51,10 +51,7 @@ public class BetScheduler extends Thread{
 	        for (IMatch m : man.getMatches()) {
 	            message += m.getCode()+" - "+m.getHomeTeam() + " vs " + m.getAwayTeam() + "\n";
 	        }
-	        
-	        /*TODO: Saving current matches but we are reading them*/
-	        database.saveObjectToFile("matches.bin", man.getMatches());
-	        
+	        	        
 	        synchronized(lastMatches){
 	        	lastMatches=new String(message);
 	        }
@@ -153,5 +150,9 @@ public class BetScheduler extends Thread{
 		
 		/* Saves the list of bets into a file. */
 		database.saveObjectToFile("bets.bin", betList);
+	}
+	
+	public Vector<Bet> getBetList(){
+		return betList;
 	}
 }
