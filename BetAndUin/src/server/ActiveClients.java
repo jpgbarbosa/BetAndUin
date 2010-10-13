@@ -173,7 +173,7 @@ public class ActiveClients {
 		String usersList="";
 		
 		int i=0;
-		while(i<clientList.size() - 1){
+		while(i<clientList.size() - 2){
 			usersList+=clientList.get(i).getUsername()+"\n";
 			i++;
 		}

@@ -136,13 +136,16 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 					}
 				} //while(!loggedIn)
 				
-				System.out.println("\n>> ");
-				serverAnswer = client.parseFunction(username, reader.readLine(), server, reader);
-				System.out.println(serverAnswer);
-				
 				retries = 0;
 				retrying = 0;
-				loggedIn = false;
+				loggedIn = true;
+				
+				while(true){
+					System.out.println("\n>> ");
+					serverAnswer = client.parseFunction(username, reader.readLine(), server, reader);
+					System.out.println(serverAnswer);
+				}
+
 			    
 			/* The list of possible exceptions to be handled. */
 			} catch (NotBoundException e) {
@@ -160,7 +163,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 			    if (retries == 1 && retrying == 0){
 			    	serverPos = (++serverPos)%noServerPorts;
 			    	if (debugging){
-			    		System.out.println("Trying to connect to server in port " + serverPorts[serverPos] + ".");
+			    		System.out.println("Connection Lost... Trying to connect to server in port " + serverPorts[serverPos] + ".");
 			    	}
 			    }
 			    /* We have retried the connection at least once.
