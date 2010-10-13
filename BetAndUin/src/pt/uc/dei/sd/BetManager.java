@@ -3,17 +3,17 @@ package pt.uc.dei.sd;
 import java.util.ArrayList;
 import java.util.List;
 
+import constants.Constants;
+
 import server.GlobalDataBase;
 
 public class BetManager implements IBetManager {
     private ArrayList<IMatch> matches;
     private BetGenerator gen;
-    private int size;
     private GlobalDataBase database;
     
     @SuppressWarnings("unchecked")
-	public BetManager(int gamesPerRound, GlobalDataBase clientsStorage) {
-        size = gamesPerRound;
+	public BetManager(GlobalDataBase clientsStorage) {
         database = clientsStorage;
         /* The next game will start one number after the last game recorded. */
         gen = new BetGenerator(database.getNextGameNumber());
@@ -44,7 +44,7 @@ public class BetManager implements IBetManager {
         matches.clear();
         database.saveObjectToFile("matches.bin", matches);
         
-        for(int i=0; i < size; i++) {
+        for(int i=0; i < Constants.NO_GAMES; i++) {
             matches.add(gen.getRandomMatch());
         }
         

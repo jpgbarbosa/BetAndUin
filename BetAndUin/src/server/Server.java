@@ -7,15 +7,18 @@ import java.io.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+import constants.Constants;
+
 import clientRMI.ServerOperations;
 
 
 public class Server extends UnicastRemoteObject implements ClientOperations{
-	protected Server(boolean defaultS, int sPort, int pPort) throws RemoteException{
+	protected Server(boolean defaultS, int sPort, int pPort, int rPort) throws RemoteException{
 		super();
 		isDefaultServer = defaultS;
 		serverPort = sPort;
 		partnerPort = pPort;
+		rmiPort = rPort;
 		
     	/* In here, we initialize the process of exchanging messages between servers. */
         new ConnectionWithServerManager(serverPort, partnerPort, isDefaultServer, changeStatusLock);
@@ -33,10 +36,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 		database = base;
 	}
 
-	private static final long serialVersionUID = 1L;
-	
-	/*Number of Games per round*/
-	static private int nGames = 10; 
+	private static final long serialVersionUID = 1L; 
 	
 	/*Set to true if you want the program to display debugging messages.*/
 	static private Boolean debugging = true;
@@ -55,26 +55,40 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     private boolean isDefaultServer;
     /* The ports of the two servers. */
     private int serverPort, partnerPort;
-	
-    static private int defaultCredits = 100;
+    /* The RMI Server port. */
+    private int rmiPort;
 	
     public static void main(String args[]){
     	boolean defaultS = false;
-    	int sPort = 0;
-    	int pPort = 0;
+    	int serverNumber;
+    	int sTCPPort = 0, pTCPPort = 0,sRMIPort = 0;
     	Server server = null;
     	
     	 /* The user has introduced less than three options by the command line, so we can't carry on. */
-        if (args.length < 3){
-        	System.out.println("java TCPServer serverPort partnerPort isPrimaryServer (for this last" +
+        if (args.length < 2){
+        	System.out.println("java TCPServer serverNumber isPrimaryServer (for this last" +
         			"option, type primary or secondary");
     	    System.exit(0);
         }
     	
         /* We read from the command line the two port numbers passed. */
-        sPort = Integer.parseInt(args[0]);
-        pPort = Integer.parseInt(args[1]);
-        if (args[2].toLowerCase().equals("primary")){
+        serverNumber = Integer.parseInt(args[0]);
+        if (serverNumber == 1){
+        	sTCPPort = Constants.FIRST_TCP_SERVER_PORT;
+        	pTCPPort = Constants.SECOND_TCP_SERVER_PORT;
+        	sRMIPort = Constants.FIRST_RMI_SERVER_PORT;
+        }
+        else if (serverNumber == 2){
+        	sTCPPort = Constants.SECOND_TCP_SERVER_PORT;
+        	pTCPPort = Constants.FIRST_TCP_SERVER_PORT;
+        	sRMIPort = Constants.SECOND_RMI_SERVER_PORT;
+        }
+        else{
+        	System.out.println("Invalid server number.");
+        	System.exit(0);
+        }
+
+        if (args[1].toLowerCase().equals("primary")){
         	defaultS = true;
         }
         else{
@@ -82,11 +96,11 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
         }
 
         if (debugging){
-        	System.out.printf("We are server %d, our partner is %d.\n", sPort, pPort);
+        	System.out.printf("We are server %d, our partner is %d.\n", sTCPPort, pTCPPort);
         }
     	
     	try {
-			server = new Server(defaultS, sPort, pPort);
+			server = new Server(defaultS, sTCPPort, pTCPPort, sRMIPort);
 			server.run();
 		} catch (RemoteException e) {
 			System.out.println("Erro creating the server: " + e);
@@ -147,13 +161,13 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
             /* There's the active clients' list to handle, the bets and the database. */
             database = new GlobalDataBase();
             activeClients = new ActiveClients();
-    		betScheduler = new BetScheduler(activeClients, nGames, database);
+    		betScheduler = new BetScheduler(activeClients, database);
     		database.setBetScheduler(betScheduler);
             
             /* Now, we prepare the connection to handle requests from RMI clients. */
     		try {
     			Server rmiServices = new Server(activeClients, betScheduler, database);
-    			Registry registry = LocateRegistry.createRegistry(12000);
+    			Registry registry = LocateRegistry.createRegistry(rmiPort);
     			registry.rebind("BetAndUinServer", rmiServices);
     			
     			if (debugging){
@@ -277,10 +291,9 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     	}
 	}
 
-	//TODO: Colocar defaultCredits noutro sitio
 	public String clientResetCredits(String user) throws RemoteException {
-		database.findClient(user).setCredits(defaultCredits);
-		return "Your credits were reseted to "+ defaultCredits +"Cr.";
+		database.findClient(user).setCredits(Constants.DEFAULT_CREDITS);
+		return "Your credits were reseted to "+ Constants.DEFAULT_CREDITS +"Cr.";
 	}
 
 	@Override

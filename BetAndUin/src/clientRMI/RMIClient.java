@@ -8,12 +8,13 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.*;
 
+import constants.Constants;
+
 import server.ClientOperations;
 
 public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 
 	private static final long serialVersionUID = 1L;
-	private static int defaultCredits = 100;
 	
 	public RMIClient() throws RemoteException {
 		super();
@@ -50,8 +51,8 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 		int serverPos = 0; //The position array, which corresponds to active port.
 		int noServerPorts = serverPorts.length; //Total number of possible servers ports.
 		//Places the two ports in the array.
-		serverPorts[0] = 12000;
-		serverPorts[1] = 13000;
+		serverPorts[0] = Constants.FIRST_RMI_SERVER_PORT;
+		serverPorts[1] = Constants.SECOND_RMI_SERVER_PORT;
 		
 		while (retries < NO_RETRIES){
 			try {			
@@ -283,10 +284,10 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
         	 */
     		int userCredits = Integer.parseInt(server.clientShowCredits(user));
 
-    		if (userCredits > defaultCredits){
+    		if (userCredits > Constants.DEFAULT_CREDITS){
     			String finalAnswer = "";
     			System.out.printf("In this moment, you have %d, which means you are going to lose %d credits.\n" +
-    					"Are you sure you want to continue with the process (Y/N)?\n", userCredits, userCredits - defaultCredits);
+    					"Are you sure you want to continue with the process (Y/N)?\n", userCredits, userCredits - Constants.DEFAULT_CREDITS);
     			do{
     				try{
     					finalAnswer = reader.readLine().toUpperCase();

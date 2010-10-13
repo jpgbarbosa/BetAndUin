@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import constants.Constants;
+
 
 
 public class ClientWriteTCP extends Thread {
@@ -22,7 +24,6 @@ public class ClientWriteTCP extends Thread {
     ConnectionLock connectionLock;
     ClientReadTCP readThread;
     int userCredits;
-    int defaultCredits = 100;
     
     BufferedReader reader;
     
@@ -71,10 +72,10 @@ public class ClientWriteTCP extends Thread {
 		            			/* Continues the work. */
 		            		}
 		            		
-		            		if (userCredits > defaultCredits){
+		            		if (userCredits > Constants.DEFAULT_CREDITS){
 		            			String finalAnswer = "";
 		            			System.out.printf("In this moment, you have %d, which means you are going to lose %d credits.\n" +
-		            					"Are you sure you want to continue with the process (Y/N)?\n", userCredits, userCredits - defaultCredits);
+		            					"Are you sure you want to continue with the process (Y/N)?\n", userCredits, userCredits - Constants.DEFAULT_CREDITS);
 		            			do{
 		            				try{
 		            					finalAnswer = reader.readLine().toUpperCase();

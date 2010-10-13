@@ -2,6 +2,8 @@ package clientTCP;
 import java.net.*;
 import java.io.*;
 
+import constants.Constants;
+
 public class TCPClient {
 
     public static void main(String args[]) {
@@ -27,8 +29,6 @@ public class TCPClient {
 		/*The variables related to the reconnection.*/
 		int retries = 0; //The numbers of times we reconnected already to a given port.
 		int retrying = 0; //Tests if we are retrying for the first or second time.
-		int WAITING_TIME = 1000; //The time the thread sleeps.
-		int NO_RETRIES = 10; //The maximum amount of retries for a given port.
 		
 		/* Variables used for the login authentication. */
 		//String username = "",password = "";
@@ -44,8 +44,8 @@ public class TCPClient {
 		int serverPos = 0; //The position array, which corresponds to active port.
 		int noServerPorts = serverPorts.length; //Total number of possible servers ports.
 		//Places the two ports in the array.
-		serverPorts[0] = 6000;
-		serverPorts[1] = 7000;
+		serverPorts[0] = Constants.FIRST_TCP_SERVER_PORT;
+		serverPorts[1] = Constants.SECOND_TCP_SERVER_PORT;
 		
 		String [] stringSplitted;
 		String command = "";
@@ -54,12 +54,12 @@ public class TCPClient {
 		readThread = new ClientReadTCP(connectionLock, writeThread);
 		writeThread.setReadThread(readThread);
 		//Five attempts to reconnect the connection.
-		while (retries < NO_RETRIES){
+		while (retries < Constants.NO_RETRIES){
 			try {			
 				/* We haven't retried yet, so, it's useless to sleep for WAITING_TIME milliseconds. */
 				if (retrying > 0){
 				    try {
-						Thread.sleep(WAITING_TIME);
+						Thread.sleep(Constants.CLIENT_WAITING_TIME);
 					} catch (InterruptedException e) {
 						System.out.println("This thread was interrupted while sleeping.\n");
 						System.exit(0);
@@ -85,6 +85,8 @@ public class TCPClient {
 				if (debugging){
 					System.out.println("We passing the socket's reference to our threads.");
 				}
+				
+				/* Resets the right socket connection. */
 			    writeThread.setSocket(s);
 			    readThread.setSocket(s);
 				
@@ -115,6 +117,7 @@ public class TCPClient {
 						if (debugging){
 							System.out.println("We don't have any login saved.");
 						}
+						
 						error=false;
 			        	command = writeThread.reader.readLine();
 			        	stringSplitted = command.split(" ");

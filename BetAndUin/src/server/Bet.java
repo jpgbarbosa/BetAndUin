@@ -11,7 +11,7 @@ public class Bet implements Serializable{
 	String bet;
 	String user;
 		
-	Bet( String user, int gameNumber, String bet, int credits){
+	public Bet( String user, int gameNumber, String bet, int credits){
 		this.credits=credits;
 		this.gameNumber=gameNumber;
 		this.bet=bet;

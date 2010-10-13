@@ -6,6 +6,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 
+import constants.Constants;
+
 import messages.MessagesRepository;
 import messages.ReceiveServerMessages;
 
@@ -51,10 +53,6 @@ public class ConnectionWithServerManager extends Thread{
 	/* Variables that checks whether this is the primary server or not. */
 	boolean isPrimaryServer = false;
 	boolean isPartnerDead = false;
-	/* Times to trigger the message timers. */
-	int KEEP_ALIVE_TIME = 5000; //The time between two consecutive KEEP_ALIVE's.
-	int WAITING_TIME = 15000; //The time needed to consider the other server dead.
-	int FIRST_WAITING_TIME = 1000; //The time the server waits before sending the initial message again.
 	
 	/*Variables related to the sending action.*/
 	DatagramSocket aSocket = null;
@@ -95,7 +93,7 @@ public class ConnectionWithServerManager extends Thread{
 			 * received at all...) .
 			 */
 			try {
-				Thread.sleep(FIRST_WAITING_TIME);
+				Thread.sleep(Constants.FIRST_WAITING_TIME);
 			} catch (InterruptedException e) {
 				/* We have just received an answer.
 				 * So, we can go off this cycle.
@@ -157,7 +155,7 @@ public class ConnectionWithServerManager extends Thread{
 					 * KEEP_ALIVE messages hoping the system does never fail.
 					 */
 					try {
-						Thread.sleep(KEEP_ALIVE_TIME);
+						Thread.sleep(Constants.KEEP_ALIVE_TIME);
 					} catch (InterruptedException e) {
 						/* We have received a message, so keep going. */
 					}
@@ -208,7 +206,7 @@ public class ConnectionWithServerManager extends Thread{
 					sendMessage("KEEP_ALIVE");
 					
 					try {
-						Thread.sleep(KEEP_ALIVE_TIME);
+						Thread.sleep(Constants.KEEP_ALIVE_TIME);
 					} catch (InterruptedException e) {
 						/* We have received a message, what wasn't expected
 						 * in a normal situation.
@@ -277,7 +275,7 @@ public class ConnectionWithServerManager extends Thread{
 				}
 				
 				try {
-					Thread.sleep(WAITING_TIME);
+					Thread.sleep(Constants.SERVER_WAITING_TIME);
 				} catch (InterruptedException e) {
 					/* A message has arrived before the timeout. */
 					synchronized(msgToReceiveList){

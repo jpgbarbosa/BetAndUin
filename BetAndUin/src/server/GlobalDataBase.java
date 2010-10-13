@@ -10,6 +10,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Hashtable;
 
+import constants.Constants;
+
 /* Class that holds all the information related to the users registed in the system.
  * In here, we can save the data, read it from a file and add/remove clients to/from
  * the database.
@@ -21,9 +23,6 @@ public class GlobalDataBase {
 	
 	/*Set to true if you want the program to display debugging messages.*/
 	Boolean debugging = true;
-	
-	/* The number of default credits for a user.*/
-	int defaultCredits = 100;
 	
 	/* The number of the last game, so the BetScheduler can keep track of it
 	 * even when the server goes down and is restarted. If not successful, we
@@ -185,7 +184,7 @@ public class GlobalDataBase {
 	 */
 	public synchronized ClientInfo addClient(String user, String pass, String mail){
 		/* The client wasn't found in the list, so we can proceed. */
-		ClientInfo element = new ClientInfo(user, pass, mail, defaultCredits);
+		ClientInfo element = new ClientInfo(user, pass, mail, Constants.DEFAULT_CREDITS);
 		
 		clientsDatabase.put(user,element);
 		
