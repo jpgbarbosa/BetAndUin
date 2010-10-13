@@ -1,20 +1,14 @@
 package server;
 
 import java.net.*;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.io.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import clientRMI.RMIClient;
 import clientRMI.ServerOperations;
 
-
-/*TODO fixed (matches.bin no betscheduler a testar): We still have to save the last batch of matches. In case the server goes down,
- * 		the new server will have to read these files.
- */
 
 public class Server extends UnicastRemoteObject implements ClientOperations{
 	protected Server(boolean defaultS, int sPort, int pPort) throws RemoteException{
@@ -39,9 +33,6 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 		database = base;
 	}
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	/*Number of Games per round*/
@@ -187,12 +178,13 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     }
 
     /* METHODS RELATED TO THE RMI */
+    
 	@Override
 	public String clientLogin(String username, String password, ServerOperations client) throws RemoteException {
 		ClientInfo clientInfo = database.findClient(username);
     	/* This username hasn't been found on the database. */
     	if (clientInfo == null){
-    		return "log error";
+    		return "user not registed";
     	}
     	/* This username has been found on the database. Let's check if the password matches
     	 * with it.

@@ -38,8 +38,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 			try{
 				RMIClient client = new RMIClient();
 				server = (ClientOperations) Naming.lookup("rmi://localhost:12000/BetAndUinServer");
-				
-				//TODO: caso haja erro no comando nao o estamos a distinguir
+			
 				while (!loggedIn){
 					/* The user hasn't made a successful login yet. */
 					if (username.equals("") && password.equals("")){
@@ -80,6 +79,10 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 			        		}
 			        		else if (serverAnswer.equals("username all")){
 			        			System.out.println("Sorry, but the keyword 'all' is reserved, pick another name.");
+			        		}
+			        		else if(serverAnswer.equals("user not registed")){
+			        			System.out.println("Sorry, but you aren't registed yet. Please use command" +
+			        					"register [user] [pass] [mail]");
 			        		}
 			        	} else {
 			        		System.out.println("You're now logged in!");
