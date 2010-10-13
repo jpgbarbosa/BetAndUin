@@ -37,8 +37,7 @@ public class BetScheduler extends Thread{
 		if (betList == null){
 			betList = new Vector<Bet>(0);
 		}
-		
-		//TODO: save the current matches
+
 		man = new BetManager(gamesPerRound, database);
 		
 		this.start();
@@ -93,8 +92,7 @@ public class BetScheduler extends Thread{
 		        /* Cleans the files with the batches. */
 		        database.saveObjectToFile("bets.bin", betList);
 		        
-		        /*Send the results to all the active clients.*/
-		        //TODO: Temos de mudar esta funçao. nao pode ser igual pq depois vai dar null ptr exception!
+		        /* Send the results to all the active clients. */
 		        activeClients.sendMessageAll(message, null, null);
 		        
 		        /* Creates a new batch of games. */

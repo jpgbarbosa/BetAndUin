@@ -10,9 +10,6 @@ import java.rmi.server.*;
 
 import server.ClientOperations;
 
-
-//TODO: O do send all também dá problemas.
-
 public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 
 	private static final long serialVersionUID = 1L;
@@ -33,7 +30,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 		ClientOperations server = null;
 		
 		/*Set to true if you want the program to display debugging messages.*/
-		boolean debugging = true;
+		boolean debugging = false;
 		
 		/* This is for knowing if we are connecting for the first time or instead, we
 		 * are trying to reconnect. It's only use is given a few lines down when we want
@@ -56,7 +53,6 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 		serverPorts[0] = 12000;
 		serverPorts[1] = 13000;
 		
-		//TODO: Isto ainda não está operacional, acho que fica em ciclo infinito.
 		while (retries < NO_RETRIES){
 			try {			
 				/* We haven't retried yet, so, it's useless to sleep for WAITING_TIME milliseconds. */
@@ -70,8 +66,16 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 				}
 
 				RMIClient client = new RMIClient();
-				server = (ClientOperations) Naming.lookup("rmi://localhost:12000/BetAndUinServer");
+				server = (ClientOperations) Naming.lookup("rmi://localhost:" + serverPorts[serverPos] +"/BetAndUinServer");
 			
+				if (!firstConnection){
+					System.out.println("Connected to server in port " + serverPorts[serverPos] + ".");
+					firstConnection = true;
+				}
+				else{
+					System.out.println("Has successfully reconnected to server, now in port " + serverPorts[serverPos] + ".");
+				}
+				
 				while (!loggedIn){
 					/* The user hasn't made a successful login yet. */
 					if (username.equals("") && password.equals("")){
@@ -142,8 +146,9 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 			    
 			/* The list of possible exceptions to be handled. */
 			} catch (NotBoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				if (debugging){
+					System.out.println("NotBoundException:" + e.getMessage());
+				}
 			}catch (RemoteException e) {
 				if (debugging){
 					System.out.println("RemoteException:" + e.getMessage());
