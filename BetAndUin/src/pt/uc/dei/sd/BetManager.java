@@ -11,7 +11,8 @@ public class BetManager implements IBetManager {
     private int size;
     private GlobalDataBase database;
     
-    public BetManager(int gamesPerRound, GlobalDataBase clientsStorage) {
+    @SuppressWarnings("unchecked")
+	public BetManager(int gamesPerRound, GlobalDataBase clientsStorage) {
         size = gamesPerRound;
         database = clientsStorage;
         /* The next game will start one number after the last game recorded. */

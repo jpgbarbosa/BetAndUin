@@ -25,6 +25,7 @@ public class BetScheduler extends Thread{
     Vector<Bet> betList;
  
     
+	@SuppressWarnings("unchecked")
 	public BetScheduler(ActiveClients activeClients, int gamesPerRound, GlobalDataBase clientsStorage){
 		this.activeClients = activeClients;
 		this.gamesPerRound=gamesPerRound;
