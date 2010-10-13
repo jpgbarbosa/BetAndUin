@@ -8,6 +8,8 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.*;
 
+import clientTCP.ConnectionLock;
+
 import constants.Constants;
 
 import server.ClientOperations;
@@ -53,6 +55,8 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 		//Places the two ports in the array.
 		serverPorts[0] = Constants.FIRST_RMI_SERVER_PORT;
 		serverPorts[1] = Constants.SECOND_RMI_SERVER_PORT;
+		
+		ConnectionLock connectionLock = new ConnectionLock();
 		
 		while (retries < NO_RETRIES){
 			try {			
@@ -141,12 +145,17 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 				retrying = 0;
 				loggedIn = true;
 				
-				while(true){
-					System.out.println("\n>> ");
-					serverAnswer = client.parseFunction(username, reader.readLine(), server, reader);
-					System.out.println(serverAnswer);
-				}
-
+				//TODO: rever aqui se existem comandos por executar?
+				
+				synchronized(connectionLock){
+			    	connectionLock.setConnectionDown(false);
+			    	connectionLock.notifyAll();
+			    	try {
+						connectionLock.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+			    }
 			    
 			/* The list of possible exceptions to be handled. */
 			} catch (NotBoundException e) {
