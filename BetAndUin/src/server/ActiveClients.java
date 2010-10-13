@@ -117,6 +117,8 @@ public class ActiveClients {
 						 * from the active list.
 						 */
 						removeClient(element.getUsername());
+						/* We have to go back one position. */
+						i--;
 					}
 					catch (RemoteException e) {
 						e.printStackTrace();

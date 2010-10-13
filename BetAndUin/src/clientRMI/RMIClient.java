@@ -2,12 +2,11 @@ package clientRMI;
 
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-//import java.rmi.server.UnicastRemoteObject;
 import java.rmi.server.*;
 
 import server.ClientOperations;
@@ -25,7 +24,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 	}
 	
 	public static void main(String args[]) {
-
+		
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		String [] stringSplitted = null;
 		String username="",password="";
@@ -34,8 +33,43 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 		boolean loggedIn = false;
 		ClientOperations server = null;
 		
-		while(true) {
-			try{
+		/*Set to true if you want the program to display debugging messages.*/
+		boolean debugging = false;
+		
+		/* This is for knowing if we are connecting for the first time or instead, we
+		 * are trying to reconnect. It's only use is given a few lines down when we want
+		 * to display a message and so it is not necessary for the correct functioning of
+		 * the program.
+		 */
+		boolean firstConnection = false;
+		
+		/*The variables related to the reconnection.*/
+		int retries = 0; //The numbers of times we reconnected already to a given port.
+		int retrying = 0; //Tests if we are retrying for the first or second time.
+		int WAITING_TIME = 1000; //The time the thread sleeps.
+		int NO_RETRIES = 10; //The maximum amount of retries for a given port.
+		
+		/*The variables related to the server ports available.*/
+		int []serverPorts = new int[2]; //The array with the two different ports.
+		int serverPos = 0; //The position array, which corresponds to active port.
+		int noServerPorts = serverPorts.length; //Total number of possible servers ports.
+		//Places the two ports in the array.
+		serverPorts[0] = 12000;
+		serverPorts[1] = 13000;
+		
+		//TODO: Isto ainda não está operacional, acho que fica em ciclo infinito.
+		while (retries < NO_RETRIES){
+			try {			
+				/* We haven't retried yet, so, it's useless to sleep for WAITING_TIME milliseconds. */
+				if (retrying > 0){
+				    try {
+						Thread.sleep(WAITING_TIME);
+					} catch (InterruptedException e) {
+						System.out.println("This thread was interrupted while sleeping.\n");
+						System.exit(0);
+					}
+				}
+
 				RMIClient client = new RMIClient();
 				server = (ClientOperations) Naming.lookup("rmi://localhost:12000/BetAndUinServer");
 			
@@ -103,12 +137,51 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 				serverAnswer = client.parseFunction(username, reader.readLine(), server, reader);
 				System.out.println(serverAnswer);
 				
-			} catch (Exception e) {
-				//TODO Auto-gen exception
-				e.printStackTrace(); 
+				retries = 0;
+				retrying = 0;
+				loggedIn = false;
+			    
+			/* The list of possible exceptions to be handled. */
+			} catch (NotBoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+			}catch (RemoteException e) {
+				if (debugging){
+					System.out.println("RemoteException:" + e.getMessage());
+				}
+			    retries++;
+			    /* In this case, it's the first connection, and the server is already down.
+			     * So, we will pass immediately to the next one and retry this one later.
+			     */
+			    if (retries == 1 && retrying == 0){
+			    	serverPos = (++serverPos)%noServerPorts;
+			    	if (debugging){
+			    		System.out.println("Trying to connect to server in port " + serverPorts[serverPos] + ".");
+			    	}
+			    }
+			    /* We have retried the connection at least once.
+			     * Consequently, the thread shall wait WAITING_TIME milliseconds 
+			     * when restarts the while cycle.
+			     */
+			    else if (retrying == 0){
+			    	retrying = 1;
+			    }
+			    /* We have completed one round of retries for one server.
+			     * Therefore, we shall try now the second server.
+			     */
+			    else if (retries == 10 && retrying == 1){
+			    	//Resets the number of retries and passes to the serverPort of the other server.
+			    	retries = 0;
+			    	serverPos = (++serverPos)%noServerPorts;
+			    	System.out.println("Trying to connect to server in port " + serverPorts[serverPos] + ".");
+			    	retrying++;
+			    }
+			} catch (IOException e) {
+				if (debugging){
+					System.out.println("IOException:" + e.getMessage());
+				}
 			}
-		} //while(true)
-
+		}
 	}
 
 	public void printUserMessage(String msg) throws java.rmi.RemoteException{
