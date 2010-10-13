@@ -4,13 +4,10 @@ import java.io.IOException;
 import java.net.Socket;
 import java.rmi.ConnectException;
 import java.rmi.RemoteException;
-import java.util.ConcurrentModificationException;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 
-import clientRMI.RMIClient;
 import clientRMI.ServerOperations;
 
 
@@ -88,15 +85,11 @@ public class ActiveClients {
 			/* Sends a message to all the clients. */
 			
 			ClientListElement element;
-			//ListIterator <ClientListElement> iterator = clientList.listIterator();
 			DataOutputStream out;
 						
 			/* Uses an iterator over the list to send a message to all the active clients. */
-			//while(iterator.hasNext())
 			for (int i = 0; i < clientList.size(); i++)
 		    {
-				//TODO: Uma vez, deu aqui java.util.ConcurrentModificationException, quando envia o resultado dos jogos.
-				//element = (ClientListElement) iterator.next();
 				element = clientList.get(i);
 				
 				/* If this is the user who sends the message, it won't receive it back. */
@@ -117,6 +110,7 @@ public class ActiveClients {
 						 * from the active list.
 						 */
 						removeClient(element.getUsername());
+						i--;
 					}
 					catch (RemoteException e) {
 						e.printStackTrace();

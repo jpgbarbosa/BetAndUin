@@ -32,6 +32,7 @@ public class GlobalDataBase {
 	int nextGameNumber = 0;
 	int readResult;
 	
+	@SuppressWarnings("unchecked")
 	public GlobalDataBase(){
 		clientsDatabase = (Hashtable <String, ClientInfo>)readObjectFromFile("clientsDatabase.bin");
 		readResult = (int )readIntFromFile("nextGameNumber.bin");

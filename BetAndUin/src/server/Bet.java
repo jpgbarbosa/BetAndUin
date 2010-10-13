@@ -3,6 +3,9 @@ package server;
 import java.io.Serializable;
 
 public class Bet implements Serializable{
+
+	private static final long serialVersionUID = 1L;
+	
 	int credits;
 	int gameNumber;
 	String bet;

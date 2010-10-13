@@ -1,8 +1,6 @@
 package server;
 
 import java.rmi.Remote;
-import java.rmi.RemoteException;
-
 import clientRMI.ServerOperations;
 
 public interface ClientOperations extends Remote{

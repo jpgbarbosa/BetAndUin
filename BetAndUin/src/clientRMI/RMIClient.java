@@ -1,13 +1,9 @@
 package clientRMI;
 
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-//import java.rmi.server.UnicastRemoteObject;
 import java.rmi.server.*;
 
 import server.ClientOperations;
