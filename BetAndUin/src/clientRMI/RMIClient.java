@@ -33,7 +33,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 		ClientOperations server = null;
 		
 		/*Set to true if you want the program to display debugging messages.*/
-		boolean debugging = false;
+		boolean debugging = true;
 		
 		/* This is for knowing if we are connecting for the first time or instead, we
 		 * are trying to reconnect. It's only use is given a few lines down when we want
@@ -181,6 +181,10 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 				}
 			}
 		}
+		
+		//TODO: Perguntar porque é que sem isto o programa não termina.
+		System.out.println("Exited");
+		System.exit(0);
 	}
 
 	public void printUserMessage(String msg) throws java.rmi.RemoteException{
