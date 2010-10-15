@@ -27,4 +27,7 @@ public class Constants {
 	public static int FIRST_RMI_SERVER_PORT = 12000;
 	public static int SECOND_RMI_SERVER_PORT = 13000;
 	
+	public static int STONITH_FIRST_SERVER_PORT = 8000;
+	public static int STONITH_SECOND_SERVER_PORT = 9000;
+	
 }

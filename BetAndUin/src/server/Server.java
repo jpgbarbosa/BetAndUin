@@ -13,15 +13,17 @@ import clientRMI.ServerOperations;
 
 
 public class Server extends UnicastRemoteObject implements ClientOperations{
-	protected Server(boolean defaultS, int sPort, int pPort, int rPort) throws RemoteException{
+	protected Server(boolean defaultS, int sPort, int pPort, int rPort, int sStonith, int pStonith) throws RemoteException{
 		super();
 		isDefaultServer = defaultS;
 		serverPort = sPort;
 		partnerPort = pPort;
 		rmiPort = rPort;
+		partnerStonith = pStonith;
+		stonithPort = sStonith;
 		
     	/* In here, we initialize the process of exchanging messages between servers. */
-        new ConnectionWithServerManager(serverPort, partnerPort, isDefaultServer, changeStatusLock);
+        new ConnectionWithServerManager(serverPort, partnerPort, stonithPort, partnerStonith, isDefaultServer, changeStatusLock);
 		/* Before going to wait, we have to see whether the manager has concluded its operations
 		 * or not yet. Otherwise, we may wait forever if it concluded before we entered here.
 		 * This step is used in order not to accept any clients before we know whether we are
@@ -57,11 +59,14 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     private int serverPort, partnerPort;
     /* The RMI Server port. */
     private int rmiPort;
-	
+    /* The Stonith simulation port.*/
+	private int partnerStonith;
+	private int stonithPort;
+    
     public static void main(String args[]){
     	boolean defaultS = false;
     	int serverNumber;
-    	int sTCPPort = 0, pTCPPort = 0,sRMIPort = 0;
+    	int sTCPPort = 0, pTCPPort = 0,sRMIPort = 0, pStonith = 0, sStonith = 0;
     	Server server = null;
     	
     	 /* The user has introduced less than three options by the command line, so we can't carry on. */
@@ -77,11 +82,15 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
         	sTCPPort = Constants.FIRST_TCP_SERVER_PORT;
         	pTCPPort = Constants.SECOND_TCP_SERVER_PORT;
         	sRMIPort = Constants.FIRST_RMI_SERVER_PORT;
+        	sStonith = Constants.STONITH_FIRST_SERVER_PORT;
+        	pStonith = Constants.STONITH_SECOND_SERVER_PORT;
         }
         else if (serverNumber == 2){
         	sTCPPort = Constants.SECOND_TCP_SERVER_PORT;
         	pTCPPort = Constants.FIRST_TCP_SERVER_PORT;
         	sRMIPort = Constants.SECOND_RMI_SERVER_PORT;
+        	sStonith = Constants.STONITH_SECOND_SERVER_PORT;
+        	pStonith = Constants.STONITH_FIRST_SERVER_PORT;
         }
         else{
         	System.out.println("Invalid server number.");
@@ -100,10 +109,10 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
         }
     	
     	try {
-			server = new Server(defaultS, sTCPPort, pTCPPort, sRMIPort);
+			server = new Server(defaultS, sTCPPort, pTCPPort, sRMIPort, sStonith, pStonith);
 			server.run();
 		} catch (RemoteException e) {
-			System.out.println("Erro creating the server: " + e);
+			System.out.println("Error creating the server: " + e);
 			System.exit(-1);
 		}
     	

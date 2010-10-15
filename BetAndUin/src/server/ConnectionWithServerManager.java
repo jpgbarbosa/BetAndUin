@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 
 import constants.Constants;
 
@@ -34,37 +36,45 @@ import messages.ReceiveServerMessages;
 
 public class ConnectionWithServerManager extends Thread{
 	/*Set to true if you want the program to display debugging messages.*/
-	boolean debugging = true;
+	private boolean debugging = true;
 
 	/* Connection variables. */
-	int serverPort;
-	int partnerPort;
-	MessagesRepository msgToReceiveList;
-	ReceiveServerMessages receiveMessenger;
+	private int serverPort;
+	private int partnerPort;
+	private MessagesRepository msgToReceiveList;
+	private ReceiveServerMessages receiveMessenger;
 	
 	/* The lock to synchronize with the server. */
-	ChangeStatusLock statusLock;
+	private ChangeStatusLock statusLock;
 	/* This variables is used when both servers decide, at the same time
 	 * that they should be the main server. When this happens and both of them
 	 * detect this inconsistency (two main servers), the one with a 'false' value
 	 * will give up from being main server.
 	 */
-	boolean isDefaultServer;
+	private boolean isDefaultServer;
 	/* Variables that checks whether this is the primary server or not. */
-	boolean isPrimaryServer = false;
-	boolean isPartnerDead = false;
+	private boolean isPrimaryServer = false;
+	private boolean isPartnerDead = false;
 	
 	/*Variables related to the sending action.*/
-	DatagramSocket aSocket = null;
-	String msgToSend = "";
+	private DatagramSocket aSocket = null;
+	private String msgToSend = "";
 	
-	public ConnectionWithServerManager(int sPort, int pPort, boolean isDefaultServer, ChangeStatusLock lock){
+	/* The port to which we must connect to simulate the STONITH situation. */
+	private int partnerStonithPort;
+	private int stonithPort;
+	private StonithManager stonithManager;
+	private boolean stonithFailed;
+	
+	public ConnectionWithServerManager(int sPort, int pPort, int sStonith, int pStonith, boolean isDefaultServer, ChangeStatusLock lock){
 		serverPort = sPort;
 		partnerPort = pPort;
 		this.isDefaultServer = isDefaultServer;
 		msgToReceiveList = new MessagesRepository();
 		receiveMessenger = new ReceiveServerMessages(serverPort, msgToReceiveList, this);
 		statusLock = lock;
+		partnerStonithPort = pStonith;
+		stonithPort = sStonith;
 		
 		/* Initializes the UDP socket to send messages to the other server. */
 		try {
@@ -105,21 +115,53 @@ public class ConnectionWithServerManager extends Thread{
 		
 		/* This means the other server hasn't responded. */
 		if (repetitions == limit){
-			partnerAnswer = "NOT_RECEIVED";
-			isPrimaryServer = true;
-			isPartnerDead = true;
-		}
+			/* Now, we have to test the STONITH scenario. */
+			//TODO: We have to change this local host. */
+			Socket s = null;
+			try {
+				s = new Socket("localHost", partnerStonithPort);
+				stonithFailed = false;
+				/* The other server is alive. */
+				partnerAnswer = "I_M_ALREADY_PRIMARY_SERVER";
+				isPrimaryServer = false;
+				isPartnerDead = false;
+				
+			} catch (Exception e) {
+				/* The other server is dead, so, it's not only a link's problem. */
+				stonithFailed = true;
+				partnerAnswer = "NOT_RECEIVED";
+				isPrimaryServer = true;
+				isPartnerDead = true;
+			}	finally {
+				//TODO: If we implement the todo down there, we can't immediately close the socket.
+			    if (s != null)
+					try {
+					    s.close();
+					} catch (IOException e) {
+					    System.out.println("close:" + e.getMessage());
+					}
+				}
 			
+			if (!stonithFailed){
+				
+			}
+			
+			//TODO: Maybe we should check the STONITH periodically till the network recovers.
+		}
+		
+		/* We initialize and start the STONITH Manager. */
+		stonithManager = new StonithManager(stonithPort);
+		stonithManager.run();
+		
 		while(true){
 			if (debugging){
 				System.out.println("I'm primary server?: " + isPrimaryServer);
 			}
 			synchronized(msgToReceiveList){
 				/* We have some messages to read. */
-				while (msgToReceiveList.listSize() > 0){
+				if (msgToReceiveList.listSize() > 0){
 					partnerAnswer = msgToReceiveList.getMsg();
 				}
-				//TODO: Nao estamos a ler sempre a ultima mensagem apenas com o while?
 			}
 			
 			/* We are now the primary server. */
