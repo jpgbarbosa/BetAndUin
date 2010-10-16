@@ -160,7 +160,6 @@ public class GlobalDataBase {
 			System.out.println("IO in readFromFile (ClientsStorage): " + e);
 			return null;
 		}
-
 	}
 	
 	/* The saving method for an object. */
@@ -175,7 +174,6 @@ public class GlobalDataBase {
 		} catch (IOException e) {
 			System.out.println("IO in saveToFile (ClientsStorage): " + e);
 		}
-		
 	}
 	
 	/* Method to add a client. If the client is already in the database, it returns

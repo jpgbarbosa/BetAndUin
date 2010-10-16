@@ -1,5 +1,9 @@
 package clientRMI;
 
+import clientTCP.ConnectionLock;
+import constants.Constants;
+import server.ClientOperations;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,12 +11,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.*;
-
-import clientTCP.ConnectionLock;
-
-import constants.Constants;
-
-import server.ClientOperations;
+import java.util.Vector;
 
 public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 
@@ -57,6 +56,8 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 		serverPorts[1] = Constants.SECOND_RMI_SERVER_PORT;
 		
 		ConnectionLock connectionLock = new ConnectionLock();
+		
+		RMIWriter rmiWriter = new RMIWriter(connectionLock);
 		
 		while (retries < NO_RETRIES){
 			try {			
@@ -145,8 +146,21 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 				retrying = 0;
 				loggedIn = true;
 				
-				//TODO: rever aqui se existem comandos por executar?
+				rmiWriter.msgBuffer = (Vector<String>) rmiWriter.readObjectFromFile("buffer.bin");
 				
+				if(rmiWriter.msgBuffer==null){
+					rmiWriter.msgBuffer = new Vector<String>();
+				} else {
+					while(!rmiWriter.msgBuffer.isEmpty()){
+						System.out.println(
+								rmiWriter.parseFunction(username, rmiWriter.msgBuffer.firstElement().split(" "), 
+										rmiWriter.msgBuffer.firstElement(), 
+										server, reader));
+						rmiWriter.msgBuffer.remove(0);
+					}
+					rmiWriter.saveObjectToFile("buffer.bin", rmiWriter.msgBuffer);
+				}
+					
 				synchronized(connectionLock){
 			    	connectionLock.setConnectionDown(false);
 			    	connectionLock.notifyAll();

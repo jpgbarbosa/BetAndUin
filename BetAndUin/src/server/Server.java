@@ -107,7 +107,6 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
         if (debugging){
         	System.out.printf("We are server %d, our partner is %d.\n", sTCPPort, pTCPPort);
         }
-    	
     	try {
 			server = new Server(defaultS, sTCPPort, pTCPPort, sRMIPort, sStonith, pStonith);
 			server.run();
@@ -120,7 +119,6 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     	
     public void run(){
         try{
-        	
     		synchronized(changeStatusLock){
     			try{
             		if (!changeStatusLock.isInitialProcessConcluded()){
@@ -136,7 +134,6 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 					/*We have been awaken by the connection manager, keep going. */
 				}
     		}
-    		
     		/* Now, we have to check whether we are the primary server or not. */
     		
     		/* We are not the primary server, so we are going to sleep and not attend any clients.
@@ -157,7 +154,6 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 					}
 	    		}
     		}
-    		   		
     		/* We open the socket connection. */
             ServerSocket listenSocket = new ServerSocket(serverPort);
             if (debugging){
@@ -174,6 +170,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     		database.setBetScheduler(betScheduler);
             
             /* Now, we prepare the connection to handle requests from RMI clients. */
+    		System.out.println("HELLLO");
     		try {
     			Server rmiServices = new Server(activeClients, betScheduler, database);
     			Registry registry = LocateRegistry.createRegistry(rmiPort);
