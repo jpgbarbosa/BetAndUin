@@ -22,10 +22,10 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 	}
 	
 	public static void main(String args[]) {
-		
+		/* Variables related to the input. */
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		String [] stringSplitted = null;
-		String username="",password="";
+		String username = "",password = "";
 		String serverAnswer = "";
 				
 		boolean loggedIn = false;
@@ -148,19 +148,32 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 				
 				rmiWriter.msgBuffer = (Vector<String>) rmiWriter.readObjectFromFile("buffer.bin");
 				
-				if(rmiWriter.msgBuffer==null){
+				/* There was some kind of trouble while reading from the file, so we simply
+				 * create a new message buffer.
+				 */
+				if(rmiWriter.msgBuffer == null){
 					rmiWriter.msgBuffer = new Vector<String>();
-				} else {
-					while(!rmiWriter.msgBuffer.isEmpty()){
-						System.out.println(
-								rmiWriter.parseFunction(username, rmiWriter.msgBuffer.firstElement().split(" "), 
-										rmiWriter.msgBuffer.firstElement(), 
-										server, reader));
-						rmiWriter.msgBuffer.remove(0);
+				}
+				else {
+					/* While there are messages to read, the thread keeps sending old messages
+					 * to the server.
+					 */
+					synchronized(rmiWriter.msgBuffer){
+						while(!rmiWriter.msgBuffer.isEmpty()){
+							System.out.println(
+									rmiWriter.parseFunction(username, rmiWriter.msgBuffer.firstElement().split(" "), 
+											rmiWriter.msgBuffer.firstElement(), 
+											server, reader));
+							rmiWriter.msgBuffer.remove(0);
+						}
 					}
+					 /* Updates the file. */
 					rmiWriter.saveObjectToFile("buffer.bin", rmiWriter.msgBuffer);
 				}
 					
+				/* Updates the state of the connection and informs all the threads
+				 * interested in such an update.
+				 */
 				synchronized(connectionLock){
 			    	connectionLock.setConnectionDown(false);
 			    	connectionLock.notifyAll();

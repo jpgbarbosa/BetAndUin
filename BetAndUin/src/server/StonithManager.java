@@ -12,6 +12,7 @@ public class StonithManager extends Thread{
 	
 	public StonithManager(int stPort){
 		stonithPort = stPort;
+		this.start();
 	}
 	
 	public void run(){

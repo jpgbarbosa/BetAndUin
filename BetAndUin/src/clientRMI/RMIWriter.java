@@ -18,16 +18,22 @@ import server.Server;
 import clientTCP.ConnectionLock;
 
 public class RMIWriter extends Thread{
-
+	/*Set to true if you want the program to display debugging messages.*/
+	private Boolean debugging = true;
+	
+	
+	/* A reference to the thread that holds the main server, to which this RMIWriter
+	 * is bounded. */
 	Server server;
 	
+	/* The connectionLock and msgBuffer so we can save 'send' messages when the server
+	 * is down.
+	 */
 	ConnectionLock connectionLock;
 	Vector<String> msgBuffer;
-	
+
+	/* Variables related to the input and analysis of the messages. */
 	BufferedReader reader;
-	
-	boolean debugging = true;
-	
 	String userInput, serverAnswer, username;
 	String [] stringSplitted;
 	
@@ -39,6 +45,7 @@ public class RMIWriter extends Thread{
 	
 	public void run(){
 		
+		/* Waits for the connection to be up before engaging in any activity. */
     	synchronized(connectionLock){
     		while (connectionLock.isConnectionDown()){
     			try {
@@ -51,33 +58,63 @@ public class RMIWriter extends Thread{
     		}
     	}
 		
+    	/* Starts to function. */
         while(true){
-        	try{ 	
+        	try{ 
+        		/* Reads the input from the user and divides its keywords. */
     	    	stringSplitted = null;
     	    	userInput =  reader.readLine();
-    	    	
     	    	stringSplitted = userInput.split(" ");
             	
             	synchronized(connectionLock){
-	            	if(connectionLock.isConnectionDown() && stringSplitted[0].equals("send")){
-	            		msgBuffer.add(userInput);
-	            		saveObjectToFile("buffer.bin", msgBuffer);
-	            	} else if(!connectionLock.isConnectionDown()){
+            		/* The connection is down, so we may need to save the message. */
+	            	if(connectionLock.isConnectionDown()){
+	            		/* This is a valid message to be saved. */
+	            		if(stringSplitted.length >= 3 && stringSplitted[0].equals("send")){
+	            			synchronized(msgBuffer){
+	            				msgBuffer.add(userInput);
+	            			}
+		            		saveObjectToFile("buffer.bin", msgBuffer);
+	            		}
+	            		/* We can't execute this operation, because it is not a send. */
+	            		else{
+	            			System.out.println("The connection is down and this operation couldn't be completed.");
+	            		}
+	            	}
+	            	/* The connection is up, so we can easily send a message. */
+	            	else if(!connectionLock.isConnectionDown()){
 						System.out.println("\n>> ");
 						serverAnswer = parseFunction(username, stringSplitted, userInput, server, reader);
 						System.out.println(serverAnswer);
 	            	}
             	}
             }catch(RemoteException e){
-        		msgBuffer.add(userInput);
-        		saveObjectToFile("buffer.bin", msgBuffer);
-            	/*Se estoirou, significa que temos de guardar este ultimo comando
-            	* visto que só estoira qd efectuamos o comando, certo?
-            	*/
-            	connectionLock.setConnectionDown(true);
-            	connectionLock.notify();
+            	/* If we ever entered here, it means that it was this thread that noticed
+            	 * for the first time that the connection was down.
+            	 * Consequently, we have to save the messages that are to be saved, change
+            	 * the status of the connection and warn all the other threads interested
+            	 * about this changes.
+            	 */
+            	
+            	/* This is a valid message to be saved. */
+        		if(stringSplitted.length >= 3 && stringSplitted[0].equals("send")){
+        			synchronized(msgBuffer){
+        				msgBuffer.add(userInput);
+        			}
+            		saveObjectToFile("buffer.bin", msgBuffer);
+        		}
+        		/* We can't execute this operation, because it is not a send. */
+        		else{
+        			System.out.println("The connection is down and this operation couldn't be completed.");
+        		}
+        		
+        		/* Updates the state of the connection. */
+        		synchronized(connectionLock){
+        			connectionLock.setConnectionDown(true);
+            		connectionLock.notify();
+        		}
 	        } catch (IOException e) {
-				e.printStackTrace();
+	        	System.out.println("IOException in RMIWriter: " + e.getMessage());
 			}
         }
 	}
@@ -85,8 +122,7 @@ public class RMIWriter extends Thread{
    public String parseFunction(String user, String [] stringSplitted, String input, ClientOperations server, BufferedReader reader) throws RemoteException{
     	/* The answer from the server to the client. */
     	String answer = "";
-
-        
+    	
         /* The client has sent two keywords and the first is "show".*/
         if(stringSplitted.length == 2 && stringSplitted[0].equals("show")){        	
         	if(stringSplitted[1].equals("matches")){ //show all current matches
@@ -105,6 +141,8 @@ public class RMIWriter extends Thread{
         		answer = "Unknow Command";
         	}
         }
+        
+        /* The user is attempting to send a message. */
         else if(stringSplitted.length >= 3 && stringSplitted[0].equals("send")){
         	if(stringSplitted[1].equals("all")){ //send a message to all users
         		/* We have to use again the input because the user may send the message with
@@ -125,6 +163,8 @@ public class RMIWriter extends Thread{
         		answer = server.clientSendMsgUser(user, stringSplitted[1],input.substring(6 + stringSplitted[1].length()));
         	}
         }
+        
+        /* The user is attempting a bet. */
         else if(stringSplitted.length == 4 && stringSplitted[0].equals("bet")){
         	/* Variables to save the values inserted by the client. */
         	String resultBet;
@@ -150,9 +190,13 @@ public class RMIWriter extends Thread{
         	
         	answer = server.clientMakeBet(user,gameNumber, resultBet, credits);
         }
+        
+        /* The number of arguments by the user to make a bet is invalid. */
         else if(stringSplitted.length > 0 && stringSplitted[0].equals("bet")){
         	answer =  "Wrong number of arguments: bet [game number] [bet] [credits]";
         }
+        
+        /* The user wants to reset the number of credits on the account. */
         else if (input.equals("reset")){
         	/* First, we verify if the client has more or less than the default value of credits,
         	 * make sure he/she won't lose credits accidentally.
@@ -163,6 +207,10 @@ public class RMIWriter extends Thread{
     			String finalAnswer = "";
     			System.out.printf("In this moment, you have %d, which means you are going to lose %d credits.\n" +
     					"Are you sure you want to continue with the process (Y/N)?\n", userCredits, userCredits - Constants.DEFAULT_CREDITS);
+    			
+    			/* If the user has more credits than the number of default credits, we have
+    			 * to ask the user if he/she really wants to lower the number of credits
+    			 * on his/her account. */
     			do{
     				try{
     					finalAnswer = reader.readLine().toUpperCase();
@@ -172,6 +220,7 @@ public class RMIWriter extends Thread{
     			}
     			while (!finalAnswer.equals("Y") && !finalAnswer.equals("N"));
     			
+    			/* Verifies the answer given by the user. */
     			if (finalAnswer.equals("Y")){
     				answer = server.clientResetCredits(user);
     			}
@@ -179,16 +228,21 @@ public class RMIWriter extends Thread{
     				answer = "Operation cancelled. You still have " + userCredits+ " credits.\n";
     			}
         	}
+    		/* If the client has less credits than the number of default credits, we can reset the
+    		 * number without bother asking.
+    		 */
     		else{
     			answer = server.clientResetCredits(user);
     		}
         }
+        /* We are leaving the program. */
         else if(stringSplitted.length == 1 && stringSplitted[0].equals("exit")){
         	server.clientLeave(user);
         	System.out.println("Thank you for using the BetAndUin service!\n"
     				+ "Have a nice day!");
     		System.exit(0);
         }
+        /* The command entered by the user is unknown to the system. */
         else {
         	answer = "Unknown command";
         }
@@ -203,7 +257,7 @@ public class RMIWriter extends Thread{
 			oS = new ObjectOutputStream(new FileOutputStream(filename));
 			oS.writeObject(obj);
 		} catch (FileNotFoundException e) {
-			System.out.println("The clientsDatabase.bin file couldn't be found...");
+			System.out.println("The " + filename + " file couldn't be found...");
 		} catch (IOException e) {
 			System.out.println("IO in saveToFile (ClientsStorage): " + e);
 		}
@@ -227,13 +281,5 @@ public class RMIWriter extends Thread{
 			System.out.println("IO in readFromFile (ClientsStorage): " + e);
 			return null;
 		}
-	}
-		
-	protected void setUserName(String username){
-		this.username = username;
-	}
-	
-	protected void setServer(Server server){
-		this.server = server;
 	}
 }

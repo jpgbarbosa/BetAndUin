@@ -6,10 +6,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 
 import constants.Constants;
-
 import messages.MessagesRepository;
 import messages.ReceiveServerMessages;
 
@@ -54,16 +52,13 @@ public class ConnectionWithServerManager extends Thread{
 	private boolean isDefaultServer;
 	/* Variables that checks whether this is the primary server or not. */
 	private boolean isPrimaryServer = false;
-	private boolean isPartnerDead = false;
 	
 	/*Variables related to the sending action.*/
 	private DatagramSocket aSocket = null;
-	private String msgToSend = "";
 	
 	/* The port to which we must connect to simulate the STONITH situation. */
 	private int partnerStonithPort;
 	private int stonithPort;
-	private StonithManager stonithManager;
 	private boolean stonithFailed;
 	
 	public ConnectionWithServerManager(int sPort, int pPort, int sStonith, int pStonith, boolean isDefaultServer, ChangeStatusLock lock){
@@ -124,14 +119,12 @@ public class ConnectionWithServerManager extends Thread{
 				/* The other server is alive. */
 				partnerAnswer = "I_M_ALREADY_PRIMARY_SERVER";
 				isPrimaryServer = false;
-				isPartnerDead = false;
 				
 			} catch (Exception e) {
 				/* The other server is dead, so, it's not only a link's problem. */
 				stonithFailed = true;
 				partnerAnswer = "NOT_RECEIVED";
 				isPrimaryServer = true;
-				isPartnerDead = true;
 			}	finally {
 				//TODO: If we implement the todo down there, we can't immediately close the socket.
 			    if (s != null)
@@ -149,9 +142,10 @@ public class ConnectionWithServerManager extends Thread{
 			//TODO: Maybe we should check the STONITH periodically till the network recovers.
 		}
 		
-		/* We initialize and start the STONITH Manager. */
-		stonithManager = new StonithManager(stonithPort);
-		stonithManager.run();
+		/* We initialize and start the STONITH Manager, that will accept any connections
+		 * in case the other server tries to connect. */
+		new StonithManager(stonithPort);
+		
 		
 		while(true){
 			if (debugging){
@@ -165,8 +159,8 @@ public class ConnectionWithServerManager extends Thread{
 			}
 			
 			/* We are now the primary server. */
-			if ((partnerAnswer.equals("OK") && isDefaultServer)
-					|| (partnerAnswer.equals("I_WILL_BE_PRIMARY_SERVER") && isDefaultServer)){
+			if ((partnerAnswer.equals("OK"))
+					|| (partnerAnswer.equals("I_WILL_BE_PRIMARY_SERVER"))){
 				
 				if (debugging){
 					System.out.println("ConnectionWithServerManager: We fulfilled the first condition.");
@@ -191,101 +185,30 @@ public class ConnectionWithServerManager extends Thread{
 				sendTerminateMessage();
 				
 				while(true){
-					/* Once we are simultaneously the main server and default server,
-					 * we will only give up from that position if the server crashes.
+					/* Once we are the main server, we will only give up from
+					 * that position if the server crashes.
 					 * Consequently, we enter this endless cycle, always sending
 					 * KEEP_ALIVE messages hoping the system does never fail.
 					 */
 					try {
 						Thread.sleep(Constants.KEEP_ALIVE_TIME);
 					} catch (InterruptedException e) {
-						/* We have received a message, so keep going. */
-					}
-					sendMessage("KEEP_ALIVE");
-				}
-			}
-			
-			/* We are now the main server, but we are not the default server. 
-			 * (continue down there...)
-			 * TODO: This situation might be cleaned up by some assumptions to be
-			 *       given by the teacher later.
-			 */
-			
-			else if(partnerAnswer.equals("OK")
-					/* It means that our partner has crashed and is now returning to activity. */
-					|| (partnerAnswer.equals("I_WILL_BE_PRIMARY_SERVER") && isPartnerDead)){
-				
-				/* (...continues from above)
-				 * Therefore, we can't just send KEEP_ALIVE messages. If for any reason
-				 * we have a failure in the link, the other server will eventually think
-				 * it is the main server. When the link is reestablished, we shall
-				 * eventually receive a KEEP_ALIVE and in that case, we ought 
-				 */
-				
-				if (debugging){
-					System.out.println("ConnectionWithServerManager: We fulfilled the second condition.");
-				}
-				
-				isPrimaryServer = true;
-				isPartnerDead = false;
-				
-				/* Informs that parent server about its status. */
-				synchronized (statusLock){
-					statusLock.setInitialProcessConcluded(true);
-					statusLock.setPrimaryServer(true);
-					if (statusLock.hasChangedStatus()){
-						statusLock.notifyAll();
-					}
-				}
-				
-				/* We continue here while we don't get any KEEP_ALIVE message. */
-				while(isPrimaryServer){
-					/* Once we are simultaneously the main server and default server,
-					 * we will only give up from that position if the server crashes.
-					 * Consequently, we enter this endless cycle, always sending
-					 * KEEP_ALIVE messages hoping the system does never fail.
-					 */
-					sendMessage("KEEP_ALIVE");
-					
-					try {
-						Thread.sleep(Constants.KEEP_ALIVE_TIME);
-					} catch (InterruptedException e) {
-						/* We have received a message, what wasn't expected
-						 * in a normal situation.
+						/* We have received a message, so keep going.
+						/* However, this shouldn't happen, as we have
+						 * terminate the receving thread up there.
+						 * Therefore, it's like to be something else.
 						 */
 					}
-					
-					synchronized(msgToReceiveList){
-						while (msgToReceiveList.listSize() > 0){
-							partnerAnswer = msgToReceiveList.getMsg();
-							if (partnerAnswer.equals("KEEP_ALIVE")){
-								/* We give up from the primary server status. */
-								isPrimaryServer = false;
-								
-								/*TODO: This may lead to bugs in the server, as we only wait if we
-								 *      are the secondary server. If we are the primary server, this
-								 *      notify is likely to be lost, but let's check it out later.
-								 */
-								
-								/* Informs that parent server about its status. */
-								synchronized (statusLock){
-									statusLock.setPrimaryServer(false);
-									if (statusLock.hasChangedStatus()){
-										statusLock.notifyAll();
-									}
-								}
-								
-							}
-							else if (partnerAnswer.equals("I_WILL_BE_PRIMARY_SERVER")){
-								/* We notify the other server that we are already the
-								 * primary server.
-								 */
-								sendMessage("I_M_ALREADY_PRIMARY_SERVER");
-							}
-						} // while (msgToReceiveList.listSize() > 0)
-					} // synchronized(msgToReceiveList)
+					sendMessage("KEEP_ALIVE");
 				}
 			}
+			
+			/*TODO: We have cleaned up a else if here. It's saved in the file "removedPart.txt".
+			 * 		If necessary, we can recover it from there.
+			 * 		The reason why it was cleaned up was because we introduced the STONITH
+			 * 		protection and therefore, the scenario covered by that elseif no longer exists.
+			 */
+			
 			/* We are now the secondary server. If we get here. */
 			else if(partnerAnswer.equals("KEEP_ALIVE") 
 					|| partnerAnswer.equals("I_M_ALREADY_PRIMARY_SERVER")
@@ -363,8 +286,6 @@ public class ConnectionWithServerManager extends Thread{
 					System.out.println("We are now going to stop sending messages till our partner " +
 							" sends us a message.");
 				}
-				
-				isPartnerDead = true;
 				
 				/* Informs that parent server about its status. */
 				synchronized (statusLock){

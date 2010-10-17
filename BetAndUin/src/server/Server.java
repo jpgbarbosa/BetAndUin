@@ -170,7 +170,6 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     		database.setBetScheduler(betScheduler);
             
             /* Now, we prepare the connection to handle requests from RMI clients. */
-    		System.out.println("HELLLO");
     		try {
     			Server rmiServices = new Server(activeClients, betScheduler, database);
     			Registry registry = LocateRegistry.createRegistry(rmiPort);
