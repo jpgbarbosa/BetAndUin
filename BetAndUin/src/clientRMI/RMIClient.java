@@ -193,15 +193,14 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 					/* While there are messages to read, the thread keeps sending old messages
 					 * to the server.
 					 */
-					synchronized(rmiWriter.msgBuffer){
-						while(!rmiWriter.msgBuffer.isEmpty()){
-							System.out.println(
-									rmiWriter.parseFunction(username, rmiWriter.msgBuffer.firstElement().split(" "), 
-											rmiWriter.msgBuffer.firstElement(), 
-											server, reader));
-							rmiWriter.msgBuffer.remove(0);
-						}
+					while(!rmiWriter.msgBuffer.isEmpty()){
+						System.out.println(
+								rmiWriter.parseFunction(username, rmiWriter.msgBuffer.firstElement().split(" "), 
+										rmiWriter.msgBuffer.firstElement(), 
+										server, reader));
+						rmiWriter.msgBuffer.remove(0);
 					}
+					
 					 /* Cleans the file. */
 					rmiWriter.saveObjectToFile(username, null);
 				}

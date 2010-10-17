@@ -1,6 +1,7 @@
 package clientTCP;
 
 import java.net.*;
+import java.util.Vector;
 import java.io.*;
 
 import constants.Constants;
@@ -32,7 +33,6 @@ public class TCPClient {
 		int retrying = 0; //Tests if we are retrying for the first or second time.
 		
 		/* Variables used for the login authentication. */
-		//String username = "",password = "";
 		boolean loggedIn = false;
 		
 		/*The thread related variables.*/
@@ -166,8 +166,32 @@ public class TCPClient {
 		        	/* The login has been validated, so the client can now proceed. */
 		        	else if (serverAnswer.equals("log successful")){
 		        		loggedIn = true;
+		        		writeThread.setUserName(command.split(" ")[1]);
 		        		System.out.println("You are now logged in!");
 		        	}
+				}
+				
+				/* Sends the undelivered messages to the server. */
+				/* The user name is in the first field of the command. */
+				writeThread.msgBuffer = (Vector<String>) writeThread.readObjectFromFile(command.split(" ")[1]);
+				
+				/* There was some kind of trouble while reading from the file, so we simply
+				 * create a new message buffer.
+				 */
+				if(writeThread.msgBuffer == null){
+					writeThread.msgBuffer = new Vector<String>();
+				}
+				else {
+					/* While there are messages to read, the thread keeps sending old messages
+					 * to the server.
+					 */
+					while(!writeThread.msgBuffer.isEmpty()){
+						writeThread.out.writeUTF(writeThread.msgBuffer.firstElement());
+						writeThread.msgBuffer.remove(0);
+					}
+					
+					 /* Cleans the file. */
+					writeThread.saveObjectToFile(command.split(" ")[1], null);
 				}
 	        	
 			    /* Resets the counters, the lock flags and the login variables. */

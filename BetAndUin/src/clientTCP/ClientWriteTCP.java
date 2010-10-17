@@ -2,9 +2,15 @@ package clientTCP;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.EOFException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Vector;
 
 import constants.Constants;
 
@@ -15,7 +21,7 @@ public class ClientWriteTCP extends Thread {
 	boolean debugging = true;
 	
 	//This thread will be responsible for handling problems with the link to the server.
-	String user = null,pass = null;
+	String username;
 	boolean loggedIn = false;
     DataOutputStream out;
     Socket clientSocket;
@@ -25,11 +31,14 @@ public class ClientWriteTCP extends Thread {
     ClientReadTCP readThread;
     int userCredits;
     
+    Vector<String> msgBuffer;
+    
     BufferedReader reader;
     
     public ClientWriteTCP (ConnectionLock lock) {
     	connectionLock = lock;
     	userCredits = 0;
+    	msgBuffer = new Vector<String>();
         this.start();
     }
     
@@ -124,9 +133,15 @@ public class ClientWriteTCP extends Thread {
 	            		else{
 	            	    	String [] stringSplitted = userInput.split(" ");
 	            	    	
-	            	    	//TODO: Continue here.
-	            	    	if (true){
-	            	    		
+	            	    	if (stringSplitted.length >= 3 && stringSplitted[0].equals("send")){
+	            	    		msgBuffer.add(userInput);
+			            		saveObjectToFile(username, msgBuffer);
+			            		System.out.println("The server is down, so we will save the message to send later.");
+			            		System.out.print(">>> ");
+	            	    	}
+	            	    	else{
+	            	    		System.out.println("The connection is down and this operation couldn't be completed.");
+		            			System.out.print(">>> ");
 	            	    	}
 	            			
 	            			
@@ -147,6 +162,42 @@ public class ClientWriteTCP extends Thread {
     	}
     }
     
+	synchronized public void saveObjectToFile(String user, Object obj){
+		ObjectOutputStream oS;
+		/* Creates a name for a specific file for a client. */
+		String filename = user + ".bin";
+		
+		try {
+			oS = new ObjectOutputStream(new FileOutputStream(filename));
+			oS.writeObject(obj);
+		} catch (FileNotFoundException e) {
+			System.out.println("The " + filename + " file couldn't be found...");
+		} catch (IOException e) {
+			System.out.println("IO in saveToFile (ClientsStorage): " + e);
+		}
+	}
+	
+	/* The reading method for an object. This method can only be used by the class. */
+	synchronized public Object readObjectFromFile(String user){
+		ObjectInputStream iS;
+		String filename = user + ".bin";
+		
+		/* We now read the list of clients. */
+		try {
+			iS = new ObjectInputStream(new FileInputStream(filename));
+			return iS.readObject();
+		} catch (FileNotFoundException e) {
+			System.out.println("The " + filename + " file couldn't be found...");
+			return null;
+		} catch (ClassNotFoundException e) {
+			System.out.println("ClassNotFound in readFromFile (ClientsStorage): " + e);
+			return null;
+		}catch (IOException e) {
+			System.out.println("IO in readFromFile (ClientsStorage): " + e);
+			return null;
+		}
+	}
+    
     public void setSocket(Socket s){
     	clientSocket = s;
     	try{
@@ -161,6 +212,10 @@ public class ClientWriteTCP extends Thread {
     
     public void setUserCredtis(int credits){
     	userCredits = credits;
+    }
+    
+    public void setUserName(String user){
+    	username = user;
     }
 	
 }

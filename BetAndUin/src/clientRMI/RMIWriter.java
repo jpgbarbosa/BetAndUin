@@ -71,9 +71,7 @@ public class RMIWriter extends Thread{
 	            	if(connectionLock.isConnectionDown()){
 	            		/* This is a valid message to be saved. */
 	            		if(stringSplitted.length >= 3 && stringSplitted[0].equals("send")){
-	            			synchronized(msgBuffer){
-	            				msgBuffer.add(userInput);
-	            			}
+	            			msgBuffer.add(userInput);
 		            		saveObjectToFile(username, msgBuffer);
 		            		System.out.println("The server is down, so we will save the message to send later.");
 		            		System.out.print(">>> ");
@@ -86,9 +84,9 @@ public class RMIWriter extends Thread{
 	            	}
 	            	/* The connection is up, so we can easily send a message. */
 	            	else if(!connectionLock.isConnectionDown()){
-						System.out.println("\n>> ");
 						serverAnswer = parseFunction(username, stringSplitted, userInput, server, reader);
 						System.out.println(serverAnswer);
+						System.out.print("\n>>> ");
 	            	}
             	}
             }catch(RemoteException e){
@@ -101,9 +99,7 @@ public class RMIWriter extends Thread{
             	
             	/* This is a valid message to be saved. */
         		if(stringSplitted.length >= 3 && stringSplitted[0].equals("send")){
-        			synchronized(msgBuffer){
-        				msgBuffer.add(userInput);
-        			}
+        			msgBuffer.add(userInput);
             		saveObjectToFile(username, msgBuffer);
             		System.out.println("The server is down, so we will save the message to send later.");
             		System.out.print(">>> ");
