@@ -104,7 +104,7 @@ public class ActiveClients {
 				else if(element.getRMIClient() != clientRMI){
 					try {
 						element.getRMIClient().printUserMessage(message);
-					} catch (ConnectException e1){ 
+					} catch (ConnectException e1){
 						/* This means that the client has logged off and consequently, we can remove it
 						 * from the active list.
 						 */
