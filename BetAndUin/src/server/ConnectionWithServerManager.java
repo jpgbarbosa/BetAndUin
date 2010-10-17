@@ -151,7 +151,7 @@ public class ConnectionWithServerManager extends Thread{
 		
 		/* We initialize and start the STONITH Manager. */
 		stonithManager = new StonithManager(stonithPort);
-		stonithManager.run();
+		
 		
 		while(true){
 			if (debugging){
