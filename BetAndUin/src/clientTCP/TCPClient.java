@@ -62,7 +62,8 @@ public class TCPClient {
 				    try {
 						Thread.sleep(Constants.CLIENT_WAITING_TIME);
 					} catch (InterruptedException e) {
-						System.out.println("This thread was interrupted while sleeping.\n");
+						if (debugging)
+							System.out.println("This thread was interrupted while sleeping.\n");
 						System.exit(0);
 					}
 				}
@@ -201,7 +202,9 @@ public class TCPClient {
 			    	try {
 						connectionLock.wait();
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						if (debugging)
+							System.out.println("InterruptedException in TCPClient: " + e.getMessage());
+						System.exit(0);
 					}
 			    }
 				retries = 0;
@@ -254,7 +257,8 @@ public class TCPClient {
 				try {
 				    s.close();
 				} catch (IOException e) {
-				    System.out.println("close:" + e.getMessage());
+					if (debugging)
+						System.out.println("close:" + e.getMessage());
 				}
 			}
 		}
