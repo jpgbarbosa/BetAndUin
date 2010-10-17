@@ -73,7 +73,10 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 
 				RMIClient client = new RMIClient();
 				server = (ClientOperations) Naming.lookup("rmi://localhost:" + serverPorts[serverPos] +"/BetAndUinServer");
-			
+				loggedIn = false;
+				
+				rmiWriter.setServer(server);
+				
 				if (!firstConnection){
 					System.out.println("Connected to server in port " + serverPorts[serverPos] + ".");
 					firstConnection = true;
@@ -131,6 +134,8 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 			        		System.out.println("You're now logged in!");
 			        		/* Shows the main menu. */
 			        		System.out.println(server.clientShowMenu());
+			        		rmiWriter.setUserName(username);
+			        		System.out.print(">>> ");
 			        		loggedIn = true;
 			        	}
 			        	
@@ -138,7 +143,37 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 					/* The client is logged in already. */
 					else{
 						serverAnswer = server.clientLogin(username, password, (ServerOperations) client);
-						
+						if (!serverAnswer.equals("log successful")){
+			        		username = "";
+			        		password = "";
+			        		
+			        		/* This client isn't registered in the system. */
+			        		if (serverAnswer.equals("log error")){
+			        			System.out.println("\nUsername or password incorrect. Please try again...\n");
+			        		}
+			        		/* This client is logged in in another machine. */
+			        		else if (serverAnswer.equals("log repeated")){
+			        			System.out.println("\nSorry, but this user is already logged in...\n");
+			        		}
+			        		/* This username is already taken by another client. */
+			        		else if (serverAnswer.equals("log taken")){
+			        			System.out.println("\nSorry, but this username isn't available, choose another.\n");
+			        		}
+			        		else if (serverAnswer.equals("username all")){
+			        			System.out.println("Sorry, but the keyword 'all' is reserved, pick another name.");
+			        		}
+			        		else if(serverAnswer.equals("user not registed")){
+			        			System.out.println("Sorry, but you aren't registed yet. Please use command" +
+			        					"register [user] [pass] [mail]");
+			        		}
+			        	} else {
+			        		System.out.println("You're now logged in!");
+			        		/* Shows the main menu. */
+			        		System.out.println(server.clientShowMenu());
+			        		rmiWriter.setUserName(username);
+			        		System.out.print(">>> ");
+			        		loggedIn = true;
+			        	}
 					}
 				} //while(!loggedIn)
 				
@@ -146,7 +181,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 				retrying = 0;
 				loggedIn = true;
 				
-				rmiWriter.msgBuffer = (Vector<String>) rmiWriter.readObjectFromFile("buffer.bin");
+				rmiWriter.msgBuffer = (Vector<String>) rmiWriter.readObjectFromFile(username);
 				
 				/* There was some kind of trouble while reading from the file, so we simply
 				 * create a new message buffer.
@@ -158,17 +193,16 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 					/* While there are messages to read, the thread keeps sending old messages
 					 * to the server.
 					 */
-					synchronized(rmiWriter.msgBuffer){
-						while(!rmiWriter.msgBuffer.isEmpty()){
-							System.out.println(
-									rmiWriter.parseFunction(username, rmiWriter.msgBuffer.firstElement().split(" "), 
-											rmiWriter.msgBuffer.firstElement(), 
-											server, reader));
-							rmiWriter.msgBuffer.remove(0);
-						}
+					while(!rmiWriter.msgBuffer.isEmpty()){
+						System.out.println(
+								rmiWriter.parseFunction(username, rmiWriter.msgBuffer.firstElement().split(" "), 
+										rmiWriter.msgBuffer.firstElement(), 
+										server, reader));
+						rmiWriter.msgBuffer.remove(0);
 					}
-					 /* Updates the file. */
-					rmiWriter.saveObjectToFile("buffer.bin", rmiWriter.msgBuffer);
+					
+					 /* Cleans the file. */
+					rmiWriter.saveObjectToFile(username, null);
 				}
 					
 				/* Updates the state of the connection and informs all the threads
@@ -177,6 +211,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 				synchronized(connectionLock){
 			    	connectionLock.setConnectionDown(false);
 			    	connectionLock.notifyAll();
+			    	loggedIn = false;
 			    	try {
 						connectionLock.wait();
 					} catch (InterruptedException e) {
@@ -232,8 +267,10 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 		System.exit(0);
 	}
 
+	@Override
 	public void printUserMessage(String msg) throws java.rmi.RemoteException{
-		System.out.println(msg);
+		System.out.println(msg + "\n");
+		System.out.print(">>> ");
 	}
 	    
     @Override

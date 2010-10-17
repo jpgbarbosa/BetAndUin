@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.rmi.RemoteException;
 
+import constants.Constants;
+
 /* Thread used to take care of each communication channel between the active server and a given client. */
 class TCPClientThread extends Thread {
 	/*Set to true if you want the program to display debugging messages.*/
@@ -24,8 +26,6 @@ class TCPClientThread extends Thread {
     ActiveClients activeClients;
     GlobalDataBase database;
     Server server;
-    
-    int defaultCredits = 100;
 
     public TCPClientThread (Server server, Socket aClientSocket, ActiveClients activeClients, BetScheduler betScheduler, GlobalDataBase database) {
         this.betScheduler=betScheduler;
@@ -212,7 +212,7 @@ class TCPClientThread extends Thread {
 	        		answer = "";
 	        	}
 	        	else if(database.findClient(stringSplitted[1]) != null){
-	        		answer = "This client if offline at the moment.";
+	        		answer = stringSplitted[1] + " is offline at the moment.";
 	        	}
 	        	else{
 	        		answer = "Username not registered.";
@@ -221,7 +221,7 @@ class TCPClientThread extends Thread {
         }
         else if(input.equals("reset")){ //resets user's credits to 100Cr
         	System.out.println("Here");
-        	clientInfo.setCredits(defaultCredits);
+        	clientInfo.setCredits(Constants.DEFAULT_CREDITS);
         	answer = "Your credits were reseted to " + clientInfo.getCredits() + "Cr";
         	database.saveObjectToFile("clientsDatabase.bin", database.getClientsDatabase());
         }
