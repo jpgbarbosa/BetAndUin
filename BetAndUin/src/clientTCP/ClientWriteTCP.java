@@ -35,19 +35,22 @@ public class ClientWriteTCP extends Thread {
     
     //=============================
     public void run(){
+    	
+    	/* Waits for the connection to be up before engaging in any activity. */
+    	synchronized(connectionLock){
+    		while (connectionLock.isConnectionDown()){
+    			try {
+    				connectionLock.wait();
+				} catch (InterruptedException e) {
+					if (debugging){
+						System.out.println("ClientWriteTCP Thread interrupted.");
+					}
+				}
+    		}
+    	}
+    	
     	while (true){
 	        try{
-	        	synchronized(connectionLock){
-	        		while (connectionLock.isConnectionDown()){
-	        			try {
-	        				connectionLock.wait();
-						} catch (InterruptedException e) {
-							if (debugging){
-								System.out.println("ClientWriteTCP Thread interrupted.");
-							}
-						}
-	        		}
-	        	}
 	        	
 	        	/* Shows the main menu. */
 	        	out.writeUTF("show menu");
@@ -59,61 +62,76 @@ public class ClientWriteTCP extends Thread {
 	            	 * the client noticed this and willingly making an action
 	            	 * that will make him lost some credits.
 	            	 */
-	            	
-	            	try{
-		            	if (userInput.equals("reset")){
-		            		readThread.setIsToPrint(false);
-		            		out.writeUTF("show credits");
-		            		try{
-		            			synchronized(this){
-		            				this.wait();
-		            			}
-		            		}catch (InterruptedException e){
-		            			/* Continues the work. */
-		            		}
-		            		
-		            		if (userCredits > Constants.DEFAULT_CREDITS){
-		            			String finalAnswer = "";
-		            			System.out.printf("In this moment, you have %d, which means you are going to lose %d credits.\n" +
-		            					"Are you sure you want to continue with the process (Y/N)?\n", userCredits, userCredits - Constants.DEFAULT_CREDITS);
-		            			do{
-		            				try{
-		            					finalAnswer = reader.readLine().toUpperCase();
-		            				}catch (Exception e){
-		            					return;
-		            				}
-		            			}
-		            			while (!finalAnswer.equals("Y") && !finalAnswer.equals("N"));
-		            			
-		            			if (finalAnswer.equals("Y")){
-		            				out.writeUTF("reset");
-		            			}
-		            			else{
-		            				System.out.printf("Operation cancelled. You still have %d credits.\n", userCredits);
-		            			}
-		            		}
-		            		else{
-		            			out.writeUTF("reset");
-		            		}
-		            	}
-		            	/* The user has selected the option to exit the program. */
-		            	else if (userInput.equals("exit")){
-		            		System.out.println("Thank you for using the BetAndUin serivce!\n"
-		            				+ "Have a nice day!");
-		            		System.exit(0);
-		            	}
-		            	else{
-		            		/* We verify the validity of the commands' on the client side
-		            		 * in order to avoid unnecessary transmission and don't push
-		            		 * too much the server with this checking.
-		            		 */
-		            		//TODO: Check if we are going to implement this last comment or
-		            		//		not.
-		            		out.writeUTF(userInput);
-		            	}
-		            }catch(Exception e){
-			        	return;
-			        }
+	            	synchronized(connectionLock){
+	            		/* The connection is up and running. */
+	            		if (!connectionLock.isConnectionDown()){
+			            	try{
+				            	if (userInput.equals("reset")){
+				            		readThread.setIsToPrint(false);
+				            		out.writeUTF("show credits");
+				            		try{
+				            			synchronized(this){
+				            				this.wait();
+				            			}
+				            		}catch (InterruptedException e){
+				            			/* Continues the work. */
+				            		}
+				            		
+				            		if (userCredits > Constants.DEFAULT_CREDITS){
+				            			String finalAnswer = "";
+				            			System.out.printf("In this moment, you have %d, which means you are going to lose %d credits.\n" +
+				            					"Are you sure you want to continue with the process (Y/N)?\n", userCredits, userCredits - Constants.DEFAULT_CREDITS);
+				            			do{
+				            				try{
+				            					finalAnswer = reader.readLine().toUpperCase();
+				            				}catch (Exception e){
+				            					return;
+				            				}
+				            			}
+				            			while (!finalAnswer.equals("Y") && !finalAnswer.equals("N"));
+				            			
+				            			if (finalAnswer.equals("Y")){
+				            				out.writeUTF("reset");
+				            			}
+				            			else{
+				            				System.out.printf("Operation cancelled. You still have %d credits.\n", userCredits);
+				            			}
+				            		}
+				            		else{
+				            			out.writeUTF("reset");
+				            		}
+				            	}
+				            	/* The user has selected the option to exit the program. */
+				            	else if (userInput.equals("exit")){
+				            		System.out.println("Thank you for using the BetAndUin serivce!\n"
+				            				+ "Have a nice day!");
+				            		System.exit(0);
+				            	}
+				            	else{
+				            		/* We verify the validity of the commands' on the client side
+				            		 * in order to avoid unnecessary transmission and don't push
+				            		 * too much the server with this checking.
+				            		 */
+				            		//TODO: Check if we are going to implement this last comment or
+				            		//		not.
+				            		out.writeUTF(userInput);
+				            	}
+				            }catch(Exception e){
+					        	return;
+					        }
+	            		}
+	            		/* The connection down and we have to analyze the message. */
+	            		else{
+	            	    	String [] stringSplitted = userInput.split(" ");
+	            	    	
+	            	    	//TODO: Continue here.
+	            	    	if (true){
+	            	    		
+	            	    	}
+	            			
+	            			
+	            		}
+	            	}
 	            }
 	        }catch(EOFException e){
 	        	if (debugging){

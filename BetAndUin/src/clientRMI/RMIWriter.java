@@ -65,8 +65,6 @@ public class RMIWriter extends Thread{
     	    	stringSplitted = null;
     	    	userInput =  reader.readLine();
     	    	stringSplitted = userInput.split(" ");
-            	
-    	    	System.out.println("We are here.");
     	    	
             	synchronized(connectionLock){
             		/* The connection is down, so we may need to save the message. */
@@ -77,10 +75,13 @@ public class RMIWriter extends Thread{
 	            				msgBuffer.add(userInput);
 	            			}
 		            		saveObjectToFile(username, msgBuffer);
+		            		System.out.println("The server is down, so we will save the message to send later.");
+		            		System.out.print(">>> ");
 	            		}
 	            		/* We can't execute this operation, because it is not a send. */
 	            		else{
 	            			System.out.println("The connection is down and this operation couldn't be completed.");
+	            			System.out.print(">>> ");
 	            		}
 	            	}
 	            	/* The connection is up, so we can easily send a message. */
@@ -104,10 +105,13 @@ public class RMIWriter extends Thread{
         				msgBuffer.add(userInput);
         			}
             		saveObjectToFile(username, msgBuffer);
+            		System.out.println("The server is down, so we will save the message to send later.");
+            		System.out.print(">>> ");
         		}
         		/* We can't execute this operation, because it is not a send. */
         		else{
         			System.out.println("The connection is down and this operation couldn't be completed.");
+        			System.out.print(">>> ");
         		}
         		
         		/* Updates the state of the connection. */
@@ -116,7 +120,14 @@ public class RMIWriter extends Thread{
             		connectionLock.notify();
         		}
 	        } catch (IOException e) {
-	        	System.out.println("IOException in RMIWriter: " + e.getMessage());
+	        	if (debugging)
+	        		System.out.println("IOException in RMIWriter: " + e.getMessage());
+	        	System.exit(-1);
+			}catch (Exception e) {
+				if (debugging)
+					System.out.println("Exception in RMIWriter: " + e.getMessage());
+	        	
+				System.exit(-1);
 			}
         }
 	}

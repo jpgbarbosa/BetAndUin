@@ -234,7 +234,7 @@ public class TCPClient {
 				}
 			}
 		}
-		/* Talvez temos de alterar isto, para deixar o programa a correr indefinidamente
+		/* TODO: Talvez temos de alterar isto, para deixar o programa a correr indefinidamente
 		 * até que o utilizador prima o Ctr+C.
 		 */
 		System.out.println("Exited");

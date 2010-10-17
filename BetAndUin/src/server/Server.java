@@ -306,7 +306,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 		
 		System.out.println("Our user is: " + user);
 		
-		
+		//TODO: Corrigir o bug do getRMIClient ser null.
 		activeClients.sendMessageAll(user + " says to everyone: " + message, null,
 				activeClients.isClientLoggedIn(user).getRMIClient());
 		return  "Message ["+message+"] delivered!";
@@ -334,7 +334,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 	    				activeClients.sendMessageUser(userSender + " says: " + message, userDest);
 	        			answer = "Message [" + message + "] delivered!";
     				}catch(Exception e){
-    					answer = "This client if offline at the moment.";
+    					answer = userDest + " is offline at the moment.";
     				}
     			}
     			

@@ -135,6 +135,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 			        		/* Shows the main menu. */
 			        		System.out.println(server.clientShowMenu());
 			        		rmiWriter.setUserName(username);
+			        		System.out.print(">>> ");
 			        		loggedIn = true;
 			        	}
 			        	
@@ -170,6 +171,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 			        		/* Shows the main menu. */
 			        		System.out.println(server.clientShowMenu());
 			        		rmiWriter.setUserName(username);
+			        		System.out.print(">>> ");
 			        		loggedIn = true;
 			        	}
 					}
@@ -200,8 +202,8 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 							rmiWriter.msgBuffer.remove(0);
 						}
 					}
-					 /* Updates the file. */
-					rmiWriter.saveObjectToFile(username,rmiWriter.msgBuffer);
+					 /* Cleans the file. */
+					rmiWriter.saveObjectToFile(username, null);
 				}
 					
 				/* Updates the state of the connection and informs all the threads
@@ -266,8 +268,10 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 		System.exit(0);
 	}
 
+	@Override
 	public void printUserMessage(String msg) throws java.rmi.RemoteException{
-		System.out.println(msg);
+		System.out.println(msg + "\n");
+		System.out.print(">>> ");
 	}
 	    
     @Override
