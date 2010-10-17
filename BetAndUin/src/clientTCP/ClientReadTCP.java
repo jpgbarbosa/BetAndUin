@@ -1,10 +1,9 @@
 package clientTCP;
+
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
-
-
 
 public class ClientReadTCP extends Thread {
 	DataInputStream in;
@@ -25,6 +24,7 @@ public class ClientReadTCP extends Thread {
         isToPrint = true;
         writeThread = thread;
     }
+    
     //=============================
     public void run(){
     	while (true){
