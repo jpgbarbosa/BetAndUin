@@ -181,16 +181,6 @@ public class ActiveClients {
 		return usersList;
 	}
 	
-	public synchronized ClientListElement findUser(String user){
-		int i=0;
-		while(i<clientList.size()){
-			if(clientList.get(i).getUsername().equals(user))
-				return clientList.get(i);
-			i++;
-		}
-		return null;
-	}
-	
 }
 
 /* Class used to insert active elements in the list. */

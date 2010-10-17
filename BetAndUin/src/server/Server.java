@@ -44,11 +44,11 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 	static private Boolean debugging = true;
 	
 	/* The object responsible for dealing with the information related to the clients logged in the system. */
-    private ActiveClients activeClients;
+    private ActiveClients activeClients  = new ActiveClients();;
     /* The object responsible for creating the matches and setting the results. */
     private BetScheduler betScheduler;
     /* The object responsible for maintaining the clients' database. */
-    private GlobalDataBase database;
+    private GlobalDataBase database = new GlobalDataBase();;
     /* The lock we are going to use when the connection manager wants to inform that server that its status
      * (i.e. primary or secondary server) has changed.
      */
@@ -164,8 +164,6 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     		/* We are the primary server, so we can communicate with clients. */
             
             /* There's the active clients' list to handle, the bets and the database. */
-            database = new GlobalDataBase();
-            activeClients = new ActiveClients();
     		betScheduler = new BetScheduler(activeClients, database);
     		database.setBetScheduler(betScheduler);
             
@@ -303,8 +301,14 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 
 	@Override
 	public String clientSendMsgAll(String user, String message) throws RemoteException {
+		if (activeClients == null)
+			System.out.println("NULL");
+		
+		System.out.println("Our user is: " + user);
+		
+		
 		activeClients.sendMessageAll(user + " says to everyone: " + message, null,
-				activeClients.findUser(user).getRMIClient());
+				activeClients.isClientLoggedIn(user).getRMIClient());
 		return  "Message ["+message+"] delivered!";
 	}
 

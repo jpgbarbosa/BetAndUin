@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.rmi.RemoteException;
@@ -13,7 +14,6 @@ import java.util.Vector;
 import constants.Constants;
 
 import server.ClientOperations;
-import server.Server;
 
 import clientTCP.ConnectionLock;
 
@@ -24,7 +24,7 @@ public class RMIWriter extends Thread{
 	
 	/* A reference to the thread that holds the main server, to which this RMIWriter
 	 * is bounded. */
-	Server server;
+	private ClientOperations server;
 	
 	/* The connectionLock and msgBuffer so we can save 'send' messages when the server
 	 * is down.
@@ -33,7 +33,7 @@ public class RMIWriter extends Thread{
 	Vector<String> msgBuffer;
 
 	/* Variables related to the input and analysis of the messages. */
-	BufferedReader reader;
+	BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 	String userInput, serverAnswer, username;
 	String [] stringSplitted;
 	
@@ -66,6 +66,8 @@ public class RMIWriter extends Thread{
     	    	userInput =  reader.readLine();
     	    	stringSplitted = userInput.split(" ");
             	
+    	    	System.out.println("We are here.");
+    	    	
             	synchronized(connectionLock){
             		/* The connection is down, so we may need to save the message. */
 	            	if(connectionLock.isConnectionDown()){
@@ -74,7 +76,7 @@ public class RMIWriter extends Thread{
 	            			synchronized(msgBuffer){
 	            				msgBuffer.add(userInput);
 	            			}
-		            		saveObjectToFile("buffer.bin", msgBuffer);
+		            		saveObjectToFile(username, msgBuffer);
 	            		}
 	            		/* We can't execute this operation, because it is not a send. */
 	            		else{
@@ -101,7 +103,7 @@ public class RMIWriter extends Thread{
         			synchronized(msgBuffer){
         				msgBuffer.add(userInput);
         			}
-            		saveObjectToFile("buffer.bin", msgBuffer);
+            		saveObjectToFile(username, msgBuffer);
         		}
         		/* We can't execute this operation, because it is not a send. */
         		else{
@@ -250,8 +252,10 @@ public class RMIWriter extends Thread{
 		return answer;
     }
    
-	synchronized public void saveObjectToFile(String filename, Object obj){
+	synchronized public void saveObjectToFile(String user, Object obj){
 		ObjectOutputStream oS;
+		/* Creates a name for a specific file for a client. */
+		String filename = user + ".bin";
 		
 		try {
 			oS = new ObjectOutputStream(new FileOutputStream(filename));
@@ -264,8 +268,9 @@ public class RMIWriter extends Thread{
 	}
 	
 	/* The reading method for an object. This method can only be used by the class. */
-	synchronized public Object readObjectFromFile(String filename){
+	synchronized public Object readObjectFromFile(String user){
 		ObjectInputStream iS;
+		String filename = user + ".bin";
 		
 		/* We now read the list of clients. */
 		try {
@@ -281,5 +286,13 @@ public class RMIWriter extends Thread{
 			System.out.println("IO in readFromFile (ClientsStorage): " + e);
 			return null;
 		}
+	}
+	
+	public void setUserName(String user){
+		username = user;
+	}
+	
+	public void setServer(ClientOperations s){
+		server = s;
 	}
 }
