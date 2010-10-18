@@ -99,7 +99,7 @@ class TCPClientThread extends Thread {
                 	else{
 		                if(password.equals(client.getPassword())){
 		                	/* However, the user was already validated in some other machine. */
-		                	if (activeClients.isClientLoggedIn(username) != null){
+		                	if (activeClients.isClientLoggedIn(username) == true){
 		                		activeClients.sendMessageBySocket("log repeated",clientSocket);
 		                	}
 		                	/* The validation process can be concluded. */
@@ -197,7 +197,7 @@ class TCPClientThread extends Thread {
         	/* We are sending a message to a user. */
         	else{
         		/* This client is online. */
-	        	if(activeClients.isClientLoggedIn(stringSplitted[1]) != null){
+	        	if(activeClients.isClientLoggedIn(stringSplitted[1]) == true){
 	        		/* Checks if client isn't sending a message to himself/herself. */
 	        		if (stringSplitted[1].equals(clientInfo.getUsername())){
 	        			/* Alternative: Are you feeling alone? */

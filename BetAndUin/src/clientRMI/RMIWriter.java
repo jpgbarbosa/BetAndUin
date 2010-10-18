@@ -268,9 +268,11 @@ public class RMIWriter extends Thread{
 			oS = new ObjectOutputStream(new FileOutputStream(filename));
 			oS.writeObject(obj);
 		} catch (FileNotFoundException e) {
-			System.out.println("The " + filename + " file couldn't be found...");
+			if(debugging)
+				System.out.println("The " + filename + " file couldn't be found...");
 		} catch (IOException e) {
-			System.out.println("IO in saveToFile (ClientsStorage): " + e);
+			if(debugging)
+				System.out.println("IO in saveToFile (ClientsStorage): " + e);
 		}
 	}
 	

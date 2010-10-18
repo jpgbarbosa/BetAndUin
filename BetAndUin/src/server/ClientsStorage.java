@@ -16,21 +16,21 @@ import java.util.Hashtable;
  */
 public class ClientsStorage {
 	/* The hash table that will work as database. */
-	Hashtable <String, ClientInfo> clientsDatabase;
-	BetScheduler betScheduler;
+	private Hashtable <String, ClientInfo> clientsDatabase;
+	private BetScheduler betScheduler;
 	
 	/*Set to true if you want the program to display debugging messages.*/
-	Boolean debugging = false;
+	private Boolean debugging = false;
 	
 	/* The number of default credits for a user.*/
-	int defaultCredits = 100;
+	private int defaultCredits = 100;
 	
 	/* The number of the last game, so the BetScheduler can keep track of it
 	 * even when the server goes down and is restarted. If not successful, we
 	 * use the default initial number.
 	 */
-	int nextGameNumber = 0;
-	int readResult;
+	private int nextGameNumber = 0;
+	private int readResult;
 	
 	public ClientsStorage(){
 		clientsDatabase = (Hashtable <String, ClientInfo>)readObjectFromFile("clientsDatabase.bin");

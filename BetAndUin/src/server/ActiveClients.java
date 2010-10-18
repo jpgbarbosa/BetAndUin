@@ -48,19 +48,15 @@ public class ActiveClients {
 	}
 	
 	public synchronized void removeClient(String username){
-		/* This method removes a client. */
-		
 		/* We have to check it because if the client ends the connection before sending data,
 		 * we will have a null element as username.
 		 */
-		
 		if (username == null || username.equals("")){
 			return;
 		}
 		
 		/* Gets the element from the hash table. */
 		ClientListElement element = clientHash.get(username);
-		
 		
 		/* Removes it first from the hash table and then from the list of active
 		 * clients, decrementing their number afterwards.
@@ -74,10 +70,25 @@ public class ActiveClients {
 	}
 	
 	/* Method to check whether a given client is already logged in or not. */
-	public synchronized ClientListElement isClientLoggedIn(String username){
-		/* The client couldn't be found in the hash table, so it means it isn't logged in -> null. */
-		/* There is already an entry in the active clients' hash table -> !null. */
-		return clientHash.get(username);
+	public synchronized boolean isClientLoggedIn(String username){
+		/* The client couldn't be found in the hash table, so it means it isn't logged in -> false. */
+		/* There is already an entry in the active clients' hash table -> true. */
+		ClientListElement element = clientHash.get(username);
+		
+     	if (element != null){
+     		if(element.getSocket() == null && element.getRMIClient()!=null){
+	    		try{
+	    			/*We are not sure if the rmi client is in fact logged in because the connection
+	    			 * can be down and the server knows by doing this kind of ping mechanism*/
+	    			element.getRMIClient().testUser();
+	    		} catch(Exception e){
+	    			/* Ping didn't work so the client is down */
+	        		return false;
+	    		}
+     		}
+     		return true;
+     	}
+     	return false;
 	}
 	
 	public synchronized void sendMessageAll(String message, Socket clientSocket, ServerOperations clientRMI){
@@ -179,6 +190,10 @@ public class ActiveClients {
 		usersList+=clientList.get(i).getUsername();
 		
 		return usersList;
+	}
+	
+	public synchronized ClientListElement getActiveClient(String user){
+		return clientHash.get(user);
 	}
 	
 }

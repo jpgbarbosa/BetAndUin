@@ -13,7 +13,7 @@ import clientRMI.ServerOperations;
 
 
 public class Server extends UnicastRemoteObject implements ClientOperations{
-	protected Server(boolean defaultS, int sPort, int pPort, int rPort, int sStonith, int pStonith) throws RemoteException{
+	private Server(boolean defaultS, int sPort, int pPort, int rPort, int sStonith, int pStonith) throws RemoteException{
 		super();
 		isDefaultServer = defaultS;
 		serverPort = sPort;
@@ -31,7 +31,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 		 */
 	}
 	
-	protected Server(ActiveClients active, BetScheduler bet, GlobalDataBase base) throws RemoteException {
+	private Server(ActiveClients active, BetScheduler bet, GlobalDataBase base) throws RemoteException {
 		super();
 		activeClients = active; 
 		betScheduler = bet;
@@ -208,16 +208,8 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     	 */
     	else{
             if(password.equals(clientInfo.getPassword())){
-            	ClientListElement element;
             	/* However, the user was already validated in some other machine. */
-            	if ((element = activeClients.isClientLoggedIn(username)) != null){
-            		try{
-            			element.getRMIClient().testUser();
-            		} catch(Exception e){
-            			/* The client hasnt't passed on the test and consequently, it's inactive. */
-            			return "log successful";
-            		}
-            		/* If we get here, the user has passed on the test and it is still active. */
+            	if(activeClients.isClientLoggedIn(username)==true){
             		return "log repeated";
             	}
             	/* The validation process can be concluded. */
@@ -308,7 +300,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 		
 		//TODO: Corrigir o bug do getRMIClient ser null.
 		activeClients.sendMessageAll(user + " says to everyone: " + message, null,
-				activeClients.isClientLoggedIn(user).getRMIClient());
+				activeClients.getActiveClient(user).getRMIClient());
 		return  "Message ["+message+"] delivered!";
 	}
 
@@ -317,7 +309,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 		String answer="";
 		ClientListElement element;
 		
-		if((element = activeClients.isClientLoggedIn(userDest)) != null){
+		if((element = activeClients.getActiveClient(userDest)) != null){
     		/* Checks if client isn't sending a message to himself/herself. */
     		if(userDest.equals(userSender)){
     			answer = "What's the point of sending messages to yourself?";
