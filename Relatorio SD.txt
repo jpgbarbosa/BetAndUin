@@ -1,0 +1,80 @@
+CAPÍTULOS:
+
+NOTA IMPORTANTE: A ordem nos capítulos não vai ser necessariamente esta. Ter em atenção
+				para criar uma ordem que reflicta bem a estrutura e organização do
+				trabalho.
+
+
+    -> Introdução:
+	        - Trabalho a que nos propomos;
+			- Modo como dividimos o trabalho ao longo do tempo;
+			- Problemas maiores e mais importantes no trabalho que iremos
+			  resolver (Ao iniciar o trabalhar, delineamos vários problemas
+			  que nos propusemos/nos foi imposto resolver):
+			       - Existência de mais do que um servidor para garantir
+				     availability. Consequentemente, precisamos de coordenar
+					 os dois servidores.
+				   
+				   - O sistema deve sobreviver tantos a falhas na rede, como
+				     nos clientes ou servidor.
+					 
+				   - Nenhuma informação deve ser perdida.
+				   
+				   - Todos os clientes têm de ser atendidos e o servidor
+				     deve ser capaz de atender ao mesmo tempo clientes TCP
+					 e RMI.
+
+    -> Estruturas principais - análise geral e apresentação:
+			- Clientes (RMI e TCP);
+			- Servidores (Com suporte para RMI e TCP);
+			- Eventualmente, estrutura de apoio para gravação persistente da informação.
+			
+	-> Troca de mensagens entre servidores:
+			- Esquema de mensagens já desenhado no caderno;
+			- Criação de duas threads: o connectionWithServerManager e o Reader, que guarda
+				as mensagens numa lista a mais tarde a ler pelo manager. Sleeps e interrupts
+				para coordenação entre threads e definição do servidor principal.
+	
+	-> Reconnecção por parte de clientes:
+			- Várias tentativas;
+			- Troca de porto;
+			- Mais umas quantas tentativas;
+	
+	-> Funcionamento dos clientes totais e dos clientes online;
+	
+	-> Como funciona quando queremos mandar uma mensagem para um cliente específico
+	   ou para todoas (eventualmente, podemos incluir este tópico no anterior);
+	   
+	
+	-> Funcionamento das bets:
+	        - São guardadas num vector que por sua vez, é guardado num ficheiro.
+			- Ambos vector e ficheiro são limpos quando um novo round é iniciado.
+			- O BetSchedule percorre a lista e envia mensagens
+	
+	-> Explicação das funções de login e register;
+	
+	-> Comunicação entre cliente TCP e servidor:
+			- Envio de strings;
+			- Tratamento da string do lado do servidor;
+			- Envio da resposta do servidor para o cliente.
+			
+	-> Comunicação entre cliente RMI e servidor:
+			- Tratamento da string do lado do cliente;
+			- Invocação da função correcta;
+			- Resposta para o cliente.
+			
+			
+			- Falar dos problemas que há quando um cliente vai a baixo sem avisar,
+			  se entretanto essa situação não for resolvida.
+
+	-> Conclusão:
+			- Principais falhas na realidade: a comunicação com a base de dados
+				é feita com o pressuposto que não existem falhas de comunicação.
+				
+			- Há uma thread, quando do lado do TCP, para cada cliente. Num cenário
+			  mais realista, teríamos de criar uma pool de threads de modo a não
+			  sobrecarregar os recursos do servidor.
+			  
+			- De modo a salvaguardar sempre os dados, há demasiados acessos a disco.
+			
+			
