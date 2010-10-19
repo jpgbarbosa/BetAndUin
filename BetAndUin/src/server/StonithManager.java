@@ -11,14 +11,10 @@ public class StonithManager extends Thread{
 	
 	/* The STONITH port. */
 	private int stonithPort;
-	private ConnectionWithServerManager connectionWithServerManager;
-	
-	/* The auxiliar thread. */
-	private StonithChanger changer;
 	
 	public StonithManager(int stPort, int pPort, ConnectionWithServerManager connectionManager){
 		stonithPort = stPort;
-		changer = new StonithChanger(pPort,connectionManager);
+		new StonithChanger(pPort,connectionManager);
 		this.start();
 	}
 	
