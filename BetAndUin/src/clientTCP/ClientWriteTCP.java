@@ -56,11 +56,16 @@ public class ClientWriteTCP extends Thread {
     		}
     	}
     	
+    	/* Shows the main menu. */
+    	try {
+			out.writeUTF("show menu");
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+    	
     	while (true){
 	        try{
-	        	
-	        	/* Shows the main menu. */
-	        	out.writeUTF("show menu");
 	            while(true){
 	            	userInput = reader.readLine();
 	            	

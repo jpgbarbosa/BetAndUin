@@ -60,7 +60,7 @@ public class ClientReadTCP extends Thread {
 	                }
 	                else{
 	                	System.out.println(data);
-	                	System.out.print(" >>> ");
+		            	System.out.print(" >>> ");
 	                }
 	                
 	            }

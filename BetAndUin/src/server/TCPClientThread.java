@@ -192,7 +192,7 @@ class TCPClientThread extends Thread {
         		 * input string.
         		 */
         		activeClients.sendMessageAll(clientInfo.getUsername() + " says to everyone: " + input.substring(9), clientSocket, null);
-        		answer = "";
+        		answer = "Message ["+input.substring(9)+"] delivered!";
         	}
         	/* We are sending a message to a user. */
         	else{
@@ -201,15 +201,16 @@ class TCPClientThread extends Thread {
 	        		/* Checks if client isn't sending a message to himself/herself. */
 	        		if (stringSplitted[1].equals(clientInfo.getUsername())){
 	        			/* Alternative: Are you feeling alone? */
-	        			activeClients.sendMessageUser("What's the point of sending messages to yourself?", stringSplitted[1]);
+	        			answer = "What's the point of sending messages to yourself?";
 	        		}
 	        		else{
 	        			/* 'send ' has 5 characters. Then, we have to sum the size of the receiver name
 	            		 * as well as a white space that separates this name from the message.
 	            		 */
 	        			activeClients.sendMessageUser(clientInfo.getUsername() + " says: " + input.substring(6 + stringSplitted[1].length()), stringSplitted[1]);
+	        			answer = "Message ["+input.substring(6 + stringSplitted[1].length())+"] delivered!";
 	        		}
-	        		answer = "";
+	        		
 	        	}
 	        	else if(database.findClient(stringSplitted[1]) != null){
 	        		answer = stringSplitted[1] + " is offline at the moment.";
