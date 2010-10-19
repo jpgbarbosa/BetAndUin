@@ -320,6 +320,8 @@ public class ConnectionWithServerManager extends Thread{
 			
 		} catch (IOException e){
 			System.out.println("IO from sendMessage (ConnectionWithServerManager): " + e.getMessage());
+		} catch (Exception e){
+			System.out.println("Exception from sendMessage (ConnectionWithServerManager): " + e.getMessage());
 		}
 	}
 	
