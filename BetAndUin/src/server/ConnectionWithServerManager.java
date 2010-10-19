@@ -59,7 +59,6 @@ public class ConnectionWithServerManager extends Thread{
 	/* The port to which we must connect to simulate the STONITH situation. */
 	private int partnerStonithPort;
 	private int stonithPort;
-	private boolean stonithFailed;
 	
 	public ConnectionWithServerManager(int sPort, int pPort, int sStonith, int pStonith, boolean isDefaultServer, ChangeStatusLock lock){
 		serverPort = sPort;
@@ -115,36 +114,39 @@ public class ConnectionWithServerManager extends Thread{
 			Socket s = null;
 			try {
 				s = new Socket("localHost", partnerStonithPort);
-				stonithFailed = false;
 				/* The other server is alive. */
 				partnerAnswer = "I_M_ALREADY_PRIMARY_SERVER";
 				isPrimaryServer = false;
 				
+				if (debugging){
+					System.out.println("The STONITH link confirmed the other server is alive.");
+				}
+				
 			} catch (Exception e) {
 				/* The other server is dead, so, it's not only a link's problem. */
-				stonithFailed = true;
 				partnerAnswer = "NOT_RECEIVED";
 				isPrimaryServer = true;
-			}	finally {
-				//TODO: If we implement the todo down there, we can't immediately close the socket.
-			    if (s != null)
+				
+				if (debugging){
+					System.out.println("The STONITH link confirmed the other server is really dead.");
+				}
+				
+			} finally {
+				/* We close the socket that simulates the STONITH link. */
+				if (s != null){
 					try {
 					    s.close();
 					} catch (IOException e) {
 					    System.out.println("close:" + e.getMessage());
 					}
 				}
-			
-			if (!stonithFailed){
-				
 			}
 			
-			//TODO: Maybe we should check the STONITH periodically till the network recovers.
 		}
 		
 		/* We initialize and start the STONITH Manager, that will accept any connections
 		 * in case the other server tries to connect. */
-		new StonithManager(stonithPort);
+		new StonithManager(stonithPort, partnerPort, this);
 		
 		
 		while(true){
@@ -233,7 +235,7 @@ public class ConnectionWithServerManager extends Thread{
 			}
 		
 			/* If we ever get here, it means that we are not the primary server.*/
-			while (!isPrimaryServer && !partnerAnswer.equals("NOT_RECEIVED")){
+			while (!isPrimaryServer){
 				
 				if (debugging){
 					System.out.println("ConnectionWithServerManager: We fulfilled the fourth condition.");
@@ -263,16 +265,58 @@ public class ConnectionWithServerManager extends Thread{
 				}// catch (InterruptedException e);
 				
 				/* If we ever get here, it means that the partner hasn't answer before
-				 * the timeout occurred. Consequently, we will now be the primary server.
+				 * the timeout occurred. Consequently, we have to test the STONITH link
+				 * to know if we are really going to be the primary server.
 				 */
-				isPrimaryServer = true;
-				/* Informs that parent server about its status. */
-				synchronized (statusLock){
-					statusLock.setPrimaryServer(true);
-					if (statusLock.hasChangedStatus()){
-						statusLock.notifyAll();
+				
+				/* We have to test the STONITH scenario. */
+				//TODO: We have to change this local host. */
+				Socket s = null;
+				try {
+					s = new Socket("localHost", partnerStonithPort);
+					/* The other server is alive. */
+					isPrimaryServer = false;
+					
+					/* We have to send a message to the other server, because
+					 * when the primary server doesn't get an answer from its
+					 * partner, it considers the partner dead and to stop wasting
+					 * link resources, stops sending messages.
+					 * Consequently, we have to send a message from this side in 
+					 * case the link recovered and to make the primary server
+					 * start sending messages again.
+					 */
+					sendMessage("I_WILL_BE_PRIMARY_SERVER");
+					if (debugging){
+						System.out.println("The STONITH link confirmed the other server is alive.");
+					}
+					
+				} catch (Exception e) {
+					/* The other server is dead, so, it's not only a link's problem. */
+					isPrimaryServer = true;
+					/* Informs the parent thread about its status. */
+					synchronized (statusLock){
+						statusLock.setPrimaryServer(true);
+						if (statusLock.hasChangedStatus()){
+							statusLock.notifyAll();
+						}
+					}
+					
+					if (debugging){
+						System.out.println("The STONITH link confirmed the other server is really dead.");
+					}
+					
+				} finally {
+					/* We close the socket that simulates the STONITH link. */
+					if (s != null){
+						try {
+						    s.close();
+						} catch (IOException e) {
+						    System.out.println("close:" + e.getMessage());
+						}
 					}
 				}
+			
+				
 			}// while (!isPrimaryServer)
 			
 			try {
@@ -343,6 +387,13 @@ public class ConnectionWithServerManager extends Thread{
 		} catch (IOException e){
 			System.out.println("IO from sendTerminateThread (ConnectionWithServerManager): " + e.getMessage());
 		}
+	}
+	
+	/* This method is used when we want to simulate the STONITH scenario and cause
+	 * failure on the link
+	 */
+	public void setPartnetPort(int port){
+		partnerPort = port;
 	}
 
 }

@@ -66,49 +66,77 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     public static void main(String args[]){
     	boolean defaultS = false;
     	int serverNumber;
-    	int sTCPPort = 0, pTCPPort = 0,sRMIPort = 0, pStonith = 0, sStonith = 0;
+    	int sPort = 0, pPort = 0,sRMIPort = 0, pStonith = 0, sStonith = 0;
     	Server server = null;
+    	boolean stonithScenario = false;
     	
     	 /* The user has introduced less than three options by the command line, so we can't carry on. */
-        if (args.length < 2){
+        if (args.length != 1 && args.length != 2){
         	System.out.println("java TCPServer serverNumber isPrimaryServer (for this last" +
-        			"option, type primary or secondary");
+        			"option, type primary or secondary) stonithScenario (optional)");
     	    System.exit(0);
         }
     	
+        /* Tests whether we are under the STONITH scenario or not. */
+        if (args.length == 2 && args[1].toLowerCase().equals("stonith")){
+        	if (debugging){
+        		System.out.println("We actived the STONITH scenario.");
+        	}
+        	stonithScenario = true;
+        }
+        
         /* We read from the command line the two port numbers passed. */
         serverNumber = Integer.parseInt(args[0]);
         if (serverNumber == 1){
-        	sTCPPort = Constants.FIRST_TCP_SERVER_PORT;
-        	pTCPPort = Constants.SECOND_TCP_SERVER_PORT;
+        	/* We are default server. */
+        	defaultS = true;
+        	
+        	/* Port configurations. */
+        	sPort = Constants.FIRST_TCP_SERVER_PORT;
         	sRMIPort = Constants.FIRST_RMI_SERVER_PORT;
         	sStonith = Constants.STONITH_FIRST_SERVER_PORT;
         	pStonith = Constants.STONITH_SECOND_SERVER_PORT;
+        	
+        	/* We are testing the STONITH scenario, where we simulate
+        	 * a failure in the link between the two nodes.
+        	 */
+        	if (stonithScenario){
+        		pPort = Constants.SECOND_TCP_SERVER_PORT + 1;
+        	}
+        	else{
+        		pPort = Constants.SECOND_TCP_SERVER_PORT;
+        	}
         }
         else if (serverNumber == 2){
-        	sTCPPort = Constants.SECOND_TCP_SERVER_PORT;
-        	pTCPPort = Constants.FIRST_TCP_SERVER_PORT;
+        	/* We are default server. */
+        	defaultS = false;
+        	
+        	/* Port configurations. */
+        	sPort = Constants.SECOND_TCP_SERVER_PORT;
         	sRMIPort = Constants.SECOND_RMI_SERVER_PORT;
         	sStonith = Constants.STONITH_SECOND_SERVER_PORT;
         	pStonith = Constants.STONITH_FIRST_SERVER_PORT;
+        	
+        	/* We are testing the STONITH scenario, where we simulate
+        	 * a failure in the link between the two nodes.
+        	 */
+        	if (stonithScenario){
+        		pPort = Constants.FIRST_TCP_SERVER_PORT + 1;
+        	}
+        	else{
+        		pPort = Constants.FIRST_TCP_SERVER_PORT;
+        	}
         }
         else{
         	System.out.println("Invalid server number.");
         	System.exit(0);
         }
-
-        if (args[1].toLowerCase().equals("primary")){
-        	defaultS = true;
-        }
-        else{
-        	defaultS = false;
-        }
-
+        
         if (debugging){
-        	System.out.printf("We are server %d, our partner is %d.\n", sTCPPort, pTCPPort);
+        	System.out.printf("We are server %d, our partner is %d.\n", sPort, pPort);
         }
     	try {
-			server = new Server(defaultS, sTCPPort, pTCPPort, sRMIPort, sStonith, pStonith);
+			server = new Server(defaultS, sPort, pPort, sRMIPort, sStonith, pStonith);
 			server.run();
 		} catch (RemoteException e) {
 			System.out.println("Error creating the server: " + e);
@@ -209,7 +237,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     	else{
             if(password.equals(clientInfo.getPassword())){
             	/* However, the user was already validated in some other machine. */
-            	if(activeClients.isClientLoggedIn(username)==true){
+            	if(activeClients.isClientLoggedIn(username) == true){
             		return "log repeated";
             	}
             	/* The validation process can be concluded. */
