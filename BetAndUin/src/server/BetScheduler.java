@@ -107,20 +107,20 @@ public class BetScheduler extends Thread{
 			bet=it.next();
 			
 			/* The client has won. */
-			if(gameResults[(bet.getGameNumber())%Constants.NO_GAMES]==0 && bet.bet.compareToIgnoreCase("X")==0
-					|| gameResults[(bet.getGameNumber())%Constants.NO_GAMES]==1 && bet.bet.equals("1")
-					|| gameResults[(bet.getGameNumber())%Constants.NO_GAMES]==2 && bet.bet.equals("2")){
+			if(gameResults[(bet.getGameNumber())%Constants.NO_GAMES]==0 && bet.getBet().compareToIgnoreCase("X")==0
+					|| gameResults[(bet.getGameNumber())%Constants.NO_GAMES]==1 && bet.getBet().equals("1")
+					|| gameResults[(bet.getGameNumber())%Constants.NO_GAMES]==2 && bet.getBet().equals("2")){
 				
 				/* We first update the value in the persistent memory, by informing the database. */
-				database.increaseCredits(bet.getUser(), bet.credits * 3);
+				database.increaseCredits(bet.getUser(), bet.getCredits() * 3);
 				
 				/* Then, we inform the client. */
 				activeClients.sendMessageUser("Congratulations, it looks like your guess was right about game " +
-						bet.gameNumber + ". You won: " + bet.credits * 3 + " Credits!", bet.getUser());
+						bet.getGameNumber() + ". You won: " + bet.getCredits() * 3 + " Credits!", bet.getUser());
 			}
 			else {
 				activeClients.sendMessageUser("Sorry, it looks like your guess wasn't right about game " +
-						+ bet.gameNumber + "... Please try again!", bet.getUser());
+						+ bet.getGameNumber() + "... Please try again!", bet.getUser());
 			}
 		}
 	}

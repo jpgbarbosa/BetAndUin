@@ -29,13 +29,13 @@ public class RMIWriter extends Thread{
 	/* The connectionLock and msgBuffer so we can save 'send' messages when the server
 	 * is down.
 	 */
-	ConnectionLock connectionLock;
+	private ConnectionLock connectionLock;
 	Vector<String> msgBuffer;
 
 	/* Variables related to the input and analysis of the messages. */
-	BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-	String userInput, serverAnswer, username;
-	String [] stringSplitted;
+	private BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+	private String userInput, serverAnswer, username;
+	private String [] stringSplitted;
 	
 	RMIWriter(ConnectionLock connectionLock){
 		this.connectionLock = connectionLock;
@@ -128,7 +128,7 @@ public class RMIWriter extends Thread{
         }
 	}
 	
-   public String parseFunction(String user, String [] stringSplitted, String input, ClientOperations server, BufferedReader reader) throws RemoteException{
+   protected String parseFunction(String user, String [] stringSplitted, String input, ClientOperations server, BufferedReader reader) throws RemoteException{
     	/* The answer from the server to the client. */
     	String answer = "";
     	
@@ -259,7 +259,7 @@ public class RMIWriter extends Thread{
 		return answer;
     }
    
-	synchronized public void saveObjectToFile(String user, Object obj){
+	synchronized protected void saveObjectToFile(String user, Object obj){
 		ObjectOutputStream oS;
 		/* Creates a name for a specific file for a client. */
 		String filename = user + ".bin";
@@ -277,7 +277,7 @@ public class RMIWriter extends Thread{
 	}
 	
 	/* The reading method for an object. This method can only be used by the class. */
-	synchronized public Object readObjectFromFile(String user){
+	synchronized protected Object readObjectFromFile(String user){
 		ObjectInputStream iS;
 		String filename = user + ".bin";
 		

@@ -10,14 +10,14 @@ import server.ConnectionWithServerManager;
 
 public class ReceiveServerMessages extends Thread{
 	/*Set to true if you want the program to display debugging messages.*/
-	Boolean debugging = true;
+	private Boolean debugging = true;
 	
-	DatagramSocket aSocket = null;
-	String msg;
-	int serverPort;
-	MessagesRepository msgList;
-	ConnectionWithServerManager parentThread;
-	boolean terminateThread = false;
+	private DatagramSocket aSocket = null;
+	private String msg;
+	private int serverPort;
+	private MessagesRepository msgList;
+	private ConnectionWithServerManager parentThread;
+	private boolean terminateThread = false;
 	
 	public ReceiveServerMessages(int sPort, MessagesRepository list, ConnectionWithServerManager thread){
 		serverPort = sPort;

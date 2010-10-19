@@ -8,7 +8,8 @@ import constants.Constants;
 
 public class TCPClient {
 
-    public static void main(String args[]) {
+    @SuppressWarnings("unchecked")
+	public static void main(String args[]) {
 		// args[0] <- hostname of destination
 		if (args.length == 0) {
 		    System.out.println("java TCPClient hostname");

@@ -6,17 +6,18 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class ClientReadTCP extends Thread {
-	DataInputStream in;
-    Socket clientSocket;
-    ConnectionLock connectionLock;
-    ClientWriteTCP writeThread;
+	
+	protected DataInputStream in;
+    private Socket clientSocket;
+    private ConnectionLock connectionLock;
+    private ClientWriteTCP writeThread;
     /* This variable is used when the user tries to reset the number of credits.
      * The other thread will ask for the server to inform the client system about
      * the amount of credits it has in order to prevent (or better saying, inform)
      * the client from losing credits. Consequently, we can't print to the screen
      * the information related to this step that is transparent to the end user.
      */
-    boolean isToPrint;
+    private boolean isToPrint;
     
     public ClientReadTCP (ConnectionLock lock, ClientWriteTCP thread) {
     	connectionLock = lock;
@@ -59,7 +60,7 @@ public class ClientReadTCP extends Thread {
 	                }
 	                else{
 	                	System.out.println(data);
-	                	System.out.print(" >>> ");
+		            	System.out.print(" >>> ");
 	                }
 	                
 	            }
