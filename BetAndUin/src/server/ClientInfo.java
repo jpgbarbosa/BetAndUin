@@ -10,8 +10,8 @@ public class ClientInfo implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
-	String username, password, email;
-	int credits;
+	private String username, password, email;
+	private int credits;
 	
 	public ClientInfo(String user, String pass, String mail, int noCredits){
 		username = user;

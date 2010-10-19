@@ -26,10 +26,10 @@ import clientRMI.ServerOperations;
  */
 
 public class ActiveClients {
-	Hashtable<String, ClientListElement> clientHash;
-	List <ClientListElement> clientList;
+	private Hashtable<String, ClientListElement> clientHash;
+	private List <ClientListElement> clientList;
 	
-	int noActiveClients;
+	private int noActiveClients;
 	
 	public ActiveClients(){
 		 clientHash = new Hashtable<String, ClientListElement>();

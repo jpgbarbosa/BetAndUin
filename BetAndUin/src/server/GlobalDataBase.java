@@ -18,18 +18,18 @@ import constants.Constants;
  */
 public class GlobalDataBase {
 	/* The hash table that will work as database. */
-	Hashtable <String, ClientInfo> clientsDatabase;
-	BetScheduler betScheduler;
+	private Hashtable <String, ClientInfo> clientsDatabase;
+	protected BetScheduler betScheduler;
 	
 	/*Set to true if you want the program to display debugging messages.*/
-	Boolean debugging = true;
+	private Boolean debugging = true;
 	
 	/* The number of the last game, so the BetScheduler can keep track of it
 	 * even when the server goes down and is restarted. If not successful, we
 	 * use the default initial number.
 	 */
-	int nextGameNumber = 0;
-	int readResult;
+	private int nextGameNumber = 0;
+	private int readResult;
 	
 	@SuppressWarnings("unchecked")
 	public GlobalDataBase(){

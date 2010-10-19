@@ -11,21 +11,21 @@ import constants.Constants;
 /* Thread used to take care of each communication channel between the active server and a given client. */
 class TCPClientThread extends Thread {
 	/*Set to true if you want the program to display debugging messages.*/
-	Boolean debugging = false;
+	private Boolean debugging = false;
 	
 	/* The betScheduler so we can send the matches' information back to the client. */
-	BetScheduler betScheduler; 
+	private BetScheduler betScheduler; 
 	/* A pointer to the information block related to this client. */
-	ClientInfo clientInfo;
+	private ClientInfo clientInfo;
 	
 	/* This two variables keep the values inserted by the user, so we can use it later. */
-	String username, password;
+	private String username, password;
 	
-    DataInputStream in;
-    Socket clientSocket;
-    ActiveClients activeClients;
-    GlobalDataBase database;
-    Server server;
+	private DataInputStream in;
+	private Socket clientSocket;
+	private ActiveClients activeClients;
+	private GlobalDataBase database;
+	private Server server;
 
     public TCPClientThread (Server server, Socket aClientSocket, ActiveClients activeClients, BetScheduler betScheduler, GlobalDataBase database) {
         this.betScheduler=betScheduler;

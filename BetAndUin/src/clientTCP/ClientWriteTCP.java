@@ -18,22 +18,20 @@ import constants.Constants;
 
 public class ClientWriteTCP extends Thread {
 	/*Set to true if you want the program to display debugging messages.*/
-	boolean debugging = true;
+	private boolean debugging = true;
 	
 	//This thread will be responsible for handling problems with the link to the server.
-	String username;
-	boolean loggedIn = false;
-    DataOutputStream out;
-    Socket clientSocket;
-    String userInput;
-    int serverSocketFirst = 6000, serverSocketSecond = 7000;
-    ConnectionLock connectionLock;
-    ClientReadTCP readThread;
-    int userCredits;
+	private String username;
+    protected DataOutputStream out;
+    private Socket clientSocket;
+    private String userInput;
+    private  ConnectionLock connectionLock;
+    private ClientReadTCP readThread;
+    private int userCredits;
     
-    Vector<String> msgBuffer;
+    protected Vector<String> msgBuffer;
     
-    BufferedReader reader;
+    protected BufferedReader reader;
     
     public ClientWriteTCP (ConnectionLock lock) {
     	connectionLock = lock;
@@ -162,7 +160,7 @@ public class ClientWriteTCP extends Thread {
     	}
     }
     
-	synchronized public void saveObjectToFile(String user, Object obj){
+	synchronized protected void saveObjectToFile(String user, Object obj){
 		ObjectOutputStream oS;
 		/* Creates a name for a specific file for a client. */
 		String filename = user + ".bin";
@@ -178,7 +176,7 @@ public class ClientWriteTCP extends Thread {
 	}
 	
 	/* The reading method for an object. This method can only be used by the class. */
-	synchronized public Object readObjectFromFile(String user){
+	synchronized protected Object readObjectFromFile(String user){
 		ObjectInputStream iS;
 		String filename = user + ".bin";
 		
@@ -198,7 +196,7 @@ public class ClientWriteTCP extends Thread {
 		}
 	}
     
-    public void setSocket(Socket s){
+    protected void setSocket(Socket s){
     	clientSocket = s;
     	try{
     		out = new DataOutputStream(clientSocket.getOutputStream());

@@ -17,10 +17,11 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 
 	private static final long serialVersionUID = 1L;
 	
-	public RMIClient() throws RemoteException {
+	private RMIClient() throws RemoteException {
 		super();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static void main(String args[]) {
 		/* Variables related to the input. */
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
