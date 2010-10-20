@@ -1,11 +1,17 @@
 package server;
 
+import intraServerCommunication.ChangeStatusLock;
+import intraServerCommunication.ConnectionWithServerManager;
+
 import java.net.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.io.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+
+import bets.Bet;
+import bets.BetScheduler;
 
 import common.Constants;
 

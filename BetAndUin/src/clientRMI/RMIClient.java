@@ -46,8 +46,6 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 		/*The variables related to the reconnection.*/
 		int retries = 0; //The numbers of times we reconnected already to a given port.
 		int retrying = 0; //Tests if we are retrying for the first or second time.
-		int WAITING_TIME = 1000; //The time the thread sleeps.
-		int NO_RETRIES = 10; //The maximum amount of retries for a given port.
 		
 		/*The variables related to the server ports available.*/
 		int []serverPorts = new int[2]; //The array with the two different ports.
@@ -61,12 +59,16 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 		
 		RMIWriter rmiWriter = new RMIWriter(connectionLock);
 		
-		while (retries < NO_RETRIES){
+		/* Displays an initial message, to ensure the user the application hasn't frozen. */
+		System.out.println("Welcome to the BetAndUin! Please wait while we try to connect to our server.\n");
+		
+		
+		while (retries < Constants.NO_RETRIES){
 			try {			
 				/* We haven't retried yet, so, it's useless to sleep for WAITING_TIME milliseconds. */
 				if (retrying > 0){
 				    try {
-						Thread.sleep(WAITING_TIME);
+						Thread.sleep(Constants.CLIENT_WAITING_TIME);
 					} catch (InterruptedException e) {
 						System.out.println("This thread was interrupted while sleeping.\n");
 						System.exit(0);
@@ -217,7 +219,9 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 			    	try {
 						connectionLock.wait();
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						if (debugging){
+							e.printStackTrace();
+						}
 					}
 			    }
 			    
