@@ -26,6 +26,10 @@ NOTA IMPORTANTE: A ordem nos capítulos não vai ser necessariamente esta. Ter e
 
     -> Estruturas principais - análise geral e apresentação:
 			- Clientes (RMI e TCP);
+					-> Reconnecção por parte de clientes:
+						- Várias tentativas;
+						- Troca de porto;
+						- Mais umas quantas tentativas;
 			- Servidores (Com suporte para RMI e TCP);
 			- Eventualmente, estrutura de apoio para gravação persistente da informação.
 			
@@ -34,11 +38,6 @@ NOTA IMPORTANTE: A ordem nos capítulos não vai ser necessariamente esta. Ter e
 			- Criação de duas threads: o connectionWithServerManager e o Reader, que guarda
 				as mensagens numa lista a mais tarde a ler pelo manager. Sleeps e interrupts
 				para coordenação entre threads e definição do servidor principal.
-	
-	-> Reconnecção por parte de clientes:
-			- Várias tentativas;
-			- Troca de porto;
-			- Mais umas quantas tentativas;
 	
 	-> Funcionamento dos clientes totais e dos clientes online;
 	
@@ -52,6 +51,11 @@ NOTA IMPORTANTE: A ordem nos capítulos não vai ser necessariamente esta. Ter e
 			- O BetSchedule percorre a lista e envia mensagens
 	
 	-> Explicação das funções de login e register;
+		- Não esquecer de mencionar o que acontece quando um cliente
+			já está activo e o servidor cai.
+	
+	
+	
 	
 	-> Comunicação entre cliente TCP e servidor:
 			- Envio de strings;
@@ -67,6 +71,9 @@ NOTA IMPORTANTE: A ordem nos capítulos não vai ser necessariamente esta. Ter e
 			- Falar dos problemas que há quando um cliente vai a baixo sem avisar,
 			  se entretanto essa situação não for resolvida.
 
+	
+	-> Onde meter a comunicação offline? Se calhar aqui.
+	
 	-> Conclusão:
 			- Principais falhas na realidade: a comunicação com a base de dados
 				é feita com o pressuposto que não existem falhas de comunicação.
