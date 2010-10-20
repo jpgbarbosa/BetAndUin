@@ -50,5 +50,4 @@ public class Bet implements Serializable{
 		this.user = user;
 	}
 	
-	
 }

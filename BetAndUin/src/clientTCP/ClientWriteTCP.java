@@ -12,7 +12,9 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Vector;
 
-import constants.Constants;
+import common.ConnectionLock;
+import common.Constants;
+
 
 
 
@@ -60,8 +62,9 @@ public class ClientWriteTCP extends Thread {
     	try {
 			out.writeUTF("show menu");
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			if(debugging){
+				e1.printStackTrace();
+			}
 		}
     	
     	while (true){
@@ -122,10 +125,7 @@ public class ClientWriteTCP extends Thread {
 				            	else{
 				            		/* We verify the validity of the commands' on the client side
 				            		 * in order to avoid unnecessary transmission and don't push
-				            		 * too much the server with this checking.
-				            		 */
-				            		//TODO: Check if we are going to implement this last comment or
-				            		//		not.
+				            		 * too much the server with this checking. */
 				            		out.writeUTF(userInput);
 				            	}
 				            }catch(Exception e){
@@ -145,9 +145,7 @@ public class ClientWriteTCP extends Thread {
 	            	    	else{
 	            	    		System.out.println("The connection is down and this operation couldn't be completed.");
 		            			System.out.print(">>> ");
-	            	    	}
-	            			
-	            			
+	            	    	}   			
 	            		}
 	            	}
 	            }

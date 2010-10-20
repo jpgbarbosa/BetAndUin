@@ -11,16 +11,16 @@ import java.io.ObjectOutputStream;
 import java.rmi.RemoteException;
 import java.util.Vector;
 
-import constants.Constants;
+import common.ConnectionLock;
+import common.Constants;
+
 
 import server.ClientOperations;
 
-import clientTCP.ConnectionLock;
 
 public class RMIWriter extends Thread{
 	/*Set to true if you want the program to display debugging messages.*/
 	private Boolean debugging = true;
-	
 	
 	/* A reference to the thread that holds the main server, to which this RMIWriter
 	 * is bounded. */

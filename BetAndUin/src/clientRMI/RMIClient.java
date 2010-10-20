@@ -1,7 +1,5 @@
 package clientRMI;
 
-import clientTCP.ConnectionLock;
-import constants.Constants;
 import server.ClientOperations;
 
 import java.io.BufferedReader;
@@ -12,6 +10,9 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.*;
 import java.util.Vector;
+
+import common.ConnectionLock;
+import common.Constants;
 
 public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 
@@ -263,7 +264,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 			}
 		}
 		
-		//TODO: Perguntar porque é que sem isto o programa não termina.
+		//TODO: Temos de ver como fechar a thread rmiWriter (talvez no TCP tambem)
 		System.out.println("Exited");
 		System.exit(0);
 	}

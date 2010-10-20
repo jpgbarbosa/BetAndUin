@@ -6,7 +6,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.rmi.RemoteException;
 
-import constants.Constants;
+import common.Constants;
+
 
 /* Thread used to take care of each communication channel between the active server and a given client. */
 class TCPClientThread extends Thread {
@@ -285,4 +286,5 @@ class TCPClientThread extends Thread {
     	
 		return answer;
     }
+    
 }

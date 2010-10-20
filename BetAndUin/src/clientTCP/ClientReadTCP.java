@@ -5,6 +5,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 
+import common.ConnectionLock;
+
 public class ClientReadTCP extends Thread {
 	
 	protected DataInputStream in;

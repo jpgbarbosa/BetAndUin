@@ -7,7 +7,8 @@ import java.io.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import constants.Constants;
+import common.Constants;
+
 
 import clientRMI.ServerOperations;
 
@@ -321,12 +322,6 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 
 	@Override
 	public String clientSendMsgAll(String user, String message) throws RemoteException {
-		if (activeClients == null)
-			System.out.println("NULL");
-		
-		System.out.println("Our user is: " + user);
-		
-		//TODO: Corrigir o bug do getRMIClient ser null.
 		activeClients.sendMessageAll(user + " says to everyone: " + message, null,
 				activeClients.getActiveClient(user).getRMIClient());
 		return  "Message ["+message+"] delivered!";

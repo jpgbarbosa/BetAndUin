@@ -89,7 +89,6 @@ class StonithChanger extends Thread{
 				System.out.println("Exception in StonithChanger: " + e.getMessage());
 			}
 		}
-		
 	}
 	
 }
