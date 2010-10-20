@@ -3,7 +3,8 @@ package server;
 import java.util.Iterator;
 import java.util.Vector;
 
-import constants.Constants;
+import common.Constants;
+
 
 import pt.uc.dei.sd.BetManager;
 import pt.uc.dei.sd.IBetManager;
@@ -12,16 +13,16 @@ import pt.uc.dei.sd.IMatch;
 
 public class BetScheduler extends Thread{
 	/* Variables to save information related to the current matches. */
-	String message, lastMatches = "";
+	private String message, lastMatches = "";
 	
 	/* References to the list of active clients and the database. */
-	ActiveClients activeClients;
-	GlobalDataBase database;
+	private ActiveClients activeClients;
+	private GlobalDataBase database;
     
 	/* Variables to keep track of the game results and how to manage them. */
-	IBetManager man;
-    int [] gameResults;
-    Vector<Bet> betList;
+	private IBetManager man;
+	private int [] gameResults;
+	private Vector<Bet> betList;
  
     
 	@SuppressWarnings("unchecked")
@@ -99,7 +100,7 @@ public class BetScheduler extends Thread{
         }
 	}
 	
-	public void notifyBets(){
+	private void notifyBets(){
 		Iterator<Bet> it = betList.iterator();
 		Bet bet;
 		

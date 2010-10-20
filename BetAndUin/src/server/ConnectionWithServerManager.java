@@ -7,7 +7,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 
-import constants.Constants;
+import common.Constants;
+
 import messages.MessagesRepository;
 import messages.ReceiveServerMessages;
 
@@ -110,7 +111,7 @@ public class ConnectionWithServerManager extends Thread{
 		/* This means the other server hasn't responded. */
 		if (repetitions == limit){
 			/* Now, we have to test the STONITH scenario. */
-			//TODO: We have to change this local host. */
+			/* TODO: We have to change this local host. */
 			Socket s = null;
 			try {
 				s = new Socket("localHost", partnerStonithPort);
@@ -203,14 +204,7 @@ public class ConnectionWithServerManager extends Thread{
 					}
 					sendMessage("KEEP_ALIVE");
 				}
-			}
-			
-			/*TODO: We have cleaned up a else if here. It's saved in the file "removedPart.txt".
-			 * 		If necessary, we can recover it from there.
-			 * 		The reason why it was cleaned up was because we introduced the STONITH
-			 * 		protection and therefore, the scenario covered by that elseif no longer exists.
-			 */
-			
+			}			
 			/* We are now the secondary server. If we get here. */
 			else if(partnerAnswer.equals("KEEP_ALIVE") 
 					|| partnerAnswer.equals("I_M_ALREADY_PRIMARY_SERVER")
@@ -270,7 +264,7 @@ public class ConnectionWithServerManager extends Thread{
 				 */
 				
 				/* We have to test the STONITH scenario. */
-				//TODO: We have to change this local host. */
+				/* TODO: We have to change this local host. */
 				Socket s = null;
 				try {
 					s = new Socket("localHost", partnerStonithPort);

@@ -4,7 +4,9 @@ import java.net.*;
 import java.util.Vector;
 import java.io.*;
 
-import constants.Constants;
+import common.ConnectionLock;
+import common.Constants;
+
 
 public class TCPClient {
 
@@ -68,8 +70,7 @@ public class TCPClient {
 						System.exit(0);
 					}
 				}
-			    // 1o passo
-				//TODO: Make sure you don't forget to change it again to the original, now commented.
+				/* TODO: We have to change this local host.*/
 			    //s = new Socket(args[0], serversocket);
 				s = new Socket("localHost", serverPorts[serverPos]);
 				
@@ -96,14 +97,9 @@ public class TCPClient {
 			    String serverAnswer;
 				boolean error = false;
 				
-				/* Prints on the screen the information necessary to take the first step
-				 * into making the login or register in the system.
-				 */
-	        	System.out.println("\nTo log in: login [user] [pass]\n" +
-    			"To register in: register [user] [pass] [email]");
 				
 				/* Login authentication. */
-				while(!loggedIn){		
+				while(!loggedIn){
 					/* When the server goes down, the client keep the data related to a successful login
 					 * When the server is up again, the client application directly sends that information
 					 * so the end user won't have to reinsert them once again.
@@ -120,6 +116,12 @@ public class TCPClient {
 						if (debugging){
 							System.out.println("We don't have any login saved.");
 						}
+						
+						/* Prints on the screen the information necessary to take the first step
+						 * into making the login or register in the system.
+						 */
+			        	System.out.println("\nTo log in: login [user] [pass]\n" +
+		    			"To register in: register [user] [pass] [email]");	
 						
 						error=false;
 			        	command = writeThread.reader.readLine();
@@ -263,9 +265,7 @@ public class TCPClient {
 				}
 			}
 		}
-		/* TODO: Talvez temos de alterar isto, para deixar o programa a correr indefinidamente
-		 * até que o utilizador prima o Ctr+C.
-		 */
+		/* TODO: Ctr+C. */
 		System.out.println("Exited");
 		System.exit(0);
     }

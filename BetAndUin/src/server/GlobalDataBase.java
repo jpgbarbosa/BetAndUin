@@ -10,7 +10,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Hashtable;
 
-import constants.Constants;
+import common.Constants;
+
 
 /* Class that holds all the information related to the users registed in the system.
  * In here, we can save the data, read it from a file and add/remove clients to/from

@@ -3,7 +3,8 @@ package pt.uc.dei.sd;
 import java.util.ArrayList;
 import java.util.List;
 
-import constants.Constants;
+import common.Constants;
+
 
 import server.GlobalDataBase;
 

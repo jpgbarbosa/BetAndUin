@@ -19,4 +19,5 @@ public interface ClientOperations extends Remote{
 	
 	public String clientMakeBet(String username, int gameNumber, String bet, int credits) throws java.rmi.RemoteException;
 	public void clientLeave(String username) throws java.rmi.RemoteException;
+	
 }
