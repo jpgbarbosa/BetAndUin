@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.net.Socket;
 import java.rmi.RemoteException;
 
+import bets.Bet;
+import bets.BetScheduler;
+
 import common.Constants;
 
 

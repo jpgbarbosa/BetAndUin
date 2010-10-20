@@ -28,7 +28,7 @@ public class ClientWriteTCP extends Thread {
     private Socket clientSocket;
     private String userInput;
     private  ConnectionLock connectionLock;
-    private ClientReadTCP readThread;
+    private TCPClient readThread;
     private int userCredits;
     
     protected Vector<String> msgBuffer;
@@ -207,7 +207,7 @@ public class ClientWriteTCP extends Thread {
         }catch(IOException e){System.out.println("Connection:" + e.getMessage());}
     }
     
-    public void setReadThread(ClientReadTCP thread){
+    public void setReadThread(TCPClient thread){
     	readThread = thread;
     }
     

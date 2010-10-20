@@ -9,27 +9,48 @@ import common.Constants;
 
 
 public class TCPClient {
-
-    @SuppressWarnings("unchecked")
+	/*Set to true if you want the program to display debugging messages.*/
+	private boolean debugging = false;
+	
+	/* This is for knowing if we are connecting for the first time or instead, we
+	 * are trying to reconnect. It's only use is given a few lines down when we want
+	 * to display a message and so it is not necessary for the correct functioning of
+	 * the program.
+	 */
+	private boolean firstConnection = false;
+	
+    /* This variable is used when the user tries to reset the number of credits.
+     * The other thread will ask for the server to inform the client system about
+     * the amount of credits it has in order to prevent (or better saying, inform)
+     * the client from losing credits. Consequently, we can't print to the screen
+     * the information related to this step that is transparent to the end user.
+     */
+    private boolean isToPrint = true;
+	
+    /* In the data input stream used to read from the socket. */
+    private DataInputStream in;
+    
+	/* The thread related variables. */
+	private ConnectionLock connectionLock = new ConnectionLock();
+	private ClientWriteTCP writeThread;
+	
+	/*The socket variable we shall use to connect to the server.*/
+	private Socket clientSocket = null;
+    
+    
 	public static void main(String args[]) {
 		// args[0] <- hostname of destination
 		if (args.length == 0) {
 		    System.out.println("java TCPClient hostname");
 		    //System.exit(0);
 		}
-	
-		/*Set to true if you want the program to display debugging messages.*/
-		boolean debugging = false;
 		
-		/* This is for knowing if we are connecting for the first time or instead, we
-		 * are trying to reconnect. It's only use is given a few lines down when we want
-		 * to display a message and so it is not necessary for the correct functioning of
-		 * the program.
-		 */
-		boolean firstConnection = false;
+		/* Initializes the application. */
+		new TCPClient();
+    }
 		
-		/*The socket variable we shall use to connect to the server.*/
-		Socket s = null;
+	@SuppressWarnings("unchecked")
+	public TCPClient(){
 		
 		/*The variables related to the reconnection.*/
 		int retries = 0; //The numbers of times we reconnected already to a given port.
@@ -38,26 +59,29 @@ public class TCPClient {
 		/* Variables used for the login authentication. */
 		boolean loggedIn = false;
 		
-		/*The thread related variables.*/
-		ConnectionLock connectionLock = new ConnectionLock();
-		ClientWriteTCP writeThread;
-		ClientReadTCP readThread;
-		
-		/*The variables related to the server ports available.*/
+		/* The variables related to the server ports available. */
 		int []serverPorts = new int[2]; //The array with the two different ports.
 		int serverPos = 0; //The position array, which corresponds to active port.
 		int noServerPorts = serverPorts.length; //Total number of possible servers ports.
-		//Places the two ports in the array.
+		/* Places the two ports in the array. */
 		serverPorts[0] = Constants.FIRST_TCP_SERVER_PORT;
 		serverPorts[1] = Constants.SECOND_TCP_SERVER_PORT;
 		
+		/* Variables to deal with the loggin. */
 		String [] stringSplitted;
 		String command = "";
+		String serverAnswer;
+		boolean error = false;
+		
 		
 		writeThread =  new ClientWriteTCP(connectionLock);
-		readThread = new ClientReadTCP(connectionLock, writeThread);
-		writeThread.setReadThread(readThread);
-		//Five attempts to reconnect the connection.
+		//readThread = new ClientReadTCP(connectionLock, writeThread);
+		writeThread.setReadThread(this);
+		
+		/* Displays an initial message, to ensure the user the application hasn't frozen. */
+		System.out.println("Welcome to the BetAndUin! Please wait while we try to connect to our server.\n");
+		
+		/* Five attempts to reconnect the connection. */
 		while (retries < Constants.NO_RETRIES){
 			try {			
 				/* We haven't retried yet, so, it's useless to sleep for WAITING_TIME milliseconds. */
@@ -72,10 +96,10 @@ public class TCPClient {
 				}
 				/* TODO: We have to change this local host.*/
 			    //s = new Socket(args[0], serversocket);
-				s = new Socket("localHost", serverPorts[serverPos]);
+				clientSocket = new Socket("localHost", serverPorts[serverPos]);
 				
 				if (debugging){
-					System.out.println("SOCKET=" + s);
+					System.out.println("SOCKET = " + clientSocket);
 				}
 				
 				if (!firstConnection){
@@ -85,18 +109,12 @@ public class TCPClient {
 				else{
 					System.out.println("Has successfully reconnected to server, now in port " + serverPorts[serverPos] + ".");
 				}
-			    
-				if (debugging){
-					System.out.println("We passing the socket's reference to our threads.");
-				}
 				
 				/* Resets the right socket connection. */
-			    writeThread.setSocket(s);
-			    readThread.setSocket(s);
+			    writeThread.setSocket(clientSocket);
 				
-			    String serverAnswer;
-				boolean error = false;
-				
+				/* Initializes the input stream. */
+				in = new DataInputStream(clientSocket.getInputStream());
 				
 				/* Login authentication. */
 				while(!loggedIn){
@@ -109,7 +127,7 @@ public class TCPClient {
 							System.out.printf("We already have some data saved (%s).\n", command);
 						}
 						writeThread.out.writeUTF(command);
-						serverAnswer = readThread.in.readUTF();
+						serverAnswer = in.readUTF();
 					}
 					/* The information needed for a valid login hasn't been inserted yet. */
 					else {
@@ -141,7 +159,7 @@ public class TCPClient {
 			        	/* Write into the socket connected to the server. */
 			        	writeThread.out.writeUTF(command);
 			        	/* Now, it waits for the answer from the server. */
-			        	serverAnswer = readThread.in.readUTF();
+			        	serverAnswer = in.readUTF();
 					}
 					
 					/* The server informs the client that there was some kind of error in the validation
@@ -198,18 +216,20 @@ public class TCPClient {
 					writeThread.saveObjectToFile(command.split(" ")[1], null);
 				}
 	        	
+				
+				/* Warns the writing thread that it start working. */
+		    	synchronized(connectionLock){
+		    		connectionLock.setConnectionDown(false);
+		    		connectionLock.notify();
+		    	}
+		    	
+			    /* Starts reading from the socket.
+			     * If we ever return from this method, it means that we had problems
+			     * with the socket connection.
+			     */
+			    clientRead();
+			    
 			    /* Resets the counters, the lock flags and the login variables. */
-			    synchronized(connectionLock){
-			    	connectionLock.setConnectionDown(false);
-			    	connectionLock.notifyAll();
-			    	try {
-						connectionLock.wait();
-					} catch (InterruptedException e) {
-						if (debugging)
-							System.out.println("InterruptedException in TCPClient: " + e.getMessage());
-						System.exit(0);
-					}
-			    }
 				retries = 0;
 				retrying = 0;
 				loggedIn = false;
@@ -256,9 +276,9 @@ public class TCPClient {
 			    	retrying++;
 			    }
 			} finally {
-			    if (s != null)
+			    if (clientSocket != null)
 				try {
-				    s.close();
+					clientSocket.close();
 				} catch (IOException e) {
 					if (debugging)
 						System.out.println("close:" + e.getMessage());
@@ -268,5 +288,55 @@ public class TCPClient {
 		/* TODO: Ctr+C. */
 		System.out.println("Exited");
 		System.exit(0);
+    }
+    
+    /* Method invoked to read from the socket and print, if required, on the screen. */
+    public void clientRead(){
+    	
+        try{
+        	
+            while(true){
+            	
+                /* Reads the input from the user. */
+                String data = in.readUTF();
+                /* This operation was asked by the internals of the system
+                 * and not directly by the user.
+                 */
+                System.out.println("Cenas");
+                
+                if (!isToPrint){
+                	int credits;
+                	try{
+                		credits = Integer.parseInt(data);
+                		isToPrint = true;
+                		writeThread.setUserCredtis(credits);
+                    	writeThread.interrupt();
+                	}catch(Exception e){
+                		/* This isn't the number of credits. */
+                		System.out.println(data);
+                	}
+                
+                }
+                else{
+                	System.out.println(data);
+	            	System.out.print(" >>> ");
+                }
+                
+            }
+        }catch(EOFException e){
+        	if (debugging){
+        		System.out.println("EOF in ClientReadTCP:" + e);
+        	}
+        }catch(IOException e){
+        	if (debugging){
+        		System.out.println("IO in ClientReadTCP:" + e);
+        	}
+        	System.out.println("The server is down. Please wait while we try to reconnect...");
+        	return;
+        }
+    }
+    
+    public void setIsToPrint(boolean value){
+    	isToPrint = value;
     }
 }
