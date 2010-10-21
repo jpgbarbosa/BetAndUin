@@ -24,9 +24,6 @@ public class GlobalDataBase {
 	private Hashtable <String, ClientInfo> clientsDatabase;
 	protected BetScheduler betScheduler;
 	
-	/*Set to true if you want the program to display debugging messages.*/
-	private Boolean debugging = true;
-	
 	/* The number of the last game, so the BetScheduler can keep track of it
 	 * even when the server goes down and is restarted. If not successful, we
 	 * use the default initial number.
@@ -48,8 +45,8 @@ public class GlobalDataBase {
 		 */
 		if (clientsDatabase == null){
 			
-			if (debugging){
-				System.out.println("We failed loading the database from file.");
+			if (Constants.DEBUGGING_SERVER){
+				System.out.println("GlobalDataBase: We failed loading the database from file.");
 			}
 			
 			clientsDatabase = new Hashtable <String, ClientInfo>();
@@ -91,14 +88,14 @@ public class GlobalDataBase {
 	 
 	    }
 	    catch(FileNotFoundException fe){
-	    	if (debugging){
-	    		System.out.println("FileNotFoundException : " + fe);
+	    	if (Constants.DEBUGGING_SERVER){
+	    		System.out.println("GlobalDataBase: FileNotFoundException : " + fe);
 	    	}
 	    	return -1;
 	    }
 	    catch(IOException ioe){
-	    	if (debugging){
-	    		System.out.println("IOException in ClientsStorage (saveIntToFile) : " + ioe);
+	    	if (Constants.DEBUGGING_SERVER){
+	    		System.out.println("GlobalDataBase: IOException in ClientsStorage (saveIntToFile) : " + ioe);
 	    	}
 	    	return -1;
 	    }
@@ -139,8 +136,8 @@ public class GlobalDataBase {
 	 
 	    }catch(IOException e){
 			/* There was an error. */
-			if (debugging){
-				System.out.println("IOException in ClientsStorage (saveIntToFile): " + e);
+			if (Constants.DEBUGGING_SERVER){
+				System.out.println("GlobalDataBase: IOException in ClientsStorage (saveIntToFile): " + e);
 			}
 		}
 	}

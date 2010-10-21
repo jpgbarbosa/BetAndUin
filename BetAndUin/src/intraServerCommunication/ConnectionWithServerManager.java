@@ -34,8 +34,6 @@ import common.Constants;
  */
 
 public class ConnectionWithServerManager extends Thread{
-	/*Set to true if you want the program to display debugging messages.*/
-	private boolean debugging = true;
 
 	/* Connection variables. */
 	private int serverPort;
@@ -119,8 +117,8 @@ public class ConnectionWithServerManager extends Thread{
 				partnerAnswer = "I_M_ALREADY_PRIMARY_SERVER";
 				isPrimaryServer = false;
 				
-				if (debugging){
-					System.out.println("The STONITH link confirmed the other server is alive.");
+				if (Constants.DEBUGGING_SERVER){
+					System.out.println("ConnectionWithServerManager: The STONITH link confirmed the other server is alive.");
 				}
 				
 			} catch (Exception e) {
@@ -128,8 +126,8 @@ public class ConnectionWithServerManager extends Thread{
 				partnerAnswer = "NOT_RECEIVED";
 				isPrimaryServer = true;
 				
-				if (debugging){
-					System.out.println("The STONITH link confirmed the other server is really dead.");
+				if (Constants.DEBUGGING_SERVER){
+					System.out.println("ConnectionWithServerManager: The STONITH link confirmed the other server is really dead.");
 				}
 				
 			} finally {
@@ -151,8 +149,8 @@ public class ConnectionWithServerManager extends Thread{
 		
 		
 		while(true){
-			if (debugging){
-				System.out.println("I'm primary server?: " + isPrimaryServer);
+			if (Constants.DEBUGGING_SERVER){
+				System.out.println("ConnectionWithServerManager: I'm primary server?: " + isPrimaryServer);
 			}
 			synchronized(msgToReceiveList){
 				/* We have some messages to read. */
@@ -165,7 +163,7 @@ public class ConnectionWithServerManager extends Thread{
 			if ((partnerAnswer.equals("OK"))
 					|| (partnerAnswer.equals("I_WILL_BE_PRIMARY_SERVER"))){
 				
-				if (debugging){
+				if (Constants.DEBUGGING_SERVER){
 					System.out.println("ConnectionWithServerManager: We fulfilled the first condition.");
 				}
 				
@@ -181,8 +179,8 @@ public class ConnectionWithServerManager extends Thread{
 				}
 				
 				/* We can now terminate the receiveMensager, it won't be needed any longer. */
-				if (debugging){
-					System.out.println("We are going to terminate the receive messenger thread.");
+				if (Constants.DEBUGGING_SERVER){
+					System.out.println("ConnectionWithServerManager: We are going to terminate the receive messenger thread.");
 				}
 				receiveMessenger.terminateThread();
 				sendTerminateMessage();
@@ -212,7 +210,7 @@ public class ConnectionWithServerManager extends Thread{
 					 * just sent the first message. */
 					|| (partnerAnswer.equals("I_WILL_BE_PRIMARY_SERVER") && !isDefaultServer)){
 				
-				if (debugging){
+				if (Constants.DEBUGGING_SERVER){
 					System.out.println("ConnectionWithServerManager: We fulfilled the third condition.");
 				}
 				
@@ -231,7 +229,7 @@ public class ConnectionWithServerManager extends Thread{
 			/* If we ever get here, it means that we are not the primary server.*/
 			while (!isPrimaryServer){
 				
-				if (debugging){
+				if (Constants.DEBUGGING_SERVER){
 					System.out.println("ConnectionWithServerManager: We fulfilled the fourth condition.");
 				}
 				
@@ -280,8 +278,8 @@ public class ConnectionWithServerManager extends Thread{
 					 * start sending messages again.
 					 */
 					sendMessage("I_WILL_BE_PRIMARY_SERVER");
-					if (debugging){
-						System.out.println("The STONITH link confirmed the other server is alive.");
+					if (Constants.DEBUGGING_SERVER){
+						System.out.println("ConnectionWithServerManager: The STONITH link confirmed the other server is alive.");
 					}
 					
 				} catch (Exception e) {
@@ -295,8 +293,8 @@ public class ConnectionWithServerManager extends Thread{
 						}
 					}
 					
-					if (debugging){
-						System.out.println("The STONITH link confirmed the other server is really dead.");
+					if (Constants.DEBUGGING_SERVER){
+						System.out.println("ConnectionWithServerManager: The STONITH link confirmed the other server is really dead.");
 					}
 					
 				} finally {
@@ -320,8 +318,8 @@ public class ConnectionWithServerManager extends Thread{
 				 */
 				
 				
-				if (debugging){
-					System.out.println("We are now going to stop sending messages till our partner " +
+				if (Constants.DEBUGGING_SERVER){
+					System.out.println("ConnectionWithServerManager: We are now going to stop sending messages till our partner " +
 							" sends us a message.");
 				}
 				
@@ -345,7 +343,7 @@ public class ConnectionWithServerManager extends Thread{
 	
 	public void sendMessage(String msgToSend){
 		/* Sends a message to the partner port. */
-		if (debugging){
+		if (Constants.DEBUGGING_SERVER){
 			System.out.println("We are sending " + msgToSend + " to the other server, in port " + partnerPort +  ".");
 		}
 		
@@ -367,8 +365,8 @@ public class ConnectionWithServerManager extends Thread{
 		/* Sends a terminate thread message to our receive messenger. */
 		String message = "TERMINATE THREAD";
 		
-		if (debugging){
-			System.out.println("We are sending a terminate thread message.");
+		if (Constants.DEBUGGING_SERVER){
+			System.out.println("ConnectionWithServerManager: We are sending a terminate thread message.");
 		}
 		
 		try {
@@ -379,7 +377,9 @@ public class ConnectionWithServerManager extends Thread{
 			aSocket.send(request);
 			
 		} catch (IOException e){
-			System.out.println("IO from sendTerminateThread (ConnectionWithServerManager): " + e.getMessage());
+			if (Constants.DEBUGGING_SERVER){
+				System.out.println("ConnectionWithServerManager: IO from sendTerminateThread: " + e.getMessage());
+			}
 		}
 	}
 	

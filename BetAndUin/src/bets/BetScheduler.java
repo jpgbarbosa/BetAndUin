@@ -1,17 +1,10 @@
 package bets;
 
-
 import java.util.Iterator;
 import java.util.Vector;
-
 import server.ActiveClients;
 import server.GlobalDataBase;
-
-
 import common.Constants;
-
-
-
 
 public class BetScheduler extends Thread{
 	/* Variables to save information related to the current matches. */

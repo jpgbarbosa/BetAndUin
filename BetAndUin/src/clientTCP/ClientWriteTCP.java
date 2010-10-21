@@ -1,4 +1,5 @@
 package clientTCP;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.EOFException;
@@ -15,14 +16,9 @@ import java.util.Vector;
 import common.ConnectionLock;
 import common.Constants;
 
-
-
-
 public class ClientWriteTCP extends Thread {
-	/*Set to true if you want the program to display debugging messages.*/
-	private boolean debugging = true;
 	
-	//This thread will be responsible for handling problems with the link to the server.
+	/* This thread will be responsible for handling problems with the link to the server. */
 	private String username;
     protected DataOutputStream out;
     private Socket clientSocket;
@@ -51,8 +47,8 @@ public class ClientWriteTCP extends Thread {
     			try {
     				connectionLock.wait();
 				} catch (InterruptedException e) {
-					if (debugging){
-						System.out.println("ClientWriteTCP Thread interrupted.");
+					if (Constants.DEBUGGING_CLIENT){
+						System.out.println("ClientWriteTCP: Thread interrupted.");
 					}
 				}
     		}
@@ -61,9 +57,9 @@ public class ClientWriteTCP extends Thread {
     	/* Shows the main menu. */
     	try {
 			out.writeUTF("show menu");
-		} catch (IOException e1) {
-			if(debugging){
-				e1.printStackTrace();
+		} catch (IOException e) {
+			if(Constants.DEBUGGING_CLIENT){
+				System.out.println("ClientWriteTCP: IOException: " + e.getMessage());
 			}
 		}
     	
@@ -140,22 +136,22 @@ public class ClientWriteTCP extends Thread {
 	            	    		msgBuffer.add(userInput);
 			            		saveObjectToFile(username, msgBuffer);
 			            		System.out.println("The server is down, so we will save the message to send later.");
-			            		System.out.print(">>> ");
+			            		System.out.print(" >>> ");
 	            	    	}
 	            	    	else{
 	            	    		System.out.println("The connection is down and this operation couldn't be completed.");
-		            			System.out.print(">>> ");
+		            			System.out.print(" >>> ");
 	            	    	}   			
 	            		}
 	            	}
 	            }
 	        }catch(EOFException e){
-	        	if (debugging){
+	        	if (Constants.DEBUGGING_CLIENT){
 	        		System.out.println("ClientWriteTCP EOF:" + e);
 				}
 	        	
 	        }catch(IOException e){
-	        	if (debugging){
+	        	if (Constants.DEBUGGING_CLIENT){
 	        		System.out.println("ClientWriteTCP IO:" + e);
 				}
 	        	

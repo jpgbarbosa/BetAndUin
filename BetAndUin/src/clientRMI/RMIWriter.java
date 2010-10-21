@@ -17,10 +17,7 @@ import common.Constants;
 
 import server.ClientOperations;
 
-
 public class RMIWriter extends Thread{
-	/*Set to true if you want the program to display debugging messages.*/
-	private Boolean debugging = true;
 	
 	/* A reference to the thread that holds the main server, to which this RMIWriter
 	 * is bounded. */
@@ -51,8 +48,8 @@ public class RMIWriter extends Thread{
     			try {
     				connectionLock.wait();
 				} catch (InterruptedException e) {
-					if (debugging){
-						System.out.println("ClientWriteRMI Thread interrupted.");
+					if (Constants.DEBUGGING_CLIENT){
+						System.out.println("ClientWriteRMI: Thread interrupted.");
 					}
 				}
     		}
@@ -74,19 +71,19 @@ public class RMIWriter extends Thread{
 	            			msgBuffer.add(userInput);
 		            		saveObjectToFile(username, msgBuffer);
 		            		System.out.println("The server is down, so we will save the message to send later.");
-		            		System.out.print(">>> ");
+		            		System.out.print(" >>> ");
 	            		}
 	            		/* We can't execute this operation, because it is not a send. */
 	            		else{
 	            			System.out.println("The connection is down and this operation couldn't be completed.");
-	            			System.out.print(">>> ");
+	            			System.out.print(" >>> ");
 	            		}
 	            	}
 	            	/* The connection is up, so we can easily send a message. */
 	            	else if(!connectionLock.isConnectionDown()){
 						serverAnswer = parseFunction(username, stringSplitted, userInput, server, reader);
 						System.out.println(serverAnswer);
-						System.out.print("\n>>> ");
+						System.out.print("\n >>> ");
 	            	}
             	}
             }catch(RemoteException e){
@@ -102,12 +99,12 @@ public class RMIWriter extends Thread{
         			msgBuffer.add(userInput);
             		saveObjectToFile(username, msgBuffer);
             		System.out.println("The server is down, so we will save the message to send later.");
-            		System.out.print(">>> ");
+            		System.out.print(" >>> ");
         		}
         		/* We can't execute this operation, because it is not a send. */
         		else{
         			System.out.println("The connection is down and this operation couldn't be completed.");
-        			System.out.print(">>> ");
+        			System.out.print(" >>> ");
         		}
         		
         		/* Updates the state of the connection. */
@@ -116,12 +113,12 @@ public class RMIWriter extends Thread{
             		connectionLock.notify();
         		}
 	        } catch (IOException e) {
-	        	if (debugging)
-	        		System.out.println("IOException in RMIWriter: " + e.getMessage());
+	        	if (Constants.DEBUGGING_CLIENT)
+	        		System.out.println("RMIWriter IOException: " + e.getMessage());
 	        	System.exit(-1);
 			}catch (Exception e) {
-				if (debugging)
-					System.out.println("Exception in RMIWriter: " + e.getMessage());
+				if (Constants.DEBUGGING_CLIENT)
+					System.out.println("RMIWriter Exception: " + e.getMessage());
 	        	
 				System.exit(-1);
 			}
@@ -268,11 +265,11 @@ public class RMIWriter extends Thread{
 			oS = new ObjectOutputStream(new FileOutputStream(filename));
 			oS.writeObject(obj);
 		} catch (FileNotFoundException e) {
-			if(debugging)
-				System.out.println("The " + filename + " file couldn't be found...");
+			if(Constants.DEBUGGING_CLIENT)
+				System.out.println("RMIWriter: The " + filename + " file couldn't be found...");
 		} catch (IOException e) {
-			if(debugging)
-				System.out.println("IO in saveToFile (ClientsStorage): " + e);
+			if(Constants.DEBUGGING_CLIENT)
+				System.out.println("RMIWriter: IO in saveToFile (ClientsStorage): " + e);
 		}
 	}
 	
@@ -286,13 +283,19 @@ public class RMIWriter extends Thread{
 			iS = new ObjectInputStream(new FileInputStream(filename));
 			return iS.readObject();
 		} catch (FileNotFoundException e) {
-			System.out.println("The " + filename + " file couldn't be found...");
+			if (Constants.DEBUGGING_CLIENT){
+				System.out.println("RMIWriter: The " + filename + " file couldn't be found...");
+			}
 			return null;
 		} catch (ClassNotFoundException e) {
-			System.out.println("ClassNotFound in readFromFile (ClientsStorage): " + e);
+			if (Constants.DEBUGGING_CLIENT){
+				System.out.println("RMIWriter: ClassNotFound in readFromFile (ClientsStorage): " + e);
+			}
 			return null;
 		}catch (IOException e) {
-			System.out.println("IO in readFromFile (ClientsStorage): " + e);
+			if (Constants.DEBUGGING_CLIENT){
+				System.out.println("RMIWriter: IO in readFromFile (ClientsStorage): " + e);
+			}
 			return null;
 		}
 	}

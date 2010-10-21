@@ -14,8 +14,6 @@ import common.Constants;
 
 /* Thread used to take care of each communication channel between the active server and a given client. */
 class TCPClientThread extends Thread {
-	/*Set to true if you want the program to display debugging messages.*/
-	private Boolean debugging = false;
 	
 	/* The betScheduler so we can send the matches' information back to the client. */
 	private BetScheduler betScheduler; 
@@ -142,16 +140,16 @@ class TCPClientThread extends Thread {
         	 * of active clients.
         	 */
         	activeClients.removeClient(username);
-        	if (debugging){
-        		System.out.println("ConnectionChat EOF:" + e);
+        	if (Constants.DEBUGGING_SERVER){
+        		System.out.println("TCPClientThread: ConnectionChat EOF:" + e);
         	}
         }catch(IOException e){
         	/* The client is leaving. Consequently, we have to remove it from the list
         	 * of active clients.
         	 */
         	activeClients.removeClient(username);
-        	if (debugging){
-        		System.out.println("ConnectionChat IO:" + e);
+        	if (Constants.DEBUGGING_SERVER){
+        		System.out.println("TCPClientThread: ConnectionChat IO:" + e);
         	}
         }
     }
@@ -243,8 +241,8 @@ class TCPClientThread extends Thread {
         	}
         	catch(NumberFormatException nFE) {
         		/* The user hasn't inserted a number for one of the required arguments. */
-        		if (debugging){
-        			System.out.println("Not an integer.");
+        		if (Constants.DEBUGGING_SERVER){
+        			System.out.println("TCPClientThread: Not an integer.");
         		}
         		
         	    answer = "Invalid game number or amount of credits!";

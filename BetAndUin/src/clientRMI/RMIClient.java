@@ -33,9 +33,6 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 		boolean loggedIn = false;
 		ClientOperations server = null;
 		
-		/*Set to true if you want the program to display debugging messages.*/
-		boolean debugging = false;
-		
 		/* This is for knowing if we are connecting for the first time or instead, we
 		 * are trying to reconnect. It's only use is given a few lines down when we want
 		 * to display a message and so it is not necessary for the correct functioning of
@@ -139,7 +136,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 			        		/* Shows the main menu. */
 			        		System.out.println(server.clientShowMenu());
 			        		rmiWriter.setUserName(username);
-			        		System.out.print(">>> ");
+			        		System.out.print(" >>> ");
 			        		loggedIn = true;
 			        	}
 			        	
@@ -175,7 +172,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 			        		/* Shows the main menu. */
 			        		System.out.println(server.clientShowMenu());
 			        		rmiWriter.setUserName(username);
-			        		System.out.print(">>> ");
+			        		System.out.print(" >>> ");
 			        		loggedIn = true;
 			        	}
 					}
@@ -219,20 +216,20 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 			    	try {
 						connectionLock.wait();
 					} catch (InterruptedException e) {
-						if (debugging){
-							e.printStackTrace();
+						if (Constants.DEBUGGING_CLIENT){
+							System.out.println("RMIWriter InterruptedException: " + e.getMessage());
 						}
 					}
 			    }
 			    
 			/* The list of possible exceptions to be handled. */
 			} catch (NotBoundException e) {
-				if (debugging){
-					System.out.println("NotBoundException:" + e.getMessage());
+				if (Constants.DEBUGGING_CLIENT){
+					System.out.println("RMIClient: NotBoundException:" + e.getMessage());
 				}
 			}catch (RemoteException e) {
-				if (debugging){
-					System.out.println("RemoteException:" + e.getMessage());
+				if (Constants.DEBUGGING_CLIENT){
+					System.out.println("RMIClient: RemoteException:" + e.getMessage());
 				}
 			    retries++;
 			    /* In this case, it's the first connection, and the server is already down.
@@ -240,9 +237,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 			     */
 			    if (retries == 1 && retrying == 0){
 			    	serverPos = (++serverPos)%noServerPorts;
-			    	if (debugging){
-			    		System.out.println("Connection Lost... Trying to connect to server in port " + serverPorts[serverPos] + ".");
-			    	}
+			    	System.out.println("Connection lost... Trying to connect to server in port " + serverPorts[serverPos] + ".");
 			    }
 			    /* We have retried the connection at least once.
 			     * Consequently, the thread shall wait WAITING_TIME milliseconds 
@@ -262,8 +257,8 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 			    	retrying++;
 			    }
 			} catch (IOException e) {
-				if (debugging){
-					System.out.println("IOException:" + e.getMessage());
+				if (Constants.DEBUGGING_CLIENT){
+					System.out.println("RMIClient IOException:" + e.getMessage());
 				}
 			}
 		}
@@ -276,7 +271,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 	@Override
 	public void printUserMessage(String msg) throws java.rmi.RemoteException{
 		System.out.println(msg + "\n");
-		System.out.print(">>> ");
+		System.out.print(" >>> ");
 	}
 	    
     @Override

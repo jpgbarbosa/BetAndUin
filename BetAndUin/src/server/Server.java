@@ -47,9 +47,6 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 
 	private static final long serialVersionUID = 1L; 
 	
-	/*Set to true if you want the program to display debugging messages.*/
-	static private Boolean debugging = true;
-	
 	/* The object responsible for dealing with the information related to the clients logged in the system. */
     private ActiveClients activeClients  = new ActiveClients();;
     /* The object responsible for creating the matches and setting the results. */
@@ -75,23 +72,19 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     	int serverNumber;
     	int sPort = 0, pPort = 0,sRMIPort = 0, pStonith = 0, sStonith = 0;
     	Server server = null;
-    	boolean stonithScenario = false;
     	
     	 /* The user has introduced less than three options by the command line, so we can't carry on. */
         if (args.length != 1 && args.length != 2){
         	System.out.println("java TCPServer serverNumber isPrimaryServer (for this last" +
-        			"option, type primary or secondary) stonithScenario (optional)");
+        			"option, type primary or secondary) debugging (optional)");
     	    System.exit(0);
         }
     	
-        /* Tests whether we are under the STONITH scenario or not. */
-        if (args.length == 2 && args[1].toLowerCase().equals("stonith")){
-        	if (debugging){
-        		System.out.println("We actived the STONITH scenario.");
-        	}
-        	stonithScenario = true;
-        }
+        System.out.println("You can activate the flags 'debugging' in the code to see\n" + "the evolution of the server state.\n");
         
+        if (args.length == 2 && args[1].equalsIgnoreCase("debugging")){
+        	Constants.DEBUGGING_SERVER = true;
+        }
         /* We read from the command line the two port numbers passed. */
         serverNumber = Integer.parseInt(args[0]);
         if (serverNumber == 1){
@@ -100,19 +93,10 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
         	
         	/* Port configurations. */
         	sPort = Constants.FIRST_TCP_SERVER_PORT;
+        	pPort = Constants.SECOND_TCP_SERVER_PORT;
         	sRMIPort = Constants.FIRST_RMI_SERVER_PORT;
         	sStonith = Constants.STONITH_FIRST_SERVER_PORT;
         	pStonith = Constants.STONITH_SECOND_SERVER_PORT;
-        	
-        	/* We are testing the STONITH scenario, where we simulate
-        	 * a failure in the link between the two nodes.
-        	 */
-        	if (stonithScenario){
-        		pPort = Constants.SECOND_TCP_SERVER_PORT + 1;
-        	}
-        	else{
-        		pPort = Constants.SECOND_TCP_SERVER_PORT;
-        	}
         }
         else if (serverNumber == 2){
         	/* We are default server. */
@@ -120,27 +104,18 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
         	
         	/* Port configurations. */
         	sPort = Constants.SECOND_TCP_SERVER_PORT;
+        	pPort = Constants.FIRST_TCP_SERVER_PORT;
         	sRMIPort = Constants.SECOND_RMI_SERVER_PORT;
         	sStonith = Constants.STONITH_SECOND_SERVER_PORT;
         	pStonith = Constants.STONITH_FIRST_SERVER_PORT;
-        	
-        	/* We are testing the STONITH scenario, where we simulate
-        	 * a failure in the link between the two nodes.
-        	 */
-        	if (stonithScenario){
-        		pPort = Constants.FIRST_TCP_SERVER_PORT + 1;
-        	}
-        	else{
-        		pPort = Constants.FIRST_TCP_SERVER_PORT;
-        	}
         }
         else{
         	System.out.println("Invalid server number.");
         	System.exit(0);
         }
         
-        if (debugging){
-        	System.out.printf("We are server %d, our partner is %d.\n", sPort, pPort);
+        if (Constants.DEBUGGING_SERVER){
+        	System.out.printf("Server: We are server %d, our partner is %d.\n", sPort, pPort);
         }
     	try {
 			server = new Server(defaultS, sPort, pPort, sRMIPort, sStonith, pStonith);
@@ -157,8 +132,8 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     		synchronized(changeStatusLock){
     			try{
             		if (!changeStatusLock.isInitialProcessConcluded()){
-            			if (debugging){
-            				System.out.println("We are temporarily sleeping while the primary server is elected...");
+            			if (Constants.DEBUGGING_SERVER){
+            				System.out.println("Server: We are temporarily sleeping while the primary server is elected...");
             			}
             			/* If this server is elected as secondary server, we won't move from here till
             			 * our status changes once again.
@@ -177,23 +152,23 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     		synchronized (changeStatusLock){
     			while (!changeStatusLock.isPrimaryServer()){
 	    			try{
-	    				if (debugging){
-							System.out.println("The server is going to sleep...");
+	    				if (Constants.DEBUGGING_SERVER){
+							System.out.println("Server: The server is going to sleep...");
 						}
 	            		changeStatusLock.wait();
 					} catch (InterruptedException e) {
 						/*We have been awaken by the connection manager, keep going.*/
-						if (debugging){
-							System.out.println("The server has been awakened!");
+						if (Constants.DEBUGGING_SERVER){
+							System.out.println("Server: The server has been awakened!");
 						}
 					}
 	    		}
     		}
     		/* We open the socket connection. */
             ServerSocket listenSocket = new ServerSocket(serverPort);
-            if (debugging){
-            	System.out.println("Listening at port  " + serverPort);
-            	System.out.println("LISTEN SOCKET=" + listenSocket);
+            if (Constants.DEBUGGING_SERVER){
+            	System.out.println("Server: Listening at port  " + serverPort);
+            	System.out.println("Server: LISTEN SOCKET=" + listenSocket);
             }
     		
     		/* We are the primary server, so we can communicate with clients. */
@@ -208,8 +183,8 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     			Registry registry = LocateRegistry.createRegistry(rmiPort);
     			registry.rebind("BetAndUinServer", rmiServices);
     			
-    			if (debugging){
-    				System.out.println("RMI Server ready.");
+    			if (Constants.DEBUGGING_SERVER){
+    				System.out.println("Server: RMI Server ready.");
     			}
     		} catch (RemoteException re) {
     			System.out.println("Exception in Server RMI: " + re);
@@ -219,8 +194,8 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
             while(true) {
                 Socket clientSocket = listenSocket.accept(); // BLOQUEANTE
                 
-                if (debugging){
-                	System.out.println("CLIENT_SOCKET = " + clientSocket);
+                if (Constants.DEBUGGING_SERVER){
+                	System.out.println("Server: CLIENT_SOCKET = " + clientSocket);
                 }
                 new TCPClientThread(this, clientSocket, activeClients, betScheduler, database);
             }

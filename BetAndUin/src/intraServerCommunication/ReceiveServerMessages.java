@@ -1,15 +1,13 @@
 package intraServerCommunication;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-
-
+import common.Constants;
 
 public class ReceiveServerMessages extends Thread{
-	/*Set to true if you want the program to display debugging messages.*/
-	private Boolean debugging = true;
 	
 	private DatagramSocket aSocket = null;
 	private String msg;
@@ -30,8 +28,8 @@ public class ReceiveServerMessages extends Thread{
 			/* Opens the Datagram socket. */
 			aSocket = new DatagramSocket(serverPort);
 			
-			if (debugging){
-				System.out.println("Socket Datagram writing in port " + serverPort + ".");
+			if (Constants.DEBUGGING_SERVER){
+				System.out.println("ReceiveServerMessages: Socket Datagram writing in port " + serverPort + ".");
 			}
 			
 			while(true){
@@ -41,13 +39,13 @@ public class ReceiveServerMessages extends Thread{
 				msg=new String(request.getData(), 0, request.getLength());
 				
 				if (terminateThread){
-					if (debugging){
-						System.out.println("We are terminating the ReceiveServerMessages thread.");
+					if (Constants.DEBUGGING_SERVER){
+						System.out.println("ReceiveServerMessages: We are terminating the ReceiveServerMessages thread.");
 						return;
 					}
 				}
-				if (debugging){
-					System.out.println("This server has received a " + msg + ".");
+				if (Constants.DEBUGGING_SERVER){
+					System.out.println("ReceiveServerMessages: This server has received a " + msg + ".");
 				}
 				
 				synchronized (msgList){

@@ -9,8 +9,6 @@ import common.Constants;
 
 
 public class TCPClient {
-	/*Set to true if you want the program to display debugging messages.*/
-	private boolean debugging = false;
 	
 	/* This is for knowing if we are connecting for the first time or instead, we
 	 * are trying to reconnect. It's only use is given a few lines down when we want
@@ -73,9 +71,7 @@ public class TCPClient {
 		String serverAnswer;
 		boolean error = false;
 		
-		
 		writeThread =  new ClientWriteTCP(connectionLock);
-		//readThread = new ClientReadTCP(connectionLock, writeThread);
 		writeThread.setReadThread(this);
 		
 		/* Displays an initial message, to ensure the user the application hasn't frozen. */
@@ -89,8 +85,8 @@ public class TCPClient {
 				    try {
 						Thread.sleep(Constants.CLIENT_WAITING_TIME);
 					} catch (InterruptedException e) {
-						if (debugging)
-							System.out.println("This thread was interrupted while sleeping.\n");
+						if (Constants.DEBUGGING_CLIENT)
+							System.out.println("TCPClient: This thread was interrupted while sleeping.\n");
 						System.exit(0);
 					}
 				}
@@ -98,8 +94,8 @@ public class TCPClient {
 			    //s = new Socket(args[0], serversocket);
 				clientSocket = new Socket("localHost", serverPorts[serverPos]);
 				
-				if (debugging){
-					System.out.println("SOCKET = " + clientSocket);
+				if (Constants.DEBUGGING_CLIENT){
+					System.out.println("TCPClient: SOCKET = " + clientSocket);
 				}
 				
 				if (!firstConnection){
@@ -123,16 +119,16 @@ public class TCPClient {
 					 * so the end user won't have to reinsert them once again.
 					 */
 					if(!(command.equals("")) && !error){
-						if (debugging){
-							System.out.printf("We already have some data saved (%s).\n", command);
+						if (Constants.DEBUGGING_CLIENT){
+							System.out.printf("TCPClient: We already have some data saved (%s).\n", command);
 						}
 						writeThread.out.writeUTF(command);
 						serverAnswer = in.readUTF();
 					}
 					/* The information needed for a valid login hasn't been inserted yet. */
 					else {
-						if (debugging){
-							System.out.println("We don't have any login saved.");
+						if (Constants.DEBUGGING_CLIENT){
+							System.out.println("TCPClient: We don't have any login saved.");
 						}
 						
 						/* Prints on the screen the information necessary to take the first step
@@ -237,16 +233,16 @@ public class TCPClient {
 			    
 			/* The list of possible exceptions to be handled. */
 			} catch (UnknownHostException e) {
-				if (debugging){
-					System.out.println("Sock:" + e.getMessage());
+				if (Constants.DEBUGGING_CLIENT){
+					System.out.println("TCPClient: Sock:" + e.getMessage());
 				}
 			} catch (EOFException e) {
-				if (debugging){
-					System.out.println("EOF:" + e.getMessage());
+				if (Constants.DEBUGGING_CLIENT){
+					System.out.println("TCPClient: EOF:" + e.getMessage());
 				}
 			} catch (IOException e) {
-				if (debugging){
-					System.out.println("IO:" + e.getMessage());
+				if (Constants.DEBUGGING_CLIENT){
+					System.out.println("TCPClient: IO:" + e.getMessage());
 				}
 			    retries++;
 			    /* In this case, it's the first connection, and the server is already down.
@@ -254,8 +250,8 @@ public class TCPClient {
 			     */
 			    if (retries == 1 && retrying == 0){
 			    	serverPos = (++serverPos)%noServerPorts;
-			    	if (debugging){
-			    		System.out.println("Trying to connect to server in port " + serverPorts[serverPos] + ".");
+			    	if (Constants.DEBUGGING_CLIENT){
+			    		System.out.println("TCPClient: Trying to connect to server in port " + serverPorts[serverPos] + ".");
 			    	}
 			    }
 			    /* We have retried the connection at least once.
@@ -280,8 +276,8 @@ public class TCPClient {
 				try {
 					clientSocket.close();
 				} catch (IOException e) {
-					if (debugging)
-						System.out.println("close:" + e.getMessage());
+					if (Constants.DEBUGGING_CLIENT)
+						System.out.println("TCPClient: Close:" + e.getMessage());
 				}
 			}
 		}
@@ -302,8 +298,6 @@ public class TCPClient {
                 /* This operation was asked by the internals of the system
                  * and not directly by the user.
                  */
-                System.out.println("Cenas");
-                
                 if (!isToPrint){
                 	int credits;
                 	try{
@@ -324,12 +318,12 @@ public class TCPClient {
                 
             }
         }catch(EOFException e){
-        	if (debugging){
-        		System.out.println("EOF in ClientReadTCP:" + e);
+        	if (Constants.DEBUGGING_CLIENT){
+        		System.out.println("TCPClient: EOF in ClientReadTCP:" + e);
         	}
         }catch(IOException e){
-        	if (debugging){
-        		System.out.println("IO in ClientReadTCP:" + e);
+        	if (Constants.DEBUGGING_CLIENT){
+        		System.out.println("TCPClient: IO in ClientReadTCP:" + e);
         	}
         	System.out.println("The server is down. Please wait while we try to reconnect...");
         	return;

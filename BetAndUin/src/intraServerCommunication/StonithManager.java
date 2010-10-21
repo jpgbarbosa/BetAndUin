@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 
+import common.Constants;
+
 public class StonithManager extends Thread{
-	/*Set to true if you want the program to display debugging messages.*/
-	boolean debugging = true;
 	
 	/* The STONITH port. */
 	private int stonithPort;
@@ -25,9 +25,9 @@ public class StonithManager extends Thread{
 		try {
 			/* First, we open the STONITH port.*/
 			listenSocket = new ServerSocket(stonithPort);
-			if (debugging){
-	        	System.out.println("Listening at port  " + stonithPort);
-	        	System.out.println("LISTEN SOCKET=" + listenSocket);
+			if (Constants.DEBUGGING_SERVER){
+	        	System.out.println("StonithManager: Listening at port  " + stonithPort);
+	        	System.out.println("StonithManager: LISTEN SOCKET=" + listenSocket);
 	        }
 			while (true){
 				/* Then, if the other client tries to connect to this port, 
@@ -64,22 +64,25 @@ class StonithChanger extends Thread{
 		reader = new BufferedReader(new InputStreamReader(System.in));
 		int port = initialPort;
 		
+		System.out.println("You are now in the regular scenario.");
 		while(true){
 			try{
+				System.out.println("\nPress enter to change the testing scenarion.");
 				reader.readLine();
 				
-				System.out.println("\nWE ARE CHANGING PORTS!!!\n");
-				
-				/* Subtracts one unit to the port because we begun
-				 * with the STONITH scenario
-				 * port. */
+				/* Subtracts one unit to the port because we were at the
+				 * STONITH scenario and want to return to the regular one.
+				 */
 				if (port % 2 == 1){
 					port--;
+					System.out.println("You are now in the regular scenario.");
 				}
-				/* Adds one unit to the port because we begun with the normal
-				 * scenario. */
+				/* Adds one unit to the port because we were at the
+				 * regular scenario and want to go to the STONITH one.
+				 */
 				else{
 					port++;
+					System.out.println("You are now in the STONITH scenario.");
 				}
 				
 				connectionWithServerManager.setPartnetPort(port);

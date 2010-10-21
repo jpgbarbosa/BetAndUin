@@ -28,6 +28,10 @@ public class Constants {
 	public static int SECOND_RMI_SERVER_PORT = 13000;
 	
 	public static int STONITH_FIRST_SERVER_PORT = 8000;
-	public static int STONITH_SECOND_SERVER_PORT = 9000;	
+	public static int STONITH_SECOND_SERVER_PORT = 9000;
+	
+	/*Set to true if you want the program to display debugging messages.*/
+	public static boolean DEBUGGING_SERVER = false;
+	public static boolean DEBUGGING_CLIENT = false;
 	
 }
