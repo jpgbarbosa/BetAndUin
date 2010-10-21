@@ -59,7 +59,10 @@ public class ConnectionWithServerManager extends Thread{
 	private int partnerStonithPort;
 	private int stonithPort;
 	
-	public ConnectionWithServerManager(int sPort, int pPort, int sStonith, int pStonith, boolean isDefaultServer, ChangeStatusLock lock){
+	/* The IP addresses for the partner server */
+	private String partnerIpAddress;
+	
+	public ConnectionWithServerManager(int sPort, int pPort, int sStonith, int pStonith, boolean isDefaultServer, ChangeStatusLock lock, String pIp){
 		serverPort = sPort;
 		partnerPort = pPort;
 		this.isDefaultServer = isDefaultServer;
@@ -68,6 +71,7 @@ public class ConnectionWithServerManager extends Thread{
 		statusLock = lock;
 		partnerStonithPort = pStonith;
 		stonithPort = sStonith;
+		partnerIpAddress = pIp;
 		
 		/* Initializes the UDP socket to send messages to the other server. */
 		try {
@@ -109,10 +113,9 @@ public class ConnectionWithServerManager extends Thread{
 		/* This means the other server hasn't responded. */
 		if (repetitions == limit){
 			/* Now, we have to test the STONITH scenario. */
-			/* TODO: We have to change this local host. */
 			Socket s = null;
 			try {
-				s = new Socket("localHost", partnerStonithPort);
+				s = new Socket(partnerIpAddress, partnerStonithPort);
 				/* The other server is alive. */
 				partnerAnswer = "I_M_ALREADY_PRIMARY_SERVER";
 				isPrimaryServer = false;
@@ -262,10 +265,9 @@ public class ConnectionWithServerManager extends Thread{
 				 */
 				
 				/* We have to test the STONITH scenario. */
-				/* TODO: We have to change this local host. */
 				Socket s = null;
 				try {
-					s = new Socket("localHost", partnerStonithPort);
+					s = new Socket(partnerIpAddress, partnerStonithPort);
 					/* The other server is alive. */
 					isPrimaryServer = false;
 					

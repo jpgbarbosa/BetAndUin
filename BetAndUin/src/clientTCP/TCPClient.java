@@ -37,18 +37,18 @@ public class TCPClient {
     
     
 	public static void main(String args[]) {
-		// args[0] <- hostname of destination
-		if (args.length == 0) {
-		    System.out.println("java TCPClient hostname");
-		    //System.exit(0);
+		
+		if (args.length != 2) {
+		    System.out.println("java [fileName] [firstServerIpAddress] [secondServerIpAddress]");
+		    System.exit(-1);
 		}
 		
 		/* Initializes the application. */
-		new TCPClient();
+		new TCPClient(args[0], args[1]);
     }
 		
 	@SuppressWarnings("unchecked")
-	public TCPClient(){
+	public TCPClient(String ipServerOne, String ipServerTwo){
 		
 		/*The variables related to the reconnection.*/
 		int retries = 0; //The numbers of times we reconnected already to a given port.
@@ -59,11 +59,14 @@ public class TCPClient {
 		
 		/* The variables related to the server ports available. */
 		int []serverPorts = new int[2]; //The array with the two different ports.
+		String []serverIps = new String[2]; //The array with the two different ports.
 		int serverPos = 0; //The position array, which corresponds to active port.
 		int noServerPorts = serverPorts.length; //Total number of possible servers ports.
-		/* Places the two ports in the array. */
+		/* Places the two ports and IP's in the respective arrays. */
 		serverPorts[0] = Constants.FIRST_TCP_SERVER_PORT;
 		serverPorts[1] = Constants.SECOND_TCP_SERVER_PORT;
+		serverIps[0] = ipServerOne;
+		serverIps[1] = ipServerTwo;
 		
 		/* Variables to deal with the loggin. */
 		String [] stringSplitted;
@@ -90,9 +93,8 @@ public class TCPClient {
 						System.exit(0);
 					}
 				}
-				/* TODO: We have to change this local host.*/
-			    //s = new Socket(args[0], serversocket);
-				clientSocket = new Socket("localHost", serverPorts[serverPos]);
+				/* Connects to the server. */
+				clientSocket = new Socket(serverIps[serverPos], serverPorts[serverPos]);
 				
 				if (Constants.DEBUGGING_CLIENT){
 					System.out.println("TCPClient: SOCKET = " + clientSocket);
@@ -250,9 +252,7 @@ public class TCPClient {
 			     */
 			    if (retries == 1 && retrying == 0){
 			    	serverPos = (++serverPos)%noServerPorts;
-			    	if (Constants.DEBUGGING_CLIENT){
-			    		System.out.println("TCPClient: Trying to connect to server in port " + serverPorts[serverPos] + ".");
-			    	}
+			    	System.out.println("Trying to connect to server in port " + serverPorts[serverPos] + ".");
 			    }
 			    /* We have retried the connection at least once.
 			     * Consequently, the thread shall wait WAITING_TIME milliseconds 
@@ -260,6 +260,7 @@ public class TCPClient {
 			     */
 			    else if (retrying == 0){
 			    	retrying = 1;
+			    	System.out.println("Trying to connect to server in port " + serverPorts[serverPos] + ".");
 			    }
 			    /* We have completed one round of retries for one server.
 			     * Therefore, we shall try now the second server.
@@ -281,7 +282,7 @@ public class TCPClient {
 				}
 			}
 		}
-		/* TODO: Ctr+C. */
+		
 		System.out.println("Exited");
 		System.exit(0);
     }

@@ -168,9 +168,13 @@ public class ClientWriteTCP extends Thread {
 			oS = new ObjectOutputStream(new FileOutputStream(filename));
 			oS.writeObject(obj);
 		} catch (FileNotFoundException e) {
-			System.out.println("The " + filename + " file couldn't be found...");
+			if (Constants.DEBUGGING_CLIENT){
+				System.out.println("The " + filename + " file couldn't be found...");
+			}
 		} catch (IOException e) {
-			System.out.println("IO in saveToFile (ClientsStorage): " + e);
+			if (Constants.DEBUGGING_CLIENT){
+				System.out.println("IO in saveToFile (ClientWriteTCP): " + e);
+			}
 		}
 	}
 	
@@ -184,13 +188,19 @@ public class ClientWriteTCP extends Thread {
 			iS = new ObjectInputStream(new FileInputStream(filename));
 			return iS.readObject();
 		} catch (FileNotFoundException e) {
-			System.out.println("The " + filename + " file couldn't be found...");
+			if (Constants.DEBUGGING_CLIENT){
+				System.out.println("The " + filename + " file couldn't be found...");
+			}
 			return null;
 		} catch (ClassNotFoundException e) {
-			System.out.println("ClassNotFound in readFromFile (ClientsStorage): " + e);
+			if (Constants.DEBUGGING_CLIENT){
+				System.out.println("ClassNotFound in readFromFile (ClientWriteTCP): " + e);
+			}
 			return null;
 		}catch (IOException e) {
-			System.out.println("IO in readFromFile (ClientsStorage): " + e);
+			if (Constants.DEBUGGING_CLIENT){
+				System.out.println("IO in readFromFile (ClientWriteTCP): " + e);
+			}
 			return null;
 		}
 	}

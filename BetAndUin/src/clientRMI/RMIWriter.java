@@ -265,11 +265,13 @@ public class RMIWriter extends Thread{
 			oS = new ObjectOutputStream(new FileOutputStream(filename));
 			oS.writeObject(obj);
 		} catch (FileNotFoundException e) {
-			if(Constants.DEBUGGING_CLIENT)
+			if(Constants.DEBUGGING_CLIENT){
 				System.out.println("RMIWriter: The " + filename + " file couldn't be found...");
+			}
 		} catch (IOException e) {
-			if(Constants.DEBUGGING_CLIENT)
-				System.out.println("RMIWriter: IO in saveToFile (ClientsStorage): " + e);
+			if(Constants.DEBUGGING_CLIENT){
+				System.out.println("RMIWriter: IO in saveToFile (RMIWriter): " + e);
+			}
 		}
 	}
 	
@@ -289,12 +291,12 @@ public class RMIWriter extends Thread{
 			return null;
 		} catch (ClassNotFoundException e) {
 			if (Constants.DEBUGGING_CLIENT){
-				System.out.println("RMIWriter: ClassNotFound in readFromFile (ClientsStorage): " + e);
+				System.out.println("RMIWriter: ClassNotFound in readFromFile (RMIWriter): " + e);
 			}
 			return null;
 		}catch (IOException e) {
 			if (Constants.DEBUGGING_CLIENT){
-				System.out.println("RMIWriter: IO in readFromFile (ClientsStorage): " + e);
+				System.out.println("RMIWriter: IO in readFromFile (RMIWriter): " + e);
 			}
 			return null;
 		}

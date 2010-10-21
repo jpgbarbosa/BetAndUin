@@ -19,7 +19,7 @@ import clientRMI.ServerOperations;
 
 
 public class Server extends UnicastRemoteObject implements ClientOperations{
-	private Server(boolean defaultS, int sPort, int pPort, int rPort, int sStonith, int pStonith) throws RemoteException{
+	private Server(boolean defaultS, int sPort, int pPort, int rPort, int sStonith, int pStonith, String ip) throws RemoteException{
 		super();
 		isDefaultServer = defaultS;
 		serverPort = sPort;
@@ -29,7 +29,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 		stonithPort = sStonith;
 		
     	/* In here, we initialize the process of exchanging messages between servers. */
-        new ConnectionWithServerManager(serverPort, partnerPort, stonithPort, partnerStonith, isDefaultServer, changeStatusLock);
+        new ConnectionWithServerManager(serverPort, partnerPort, stonithPort, partnerStonith, isDefaultServer, changeStatusLock, ip);
 		/* Before going to wait, we have to see whether the manager has concluded its operations
 		 * or not yet. Otherwise, we may wait forever if it concluded before we entered here.
 		 * This step is used in order not to accept any clients before we know whether we are
@@ -68,24 +68,27 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     
     public static void main(String args[]){
     	boolean defaultS = false;
-    	int serverNumber;
+    	int serverNumber = 0;
     	int sPort = 0, pPort = 0,sRMIPort = 0, pStonith = 0, sStonith = 0;
     	Server server = null;
     	
     	 /* The user has introduced less than three options by the command line, so we can't carry on. */
-        if (args.length != 1 && args.length != 2){
-        	System.out.println("java TCPServer serverNumber isPrimaryServer (for this last" +
-        			"option, type primary or secondary) debugging (optional)");
+        if (args.length < 1 && args.length > 3){
+        	System.out.println("java [fileName] [serverNumber] [partnerIpAddress] -debugging");
     	    System.exit(0);
         }
-    	
-        System.out.println("You can activate the flags 'debugging' in the code to see\n" + "the evolution of the server state.\n");
-        
-        if (args.length == 2 && args[1].equalsIgnoreCase("debugging")){
+
+        if (args.length == 3 && args[2].equalsIgnoreCase("debugging")){
         	Constants.DEBUGGING_SERVER = true;
+        	System.out.println("Debugging flag activated.");
         }
         /* We read from the command line the two port numbers passed. */
-        serverNumber = Integer.parseInt(args[0]);
+        try{
+        	serverNumber = Integer.parseInt(args[0]);
+        }catch(Exception e){
+        	System.out.println("Invalid argument for [serverNumber].");
+        	System.exit(-1);
+        }
         if (serverNumber == 1){
         	/* We are default server. */
         	defaultS = true;
@@ -109,15 +112,15 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
         	pStonith = Constants.STONITH_FIRST_SERVER_PORT;
         }
         else{
-        	System.out.println("Invalid server number.");
-        	System.exit(0);
+        	System.out.println("Invalid argument for [serverNumber].");
+        	System.exit(-1);
         }
         
         if (Constants.DEBUGGING_SERVER){
         	System.out.printf("Server: We are server %d, our partner is %d.\n", sPort, pPort);
         }
     	try {
-			server = new Server(defaultS, sPort, pPort, sRMIPort, sStonith, pStonith);
+			server = new Server(defaultS, sPort, pPort, sRMIPort, sStonith, pStonith, args[1]);
 			server.run();
 		} catch (RemoteException e) {
 			System.out.println("Error creating the server: " + e);

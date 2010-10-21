@@ -95,7 +95,7 @@ public class GlobalDataBase {
 	    }
 	    catch(IOException ioe){
 	    	if (Constants.DEBUGGING_SERVER){
-	    		System.out.println("GlobalDataBase: IOException in ClientsStorage (saveIntToFile) : " + ioe);
+	    		System.out.println("GlobalDataBase: IOException(saveIntToFile) : " + ioe);
 	    	}
 	    	return -1;
 	    }
@@ -137,7 +137,7 @@ public class GlobalDataBase {
 	    }catch(IOException e){
 			/* There was an error. */
 			if (Constants.DEBUGGING_SERVER){
-				System.out.println("GlobalDataBase: IOException in ClientsStorage (saveIntToFile): " + e);
+				System.out.println("GlobalDataBase IOException(saveIntToFile): " + e);
 			}
 		}
 	}
@@ -151,13 +151,19 @@ public class GlobalDataBase {
 			iS = new ObjectInputStream(new FileInputStream(filename));
 			return iS.readObject();
 		} catch (FileNotFoundException e) {
-			System.out.println("The " + filename + " file couldn't be found...");
+			if (Constants.DEBUGGING_SERVER){
+				System.out.println("The " + filename + " file couldn't be found...");
+			}
 			return null;
 		} catch (ClassNotFoundException e) {
-			System.out.println("ClassNotFound in readFromFile (ClientsStorage): " + e);
+			if (Constants.DEBUGGING_SERVER){
+				System.out.println("ClassNotFound in readFromFile (GlobalDataBase): " + e);
+			}
 			return null;
 		}catch (IOException e) {
-			System.out.println("IO in readFromFile (ClientsStorage): " + e);
+			if (Constants.DEBUGGING_SERVER){
+				System.out.println("GlobalDataBase IO in readFromFile: " + e);
+			}
 			return null;
 		}
 	}
@@ -170,9 +176,13 @@ public class GlobalDataBase {
 			oS = new ObjectOutputStream(new FileOutputStream(filename));
 			oS.writeObject(obj);
 		} catch (FileNotFoundException e) {
-			System.out.println("The clientsDatabase.bin file couldn't be found...");
+			if (Constants.DEBUGGING_SERVER){
+				System.out.println("The clientsDatabase.bin file couldn't be found...");
+			}
 		} catch (IOException e) {
-			System.out.println("IO in saveToFile (ClientsStorage): " + e);
+			if (Constants.DEBUGGING_SERVER){
+				System.out.println("IO in saveToFile (GlobalDataBase): " + e);
+			}
 		}
 	}
 	

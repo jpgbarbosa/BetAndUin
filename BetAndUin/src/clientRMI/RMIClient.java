@@ -46,6 +46,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 		
 		/*The variables related to the server ports available.*/
 		int []serverPorts = new int[2]; //The array with the two different ports.
+		String []serverIps = new String[2]; //The array with the two different ports.
 		int serverPos = 0; //The position array, which corresponds to active port.
 		int noServerPorts = serverPorts.length; //Total number of possible servers ports.
 		//Places the two ports in the array.
@@ -53,12 +54,20 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 		serverPorts[1] = Constants.SECOND_RMI_SERVER_PORT;
 		
 		ConnectionLock connectionLock = new ConnectionLock();
+		RMIWriter rmiWriter;
 		
-		RMIWriter rmiWriter = new RMIWriter(connectionLock);
+		if (args.length != 2) {
+		    System.out.println("java [fileName] [firstServerIpAddress] [secondServerIpAddress]");
+		    System.exit(-1);
+		}
+		
+		 rmiWriter = new RMIWriter(connectionLock);
 		
 		/* Displays an initial message, to ensure the user the application hasn't frozen. */
 		System.out.println("Welcome to the BetAndUin! Please wait while we try to connect to our server.\n");
 		
+		serverIps[0] = args[0];
+		serverIps[1] = args[1];
 		
 		while (retries < Constants.NO_RETRIES){
 			try {			
@@ -73,7 +82,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 				}
 
 				RMIClient client = new RMIClient();
-				server = (ClientOperations) Naming.lookup("rmi://localhost:" + serverPorts[serverPos] +"/BetAndUinServer");
+				server = (ClientOperations) Naming.lookup("rmi://" + serverIps[serverPos] + ":" + serverPorts[serverPos] +"/BetAndUinServer");
 				loggedIn = false;
 				
 				rmiWriter.setServer(server);
