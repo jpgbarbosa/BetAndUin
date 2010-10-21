@@ -183,11 +183,13 @@ public class ActiveClients {
 		String usersList="";
 		
 		int i=0;
-		while(i<clientList.size() - 2){
-			usersList+=clientList.get(i).getUsername()+"\n";
-			i++;
+		
+		for (i = 0; i < clientList.size() - 1; i++){
+			usersList += clientList.get(i).getUsername()+"\n";
 		}
-		usersList+=clientList.get(i).getUsername();
+		
+		/* We take out the '\n' from the last user. */
+		usersList += clientList.get(i).getUsername();
 		
 		return usersList;
 	}

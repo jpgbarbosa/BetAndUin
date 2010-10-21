@@ -272,7 +272,6 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 			}
 		}
 		
-		//TODO: Temos de ver como fechar a thread rmiWriter (talvez no TCP tambem)
 		System.out.println("Exited");
 		System.exit(0);
 	}
