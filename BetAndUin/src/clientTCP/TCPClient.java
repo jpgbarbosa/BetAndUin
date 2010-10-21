@@ -302,7 +302,6 @@ public class TCPClient {
                 /* This operation was asked by the internals of the system
                  * and not directly by the user.
                  */
-                System.out.println("Cenas");
                 
                 if (!isToPrint){
                 	int credits;

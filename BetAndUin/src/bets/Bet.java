@@ -6,10 +6,10 @@ public class Bet implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
-	protected int credits;
-	protected int gameNumber;
-	protected String bet;
-	protected String user;
+	private int credits;
+	private int gameNumber;
+	private String bet;
+	private String user;
 		
 	public Bet( String user, int gameNumber, String bet, int credits){
 		this.credits=credits;
