@@ -69,6 +69,9 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 		serverIps[0] = args[0];
 		serverIps[1] = args[1];
 		
+		/* Reads the properties. */
+		Constants.readProperties("properties.conf");
+		
 		while (retries < Constants.NO_RETRIES){
 			try {			
 				/* We haven't retried yet, so, it's useless to sleep for WAITING_TIME milliseconds. */

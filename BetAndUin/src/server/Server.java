@@ -120,7 +120,12 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
         	System.out.printf("Server: We are server %d, our partner is %d.\n", sPort, pPort);
         }
     	try {
-			server = new Server(defaultS, sPort, pPort, sRMIPort, sStonith, pStonith, args[1]);
+			System.out.println("Initializing the server...");
+			
+			/* Reads the properties. */
+			Constants.readProperties("properties.conf");
+			
+    		server = new Server(defaultS, sPort, pPort, sRMIPort, sStonith, pStonith, args[1]);
 			server.run();
 		} catch (RemoteException e) {
 			System.out.println("Error creating the server: " + e);
@@ -192,7 +197,8 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     			System.out.println("Exception in Server RMI: " + re);
     		}
             
-            
+    		System.out.println("Server ready!");
+    		
             while(true) {
                 Socket clientSocket = listenSocket.accept(); // BLOQUEANTE
                 
