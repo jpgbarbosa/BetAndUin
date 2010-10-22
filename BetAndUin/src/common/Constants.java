@@ -79,9 +79,9 @@ public class Constants {
         	properties.setProperty("KEEP_ALIVE_TIME", "5000");
         	KEEP_ALIVE_TIME = 5000;
         	properties.setProperty("SERVER_WAITING_TIME", "15000");
-        	SERVER_INIT_RETRIES = 5000;
-        	properties.setProperty("SERVER_INIT_RETRIES", "3");
         	SERVER_WAITING_TIME = 15000;
+        	properties.setProperty("SERVER_INIT_RETRIES", "3");
+        	SERVER_WAITING_TIME = 3;
         	properties.setProperty("FIRST_WAITING_TIME", "5000");
         	FIRST_WAITING_TIME = 5000;
         	properties.setProperty("NO_GAMES", "10");
