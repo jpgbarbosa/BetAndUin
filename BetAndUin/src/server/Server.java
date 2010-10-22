@@ -75,7 +75,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     	Server server = null;
     	
     	 /* The user has introduced less than three options by the command line, so we can't carry on. */
-        if (args.length < 1 && args.length > 3){
+        if (args.length < 2 || args.length > 3){
         	System.out.println("java -jar [fileName] [serverNumber] [partnerIpAddress] -debugging");
     	    System.exit(0);
         }
