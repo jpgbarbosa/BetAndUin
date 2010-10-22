@@ -39,7 +39,7 @@ public class TCPClient {
 	public static void main(String args[]) {
 		
 		if (args.length != 2) {
-		    System.out.println("java [fileName] [firstServerIpAddress] [secondServerIpAddress]");
+		    System.out.println("java -jar [fileName] [firstServerIpAddress] [secondServerIpAddress]");
 		    System.exit(-1);
 		}
 		

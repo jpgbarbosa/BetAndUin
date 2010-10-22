@@ -87,12 +87,11 @@ public class ConnectionWithServerManager extends Thread{
 		String partnerAnswer = "NOT_RECEIVED"; //By default
 		int repetitions = 0; // In this variable, we count the number of times we tried to send
 		                 // the first message to our partner.
-		int limit = 3; //The upper limit of these retries.
 		
 		/* When the server is up, it sends the first message,
 		 * corresponding to the I_WILL_BE_PRIMARY_SERVER.
 		 */
-		while (repetitions < limit){
+		while (repetitions < Constants.SERVER_INIT_RETRIES){
 			sendMessage("I_WILL_BE_PRIMARY_SERVER");
 			
 			/* Then, it waits for the other server to respond,
@@ -111,7 +110,7 @@ public class ConnectionWithServerManager extends Thread{
 		}
 		
 		/* This means the other server hasn't responded. */
-		if (repetitions == limit){
+		if (repetitions == Constants.SERVER_INIT_RETRIES){
 			/* Now, we have to test the STONITH scenario. */
 			Socket s = null;
 			try {
@@ -152,9 +151,13 @@ public class ConnectionWithServerManager extends Thread{
 		
 		
 		while(true){
-			if (Constants.DEBUGGING_SERVER){
-				System.out.println("ConnectionWithServerManager: I'm primary server?: " + isPrimaryServer);
+			if (isPrimaryServer){
+				System.out.println("I'm the primary server.");
 			}
+			else{
+				System.out.println("I'm the secondary server.");
+			}
+			
 			synchronized(msgToReceiveList){
 				/* We have some messages to read. */
 				if (msgToReceiveList.listSize() > 0){

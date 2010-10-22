@@ -133,11 +133,21 @@ public class ClientWriteTCP extends Thread {
 	            	    	String [] stringSplitted = userInput.split(" ");
 	            	    	
 	            	    	if (stringSplitted.length >= 3 && stringSplitted[0].equals("send")){
-	            	    		msgBuffer.add(userInput);
-			            		saveObjectToFile(username, msgBuffer);
-			            		System.out.println("The server is down, so we will save the message to send later.");
+	            	    		if (msgBuffer.size() <= Constants.BUFFER_SIZE){
+	            	    			msgBuffer.add(userInput);
+			            			saveObjectToFile(username, msgBuffer);
+			            			System.out.println("The server is down, so we will save the message to send later.");
+	            	    		}
+	            	    		else{
+	            	    			System.out.println("Buffer full, can't store any other messages.");
+	            	    		}
 			            		System.out.print(" >>> ");
 	            	    	}
+	            	    	else if (userInput.equals("exit")){
+		            			System.out.println("Thank you for using the BetAndUin service!\n"
+		                				+ "Have a nice day!");
+		                		System.exit(0);
+		            		}
 	            	    	else{
 	            	    		System.out.println("The connection is down and this operation couldn't be completed.");
 		            			System.out.print(" >>> ");

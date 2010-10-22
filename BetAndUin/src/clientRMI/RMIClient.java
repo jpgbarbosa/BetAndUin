@@ -24,6 +24,8 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 	
 	@SuppressWarnings("unchecked")
 	public static void main(String args[]) {
+		/* Reads the properties. */
+		Constants.readProperties("properties.conf");
 		/* Variables related to the input. */
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		String [] stringSplitted = null;
@@ -68,9 +70,6 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 		
 		serverIps[0] = args[0];
 		serverIps[1] = args[1];
-		
-		/* Reads the properties. */
-		Constants.readProperties("properties.conf");
 		
 		while (retries < Constants.NO_RETRIES){
 			try {			
@@ -249,7 +248,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 			     */
 			    if (retries == 1 && retrying == 0){
 			    	serverPos = (++serverPos)%noServerPorts;
-			    	System.out.println("Connection lost... Trying to connect to server in port " + serverPorts[serverPos] + ".");
+			    	System.out.println("Trying to connect to server in port " + serverPorts[serverPos] + ".");
 			    }
 			    /* We have retried the connection at least once.
 			     * Consequently, the thread shall wait WAITING_TIME milliseconds 

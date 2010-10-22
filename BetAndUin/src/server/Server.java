@@ -67,6 +67,8 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 	private int stonithPort;
     
     public static void main(String args[]){
+    	/* Reads the properties. */
+		Constants.readProperties("properties.conf");
     	boolean defaultS = false;
     	int serverNumber = 0;
     	int sPort = 0, pPort = 0,sRMIPort = 0, pStonith = 0, sStonith = 0;
@@ -74,7 +76,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     	
     	 /* The user has introduced less than three options by the command line, so we can't carry on. */
         if (args.length < 1 && args.length > 3){
-        	System.out.println("java [fileName] [serverNumber] [partnerIpAddress] -debugging");
+        	System.out.println("java -jar [fileName] [serverNumber] [partnerIpAddress] -debugging");
     	    System.exit(0);
         }
 
@@ -121,9 +123,6 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
         }
     	try {
 			System.out.println("Initializing the server...");
-			
-			/* Reads the properties. */
-			Constants.readProperties("properties.conf");
 			
     		server = new Server(defaultS, sPort, pPort, sRMIPort, sStonith, pStonith, args[1]);
 			server.run();
