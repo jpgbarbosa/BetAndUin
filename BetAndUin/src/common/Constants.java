@@ -1,9 +1,7 @@
 package common;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Properties;
 
 public class Constants {
@@ -18,14 +16,17 @@ public class Constants {
 	/* The variable that controls the time of a round. */
 	public static int TIME_BETWEEN_ROUNDS = 60000;
 	
-	
 	/* Times to trigger the message timers. */
 	public static int KEEP_ALIVE_TIME = 5000; //The time between two consecutive KEEP_ALIVE's.
 	public static int SERVER_WAITING_TIME = 15000; //The time needed to consider the other server dead.
 	public static int FIRST_WAITING_TIME = 5000; //The time the server waits before sending the initial message again.
+	public static int SERVER_INIT_RETRIES = 3; //The upper limit of initial retries for a server.
 	
 	/* Number of Games per round. */
 	public static int NO_GAMES = 10;
+	
+	/* The size of the buffer to save offline messages. */
+	public static int BUFFER_SIZE = 10;
 	
 	/* The ports related to each server. */
 	public static int FIRST_TCP_SERVER_PORT = 6000;
@@ -50,9 +51,11 @@ public class Constants {
             NO_RETRIES = Integer.parseInt(properties.getProperty("NO_RETRIES"));
             TIME_BETWEEN_ROUNDS = Integer.parseInt(properties.getProperty("TIME_BETWEEN_ROUNDS"));
             KEEP_ALIVE_TIME = Integer.parseInt(properties.getProperty("KEEP_ALIVE_TIME"));
+            SERVER_INIT_RETRIES = Integer.parseInt(properties.getProperty("SERVER_INIT_RETRIES"));
             SERVER_WAITING_TIME = Integer.parseInt(properties.getProperty("SERVER_WAITING_TIME"));
             FIRST_WAITING_TIME = Integer.parseInt(properties.getProperty("FIRST_WAITING_TIME"));
             NO_GAMES = Integer.parseInt(properties.getProperty("NO_GAMES"));
+            BUFFER_SIZE = Integer.parseInt(properties.getProperty("BUFFER_SIZE"));
             FIRST_TCP_SERVER_PORT = Integer.parseInt(properties.getProperty("FIRST_TCP_SERVER_PORT"));
             SECOND_TCP_SERVER_PORT = Integer.parseInt(properties.getProperty("SECOND_TCP_SERVER_PORT"));
             FIRST_RMI_SERVER_PORT = Integer.parseInt(properties.getProperty("FIRST_RMI_SERVER_PORT"));
@@ -76,11 +79,15 @@ public class Constants {
         	properties.setProperty("KEEP_ALIVE_TIME", "5000");
         	KEEP_ALIVE_TIME = 5000;
         	properties.setProperty("SERVER_WAITING_TIME", "15000");
+        	SERVER_INIT_RETRIES = 5000;
+        	properties.setProperty("SERVER_INIT_RETRIES", "3");
         	SERVER_WAITING_TIME = 15000;
         	properties.setProperty("FIRST_WAITING_TIME", "5000");
         	FIRST_WAITING_TIME = 5000;
         	properties.setProperty("NO_GAMES", "10");
         	NO_GAMES = 10;
+        	properties.setProperty("BUFFER_SIZE", "10");
+        	BUFFER_SIZE = 10;
         	properties.setProperty("FIRST_TCP_SERVER_PORT", "6000");
         	FIRST_TCP_SERVER_PORT = 6000;
         	properties.setProperty("SECOND_TCP_SERVER_PORT", "7000");

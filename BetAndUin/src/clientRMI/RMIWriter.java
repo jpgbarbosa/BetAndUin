@@ -68,10 +68,21 @@ public class RMIWriter extends Thread{
 	            	if(connectionLock.isConnectionDown()){
 	            		/* This is a valid message to be saved. */
 	            		if(stringSplitted.length >= 3 && stringSplitted[0].equals("send")){
-	            			msgBuffer.add(userInput);
-		            		saveObjectToFile(username, msgBuffer);
-		            		System.out.println("The server is down, so we will save the message to send later.");
-		            		System.out.print(" >>> ");
+	            			if (msgBuffer.size() <= Constants.BUFFER_SIZE){
+	            				msgBuffer.add(userInput);
+		            			saveObjectToFile(username, msgBuffer);
+		            			System.out.println("The server is down, so we will save the message to send later.");
+	            			}
+	        	    		else{
+	        	    			System.out.println("Buffer full, can't store any other messages.");
+	        	    		}
+	            			System.out.print(" >>> ");
+	            		}
+	            		
+	            		else if (userInput.equals("exit")){
+	            			System.out.println("Thank you for using the BetAndUin service!\n"
+	                				+ "Have a nice day!");
+	                		System.exit(0);
 	            		}
 	            		/* We can't execute this operation, because it is not a send. */
 	            		else{
