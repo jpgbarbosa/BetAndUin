@@ -43,6 +43,9 @@ public class TCPClient {
 		    System.exit(-1);
 		}
 		
+		/* Reads the properties. */
+		Constants.readProperties("properties.conf");
+		
 		/* Initializes the application. */
 		new TCPClient(args[0], args[1]);
     }
