@@ -67,6 +67,8 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 	private int stonithPort;
     
     public static void main(String args[]){
+    	/* Reads the properties. */
+		Constants.readProperties("properties.conf");
     	boolean defaultS = false;
     	int serverNumber = 0;
     	int sPort = 0, pPort = 0,sRMIPort = 0, pStonith = 0, sStonith = 0;
@@ -121,9 +123,6 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
         }
     	try {
 			System.out.println("Initializing the server...");
-			
-			/* Reads the properties. */
-			Constants.readProperties("properties.conf");
 			
     		server = new Server(defaultS, sPort, pPort, sRMIPort, sStonith, pStonith, args[1]);
 			server.run();

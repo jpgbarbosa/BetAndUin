@@ -151,9 +151,13 @@ public class ConnectionWithServerManager extends Thread{
 		
 		
 		while(true){
-			if (Constants.DEBUGGING_SERVER){
-				System.out.println("ConnectionWithServerManager: I'm primary server?: " + isPrimaryServer);
+			if (isPrimaryServer){
+				System.out.println("I'm the primary server.");
 			}
+			else{
+				System.out.println("I'm the secondary server.");
+			}
+			
 			synchronized(msgToReceiveList){
 				/* We have some messages to read. */
 				if (msgToReceiveList.listSize() > 0){
