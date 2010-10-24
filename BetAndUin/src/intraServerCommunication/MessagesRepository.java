@@ -1,3 +1,10 @@
+/* By:
+ * 		Ivo Daniel Venhuizen Correia, no 2008110814
+ * 		João Pedro Gaioso Barbosa, no 2008111830
+ * 
+ * Distributed Systems, October 2010 
+ */
+
 package intraServerCommunication;
 
 import java.util.LinkedList;
