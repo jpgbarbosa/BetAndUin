@@ -11,13 +11,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
+import java.rmi.RemoteException;import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import server.ClientOperations;
 
@@ -60,34 +62,45 @@ public class WebServer extends HttpServlet implements ServerOperations{
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
 	{
-		String name = request.getParameter("name");
-		String message = request.getParameter("msg");
+		String username = request.getParameter("username");
+		String password= request.getParameter("password");
 		PrintWriter out = null;
 
 		response.setContentType("text/html");
 		out = response.getWriter();
 
 		String msg = HTML_START;
-		if (name == null)
+		
+		if (username == null)
 		{
 			msg += "name parameter not found";
 		}
 		else
 		{
-			String value = mainServer.clientShowMenu();
+			String value = mainServer.clientLogin(username, password, null);
 			
-			if (value == null)
-			{
-				msg += "User " + name + " not found in database";
-			}
-			else
-			{
-				msg += "Age of " + name + " is " + value;
-			}
+			msg = value;
+
 		}
 
 		msg += HTML_END;
-		out.write(msg);
+		
+		
+		RequestDispatcher dispatcher;
+		
+		//TODO: Corrigir isto.
+		if (msg.equals("log successful")){
+			 //HttpSession session = request.getSession(true);
+			   dispatcher = request.getRequestDispatcher("/Pages/Bet.html");
+			   dispatcher.forward(request, response);
+		}
+		else{
+			 dispatcher = request.getRequestDispatcher("/Pages/Bet.html");
+			   dispatcher.forward(request, response);
+		}
+		
+		
+		//out.write(getHTMLResponse(msg));
 	}
 
 	@Override
@@ -106,4 +119,22 @@ public class WebServer extends HttpServlet implements ServerOperations{
     public boolean testUser() throws java.rmi.RemoteException{
     	return true;
     }
+    
+    
+    private String getHTMLResponse(String msg)
+	{
+		String html = "";
+		html += "<html>";
+		html += "<head>";
+		html += "<title>Calculator</title>";
+		html += "</head>";
+		html += "<body>";
+		html += "<h1>This servlet performs simple calculations</h1>";
+		html += "<p>";
+		html += "Result is: " + msg;
+		html += "</p>";
+		html += "</body>";
+		html += "</html>";
+		return html;
+	}
 }
