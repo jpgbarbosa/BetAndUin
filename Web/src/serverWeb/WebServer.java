@@ -21,12 +21,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import users.User;
 import server.ClientOperations;
 
+import clientRMI.RMIClient;
 import clientRMI.ServerOperations;
 
 
-public class WebServer extends HttpServlet implements ServerOperations{
+public class WebServer extends HttpServlet{
 
 	private static final long serialVersionUID = 1L;
 	
@@ -35,6 +37,7 @@ public class WebServer extends HttpServlet implements ServerOperations{
 
 	private Registry registry;
 	private ClientOperations mainServer;
+	private ServerOperations webClient;
 
 	@Override
 	public void init() throws ServletException
@@ -44,6 +47,8 @@ public class WebServer extends HttpServlet implements ServerOperations{
 			//registry = LocateRegistry.getRegistry(Constants.FIRST_RMI_SERVER_PORT);
 			registry = LocateRegistry.getRegistry(12000);
 			mainServer = (ClientOperations) registry.lookup("BetAndUinServer");
+			
+			webClient = new RMIClient();
 		}catch (AccessException e)
 		{
 			throw new ServletException(e);
@@ -77,7 +82,7 @@ public class WebServer extends HttpServlet implements ServerOperations{
 		}
 		else
 		{
-			String value = mainServer.clientLogin(username, password, null);
+			String value = mainServer.clientLogin(username, password, webClient);
 			
 			msg = value;
 
@@ -90,13 +95,18 @@ public class WebServer extends HttpServlet implements ServerOperations{
 		
 		//TODO: Corrigir isto.
 		if (msg.equals("log successful")){
-			 //HttpSession session = request.getSession(true);
-			   dispatcher = request.getRequestDispatcher("/Pages/Bet.html");
-			   dispatcher.forward(request, response);
+			HttpSession session = request.getSession(true);
+			User userData = new User(username);
+		    session.setAttribute("user", userData);
+			dispatcher = request.getRequestDispatcher("/Pages/Bet.html");
+			dispatcher.forward(request, response);
 		}
 		else{
-			 dispatcher = request.getRequestDispatcher("/Pages/Bet.html");
-			   dispatcher.forward(request, response);
+			HttpSession session = request.getSession(true);
+			User userData = new User(username);
+		    session.setAttribute("user", userData);
+			dispatcher = request.getRequestDispatcher("/Pages/Bet.html");
+			dispatcher.forward(request, response);
 		}
 		
 		
@@ -108,18 +118,6 @@ public class WebServer extends HttpServlet implements ServerOperations{
 	{
 		doGet(request, response);
 	}
-	
-	@Override
-	public void printUserMessage(String userName, String msg) throws java.rmi.RemoteException{
-		System.out.println(msg + "\n");
-		System.out.print(" >>> ");
-	}
-	    
-    @Override
-    public boolean testUser() throws java.rmi.RemoteException{
-    	return true;
-    }
-    
     
     private String getHTMLResponse(String msg)
 	{
