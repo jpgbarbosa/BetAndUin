@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
@@ -9,9 +9,75 @@
 body {
 	background-color:#000000;
 }
-</style>
 
+.team{
+	width: 45%;
+	color: #FFFFFF;
+	background:#00000;
+	text-align:center;
+}
+
+.tie{
+	width: 10%;
+	color: #FFFFFF;
+	background:#00000;
+	text-align:center;
+}
+
+.bet{
+	text-align:center;
+	color:#000000;
+	background-color:#FFFFCC;
+}
+
+
+</style>
+ 
+ <script type="text/javascript">
+var oTbo;
+function showhide(tbo){
+	var nextS=tbo;
+	while(!nextS.nodeName||nextS.nodeName.toLowerCase()!='tbody'){
+		nextS=tbo.nextSibling;
+	}
+	nextS.style.display=nextS.style.display=='none'?'':'none';
+}
+
+function hideAll(){
+	for(var i=1;i<oTbo.length;i+=2){
+		oTbo[i].style.display='none';
+	}
+}
+
+onload=function(){
+	oTbo=document.getElementsByTagName('tbody');
+	hideAll();
+}
+</script>
+ 
 <body>
+
+
+<table align="center" width="70%" bordercolor="#FFCC00" style="background-color:#FFFFCC" cellpadding="3" cellspacing="3" id="betTable">
+
+
+<tbody>
+	<tr>
+		<td class="team" colspan="1" onclick="showhide(this.parentNode.parentNode.nextSibling)"> team1</td>
+		<td class="tie" colspan="1" onclick="showhide(this.parentNode.parentNode.nextSibling)"> X</td>
+		<td class="team" colspan="1" onclick="showhide(this.parentNode.parentNode.nextSibling)"> team2</td>
+	</tr>
+</tbody>
+<tbody>
+	<tr>
+		<td class="bet" colspan="3">Amount: 
+	      <input type="text" name="textfield" /> Cr
+	      <input type="submit" name="submit" value="Bet!" /></td>
+	</tr>
+</tbody>
+</table>
+
+
 </body>
 
 
