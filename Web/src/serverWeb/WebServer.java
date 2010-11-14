@@ -69,12 +69,9 @@ public class WebServer extends HttpServlet{
 	{
 		String username = request.getParameter("username");
 		String password= request.getParameter("password");
-		PrintWriter out = null;
+		String msg = null;
 
 		response.setContentType("text/html");
-		out = response.getWriter();
-
-		String msg = HTML_START;
 		
 		if (username == null)
 		{
@@ -88,51 +85,27 @@ public class WebServer extends HttpServlet{
 
 		}
 
-		msg += HTML_END;
-		
-		
 		RequestDispatcher dispatcher;
 		
-		//TODO: Corrigir isto.
 		if (msg.equals("log successful")){
 			HttpSession session = request.getSession(true);
 			User userData = new User(username);
 		    session.setAttribute("user", userData);
+		    session.setAttribute("status", msg);
 			dispatcher = request.getRequestDispatcher("/Pages/Bet.html");
 			dispatcher.forward(request, response);
 		}
 		else{
 			HttpSession session = request.getSession(true);
-			User userData = new User(username);
-		    session.setAttribute("user", userData);
-			dispatcher = request.getRequestDispatcher("/Pages/Bet.html");
+			session.setAttribute("status", msg);
+			dispatcher = request.getRequestDispatcher("/Pages/Login.jsp");
 			dispatcher.forward(request, response);
 		}
-		
-		
-		//out.write(getHTMLResponse(msg));
 	}
 
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
 	{
 		doGet(request, response);
-	}
-    
-    private String getHTMLResponse(String msg)
-	{
-		String html = "";
-		html += "<html>";
-		html += "<head>";
-		html += "<title>Calculator</title>";
-		html += "</head>";
-		html += "<body>";
-		html += "<h1>This servlet performs simple calculations</h1>";
-		html += "<p>";
-		html += "Result is: " + msg;
-		html += "</p>";
-		html += "</body>";
-		html += "</html>";
-		return html;
 	}
 }
