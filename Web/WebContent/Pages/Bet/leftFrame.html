@@ -3,7 +3,9 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>Untitled Document</title>
-</head>
+</head>~
+
+<script src="http://code.jquery.com/jquery-latest.js"></script>
 
 <style type="text/css">
 body {
@@ -14,6 +16,13 @@ body {
 	width: 45%;
 	color: #FFFFFF;
 	background:#00000;
+	text-align:center;
+}
+
+.team1{
+	width: 45%;
+	color: #FFFFFF;
+	background:#33FF00;
 	text-align:center;
 }
 
@@ -35,17 +44,33 @@ body {
  
  <script type="text/javascript">
 var oTbo;
+
+
 function showhide(tbo){
+	if(tbo.style.backgroundColor == "yellow"){
+		tbo.style.backgroundColor = "black";
+		tbo.style.color = "white";
+	}
+	else{
+		tbo.style.backgroundColor = "yellow";
+		tbo.style.color = "black";
+	}
+		
+		
+	tbo=tbo.parentNode.parentNode.nextSibling;
+
 	var nextS=tbo;
 	while(!nextS.nodeName||nextS.nodeName.toLowerCase()!='tbody'){
 		nextS=tbo.nextSibling;
 	}
 	nextS.style.display=nextS.style.display=='none'?'':'none';
+
 }
 
 function hideAll(){
 	for(var i=1;i<oTbo.length;i+=2){
 		oTbo[i].style.display='none';
+		
 	}
 }
 
@@ -53,6 +78,7 @@ onload=function(){
 	oTbo=document.getElementsByTagName('tbody');
 	hideAll();
 }
+
 </script>
  
 <body>
@@ -62,15 +88,15 @@ onload=function(){
 
 
 <tbody>
-	<tr>
-		<td class="team" colspan="1" onclick="showhide(this.parentNode.parentNode.nextSibling)"> team1</td>
-		<td class="tie" colspan="1" onclick="showhide(this.parentNode.parentNode.nextSibling)"> X</td>
-		<td class="team" colspan="1" onclick="showhide(this.parentNode.parentNode.nextSibling)"> team2</td>
+	<tr id="row1">
+		<td class="team" colspan="1" onclick="showhide(this)" id="c"> team1</td>
+		<td class="tie" colspan="1" onclick="showhide(this)" id="c"> X</td>
+		<td class="team" colspan="1" onclick="showhide(this)" id="c"> team2</td>
 	</tr>
 </tbody>
 <tbody>
 	<tr>
-		<td class="bet" colspan="3">Amount: 
+		<td class="bet" colspan="3" id="input">Amount: 
 	      <input type="text" name="textfield" /> Cr
 	      <input type="submit" name="submit" value="Bet!" /></td>
 	</tr>
