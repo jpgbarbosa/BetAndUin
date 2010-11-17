@@ -8,7 +8,9 @@
 package server;
 
 import java.rmi.Remote;
+
 import clientRMI.ServerOperations;
+
 
 public interface ClientOperations extends Remote{
 	public String clientLogin(String user, String pass, ServerOperations client) throws java.rmi.RemoteException;

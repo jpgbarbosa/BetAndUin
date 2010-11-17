@@ -28,7 +28,7 @@ import clientRMI.RMIClient;
 import clientRMI.ServerOperations;
 
 
-public class WebServer extends HttpServlet{
+public class WebServer extends HttpServlet implements ServerOperations{
 
 	private static final long serialVersionUID = 1L;
 	
@@ -101,6 +101,7 @@ public class WebServer extends HttpServlet{
 			dispatcher = request.getRequestDispatcher("/Pages/Login.jsp");
 			dispatcher.forward(request, response);
 		}
+		
 	}
 
 	@Override
@@ -108,4 +109,16 @@ public class WebServer extends HttpServlet{
 	{
 		doGet(request, response);
 	}
+	
+	@Override
+	public void printUserMessage(String msg) throws java.rmi.RemoteException{
+		System.out.println(msg + "\n");
+		System.out.print(" >>> ");
+	}
+	    
+    @Override
+    public boolean testUser() throws java.rmi.RemoteException{
+    	return true;
+    }
+
 }
