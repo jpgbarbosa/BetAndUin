@@ -59,8 +59,8 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 
 		// Initialize the SESSION and Cache headers.
 		String sessionId = request.getSession().getId();
-		String nickName = (String) request.getSession().getAttribute("nickName");
-		System.out.println("Nick: " + nickName); 
+		String user = ((clientRMI.Client)request.getSession().getAttribute("user")).getUsername();
+		System.out.println("User: " + user); 
 		System.out.println("SESSION: " + sessionId);
 		response.setHeader("Pragma", "no-cache");
 		response.setHeader("Cache-control", "no-cache");
@@ -85,7 +85,7 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 					
 					// Let's save the HttpServletResponse with the nickName key.
 					//  That response object will act as a callback to the client.
-					addClient(nickName, response);
+					addClient(user, response);
 					
 				} else if (reqType.equalsIgnoreCase("exit")) {
 					// if the client wants to quit, we do it.					
@@ -148,7 +148,7 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 
 	public static void sendMessage(String message, String destination) {
 		// This method sends a message to a specific user
-		System.out.println("D:" + destination);
+		System.out.println("Destination: " + destination);
 		
 		synchronized (ChatServlet.clients) {
 			try {

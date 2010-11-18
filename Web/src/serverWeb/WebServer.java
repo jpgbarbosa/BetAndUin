@@ -89,8 +89,8 @@ public class WebServer extends HttpServlet{
 		if (msg.equals("log successful")){
 			webClient = new Client(registry, mainServer, username);
 			HttpSession session = request.getSession(true);
-			User userData = new User(username);
-		    session.setAttribute("user", userData);
+			//User userData = new User(username);
+		    session.setAttribute("user", webClient);
 		    session.setAttribute("status", msg);
 			dispatcher = request.getRequestDispatcher("/Pages/Bet.html");
 			dispatcher.forward(request, response);

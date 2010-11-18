@@ -31,4 +31,8 @@ public class Client extends UnicastRemoteObject implements ServerOperations{
 		return true;
 	}
 	
+	public String getUsername(){
+		return user;
+	}
+	
 }
