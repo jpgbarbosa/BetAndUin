@@ -27,14 +27,14 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 	private static Map<String, HttpServletResponse> clients = new Hashtable<String, HttpServletResponse>();
 	
 	// Method called when a client is registers with the CometProcessor
-	private void addClient(String nickName, HttpServletResponse clientResponseObject) {
+	private static void addClient(String nickName, HttpServletResponse clientResponseObject) {
 		ChatServlet.clients.put(nickName, clientResponseObject);
 		// TODO 1: Write your code here.
 	}
 
 	
 	// Method called after an Exception is thrown when the server tries to write to a client's socket.
-	private void removeClient(String nickName, HttpServletRequest request) {
+	private static void removeClient(String nickName, HttpServletRequest request) {
 		if (ChatServlet.clients.remove(nickName) != null) {
 			// TODO 2: Write your code here
 		}
@@ -127,7 +127,7 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 	
 	
 	
-	private void sendMessageToAll(String message) {
+	public static void sendMessageToAll(String message) {
 		// The message is for everyone.
 		synchronized (ChatServlet.clients) {
 			Set<String> clientKeySet = ChatServlet.clients.keySet();
@@ -146,7 +146,7 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 		}
 	}
 
-	private void sendMessage(String message, String destination) {
+	public static void sendMessage(String message, String destination) {
 		// This method sends a message to a specific user
 		System.out.println("D:" + destination);
 		

@@ -24,11 +24,12 @@ import javax.servlet.http.HttpSession;
 import users.User;
 import server.ClientOperations;
 
+import clientRMI.Client;
 import clientRMI.RMIClient;
 import clientRMI.ServerOperations;
 
 
-public class WebServer extends HttpServlet implements ServerOperations{
+public class WebServer extends HttpServlet{
 
 	private static final long serialVersionUID = 1L;
 	
@@ -47,8 +48,6 @@ public class WebServer extends HttpServlet implements ServerOperations{
 			//registry = LocateRegistry.getRegistry(Constants.FIRST_RMI_SERVER_PORT);
 			registry = LocateRegistry.getRegistry(12000);
 			mainServer = (ClientOperations) registry.lookup("BetAndUinServer");
-			
-			webClient = new RMIClient();
 		}catch (AccessException e)
 		{
 			throw new ServletException(e);
@@ -88,6 +87,7 @@ public class WebServer extends HttpServlet implements ServerOperations{
 		RequestDispatcher dispatcher;
 		
 		if (msg.equals("log successful")){
+			webClient = new Client(registry, mainServer, username);
 			HttpSession session = request.getSession(true);
 			User userData = new User(username);
 		    session.setAttribute("user", userData);
@@ -109,16 +109,4 @@ public class WebServer extends HttpServlet implements ServerOperations{
 	{
 		doGet(request, response);
 	}
-	
-	@Override
-	public void printUserMessage(String msg) throws java.rmi.RemoteException{
-		System.out.println(msg + "\n");
-		System.out.print(" >>> ");
-	}
-	    
-    @Override
-    public boolean testUser() throws java.rmi.RemoteException{
-    	return true;
-    }
-
 }
