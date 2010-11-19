@@ -159,6 +159,9 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 				// Trouble using the response object's writer so we remove
 				// the user and response object from the hashtable
 				removeClient(destination,null);
+			} catch(NullPointerException ex){
+				System.out.println("null ptr chatservlet.java 163");
+				//remove client
 			}
 		}
 	}
