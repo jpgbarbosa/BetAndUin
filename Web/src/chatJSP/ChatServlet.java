@@ -1,5 +1,6 @@
 package chatJSP;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
@@ -108,9 +109,9 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 			
 			if (msg != null && !msg.isEmpty()) {
 				if (dest.equals("allusers")) {
-					sendMessageToAll(msg);
+					((clientRMI.Client)request.getSession().getAttribute("user")).getMainServer().clientSendMsgAll(user, msg);
 				} else {
-					sendMessage(msg,dest);
+					sendMessage(msg,dest,request);
 				}
 			}
 			
@@ -126,7 +127,7 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 	}
 	
 	
-	
+	/*
 	public static void sendMessageToAll(String message) {
 		// The message is for everyone.
 		synchronized (ChatServlet.clients) {
@@ -144,12 +145,11 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 				}
 			}
 		}
-	}
+	}*/
 
-	public static void sendMessage(String message, String destination) {
+	public static void sendMessage(String message, String destination, HttpServletRequest request) {
 		// This method sends a message to a specific user
 		System.out.println("Destination: " + destination);
-		
 		synchronized (ChatServlet.clients) {
 			try {
 				HttpServletResponse resp = ChatServlet.clients.get(destination);
@@ -160,7 +160,14 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 				// the user and response object from the hashtable
 				removeClient(destination,null);
 			} catch(NullPointerException ex){
-				System.out.println("null ptr chatservlet.java 163");
+				try {
+					System.out.println("NULL PTR!!! vai enviar para o server a msg. chatservlet 165");
+					((clientRMI.Client)request.getSession().getAttribute("user")).getMainServer().clientSendMsgUser(
+							((clientRMI.Client)request.getSession().getAttribute("user")).getUsername(),destination, message);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				//remove client
 			}
 		}

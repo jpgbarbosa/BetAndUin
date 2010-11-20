@@ -148,10 +148,8 @@ public class ActiveClients {
 	public synchronized void sendMessageUser(String message, String username){
 		/* Sends a message to a specific user. */
 		DataOutputStream out;
-		
 		/* Get the element using the hash table. */
 		ClientListElement element = clientHash.get(username);
-		
 		if (element != null){
 			try {
 				/* This is a TCP Client. */
@@ -168,7 +166,7 @@ public class ActiveClients {
 				System.out.println("IO from sendMessageUser (ActiveClients): " + e);
 			}
 		}
-		
+		System.out.println("7c");
 	}
 	
 	/* This method is used when we still don't have a valid login and we want to send

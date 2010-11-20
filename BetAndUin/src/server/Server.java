@@ -354,7 +354,6 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     	} else {
     		answer = "Username not registered.";
     	}
-		
     	return answer;
 	}
 	
