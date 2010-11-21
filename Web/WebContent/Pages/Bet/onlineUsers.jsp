@@ -13,20 +13,11 @@ body {
 
 
  <script type="text/javascript">
- 
- function splitAndAddNameToTable(id){
-	 var result;
-
- }
-
-function addRow(id,userName){
-    var tbody = document.getElementById(id).getElementsByTagName("TBODY")[0];
-    var row = document.createElement("TR")
-    var td1 = document.createElement("TD")
-    td1.appendChild(document.createTextNode(userName))
-    row.appendChild(td1);
-    tbody.appendChild(row);
-  }
+  
+function sendToMsgBox(id){
+	parent.chatFrame.document.getElementById("destination").value=document.getElementById(id).innerHTML;;
+}
+  
 </script>
 
 <body>
@@ -37,7 +28,7 @@ function addRow(id,userName){
 <table align="center" width="100%" bordercolor="#FFCC00" style="background-color:#FFFFCC" cellpadding="3" cellspacing="3" id="betTable">
   <tbody>
     <tr>
-      <td bordercolor="#000000" cellpadding="3" cellspacing="3" style=" border-bottom:solid">Clients on-line</td>
+      <td bordercolor="#000000" style=" border-bottom:solid">Clients on-line</td>
     </tr>
   </tbody>
     <%
@@ -55,11 +46,10 @@ function addRow(id,userName){
 		int i=0;
 		
 		while (i < usersOntArray.length){
-			out.println("<tr><td>"+usersOntArray[i]+"</td></tr>");
+			out.println("<tr><td id=\""+i+"\" style=\"cursor:hand; cursor:pointer;\" onClick=\"sendToMsgBox(this.id)\">"+usersOntArray[i]+"</td></tr>");
 			i++;
 		}
 	}
     %>
 </table>
-</p>
 </body>
