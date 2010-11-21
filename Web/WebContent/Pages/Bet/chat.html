@@ -1,18 +1,28 @@
 <html>
     <head>
+    <style type="text/css">
+    	body {
+			background-color: #000000;
+		}
+    .style1 {
+		color: #FFFFFF;
+		font-family: Arial, Helvetica, sans-serif;
+	}
+    </style>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Comet Chat</title>
+        <title>BetAndUin Chat</title>
     </head>
     <body>
-        <div id="display">
-            <h1>Comet Chat</h1>
-            <div id="messagesboard" style="overflow: auto; border:thin solid #000000; position: fixed; top: 80px; left: 30px; width: 400px; height: 400px"></div>
+        <div id="display" style="width: 100%;">
+            <h2 style="color:#FFFFFF; font-family: Arial, Helvetica, sans-serif;">BetAndUin chat</h2>
+            <div id="messagesboard" style="overflow: auto; background-color:#FFFFCC;  border: medium solid #FFCC00;  top: 80px; width:100%; height: 400px">
+			</div>
         </div>
-        <div id="input" style="position: fixed; top: 490px; left: 30px; width: 600px; height: 60px">
-            <input id="message" type="text" size="90"/><br/>
-            Send To: <input id="destination" type="text" size="20"/><br/>
-            <input type="button" onclick="sendMsg()" value="Send" />
-            <input type="button" onclick="quitChat();window.location='about:blank';" value="Quit" />
+        <div id="input" style="position: fixed; top: 490px; width: 100%; height: 60px">
+            <input id="message" type="text" size="90" style="width:100%; bacbackground-color:#FFFFCC;  border: thin solid #FFCC00"/><br/>
+            <span class="style1">Send To</span>: 
+            <input style="bacbackground-color:#FFFFCC;  border: thin solid #FFCC00" id="destination" type="text" size="20"/><br/>
+            <input type="button" onClick="sendMsg()" value="Send" />
         </div>
     </body>
     <script type="text/javascript" src="comet.js"> </script>
