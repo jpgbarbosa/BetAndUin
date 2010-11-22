@@ -114,7 +114,7 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 					sendMessage(msg,dest,request);
 				}
 			}
-			
+			event.close();
 		} else if (event.getEventType() == CometEvent.EventType.ERROR) {
 			// In case of any error, we terminate the connection.
 			// The connection remains in cache anyway, and it's later removed
