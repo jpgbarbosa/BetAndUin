@@ -74,10 +74,11 @@ public class WebServer extends HttpServlet{
 		
 		if (username == null)
 		{
-			msg += "name parameter not found";
+			msg = "name parameter not found";
 		}
 		else
 		{
+			webClient = new Client(registry, mainServer, username);
 			String value = mainServer.clientLogin(username, password, webClient);
 			
 			msg = value;
@@ -87,7 +88,7 @@ public class WebServer extends HttpServlet{
 		RequestDispatcher dispatcher;
 		
 		if (msg.equals("log successful")){
-			webClient = new Client(registry, mainServer, username);
+			
 			HttpSession session = request.getSession(true);
 			//User userData = new User(username);
 		    session.setAttribute("user", webClient);

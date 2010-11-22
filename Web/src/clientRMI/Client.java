@@ -23,7 +23,7 @@ public class Client extends UnicastRemoteObject implements ServerOperations{
 	
 	@Override
 	public void printUserMessage(String msg) throws RemoteException {
-		ChatServlet.sendMessage(msg, user,null);
+		ChatServlet.sendMessage(msg, user);
 	}
 
 	@Override

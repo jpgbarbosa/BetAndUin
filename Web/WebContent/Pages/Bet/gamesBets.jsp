@@ -35,18 +35,18 @@
 <h3 class="style1 style2"> Give your best Shot </h3>
 <div id="betsTable">
 <table width="100%" bordercolor="#FFCC00" style="background-color:#FFFFCC" cellpadding="3" cellspacing="3">
-  <tr bordercolor="#000000" style="border-bottom:solid">
+  <tr bordercolor="#000000" style="border-bottom:solid; border-bottom-color:#000000">
     <th width="*" scope="col" class=style3>Home Team</th>
     <th width="15%" scope="col" class=style3>X</th>
     <th width="*" scope="col" class=style3>Away Team</th>
-	<th width="9%" scope="col" class=style3>Amount of Cr</th>
+	<th width="10%" scope="col" class=style3>Amount of Cr</th>
     <th width="3%" scope="col" class=style3>Bet!</th>
   </tr>
   <tr>
     <th width="*" scope="col"  class=rowStyle><input type="checkbox"> equipa1</th>
     <th width="15%" scope="col" class=rowStyle><input type="checkbox"> Tie</th>
     <th width="*" scope="col" class=rowStyle><input type="checkbox"> equipa2</th>
-	<th width="9%" scope="col" class=rowStyle><input type="text" name="textfield" /> Cr</th>
+	<th width="10%" scope="col" class=rowStyle><input type="text" name="textfield" /></th>
     <th width="3%" scope="col" class=rowStyle><input width="100%" name="button" type=button value="Bet!"></th>
   </tr>
 </table>

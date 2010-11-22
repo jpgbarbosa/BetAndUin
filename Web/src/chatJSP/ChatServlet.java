@@ -14,6 +14,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.catalina.comet.CometEvent;
 import org.apache.catalina.comet.CometProcessor;
 
+import clientRMI.Client;
+
 /**
  * 
  * @author Andre Lourenco, aglour@student.dei.uc.pt
@@ -108,10 +110,11 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 			System.out.println("msg = [" + msg + "] to " + dest);
 			
 			if (msg != null && !msg.isEmpty()) {
+				Client c = (clientRMI.Client)request.getSession().getAttribute("user");
 				if (dest.equals("allusers")) {
-					((clientRMI.Client)request.getSession().getAttribute("user")).getMainServer().clientSendMsgAll(user, msg);
+					c.getMainServer().clientSendMsgAll(user, msg);
 				} else {
-					sendMessage(msg,dest,request);
+					c.getMainServer().clientSendMsgUser(c.getUsername(),dest, msg);
 				}
 			}
 			event.close();
@@ -147,7 +150,7 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 		}
 	}*/
 
-	public static void sendMessage(String message, String destination, HttpServletRequest request) {
+	public static void sendMessage(String message, String destination) {
 		// This method sends a message to a specific user
 		System.out.println("Destination: " + destination);
 		synchronized (ChatServlet.clients) {
@@ -159,16 +162,6 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 				// Trouble using the response object's writer so we remove
 				// the user and response object from the hashtable
 				removeClient(destination,null);
-			} catch(NullPointerException ex){
-				try {
-					System.out.println("NULL PTR!!! vai enviar para o server a msg. chatservlet 165");
-					((clientRMI.Client)request.getSession().getAttribute("user")).getMainServer().clientSendMsgUser(
-							((clientRMI.Client)request.getSession().getAttribute("user")).getUsername(),destination, message);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				//remove client
 			}
 		}
 	}

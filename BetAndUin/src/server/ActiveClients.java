@@ -159,7 +159,9 @@ public class ActiveClients {
 				}
 				/* This is a RMI Client. */
 				else{
+					System.out.println("Here");
 					element.getRMIClient().printUserMessage(message);
+					System.out.println("Here1");
 				}
 				
 			} catch (IOException e) {
@@ -216,6 +218,7 @@ class ClientListElement{
 		username = user;
 		socket = socketArg;
 		rmiClient = client;
+		System.out.println(username+" | "+socket+" | "+rmiClient);
 	}
 
 	public String getUsername() {
