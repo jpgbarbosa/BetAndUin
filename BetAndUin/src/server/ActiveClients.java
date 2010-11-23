@@ -168,7 +168,6 @@ public class ActiveClients {
 				System.out.println("IO from sendMessageUser (ActiveClients): " + e);
 			}
 		}
-		System.out.println("7c");
 	}
 	
 	/* This method is used when we still don't have a valid login and we want to send
@@ -218,7 +217,6 @@ class ClientListElement{
 		username = user;
 		socket = socketArg;
 		rmiClient = client;
-		System.out.println(username+" | "+socket+" | "+rmiClient);
 	}
 
 	public String getUsername() {
