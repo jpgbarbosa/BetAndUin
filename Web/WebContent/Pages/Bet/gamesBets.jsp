@@ -34,20 +34,20 @@ function checkBoxes(parentID,boxID){
 
 	alert(rowID+"");
 	var rowID=parentID.split("-")[1];
-	var checkedNow=rowID+boxID;
+	var checkedNow=boxID;
 	
-	if ((checkedNow!=(rowID+"-H")) && eval("getElementByID(rowID+"+"-H"+").checked")  == true) {
+	if ((checkedNow!=(rowID+"-H")) && (eval("getElementByID(rowID+"+"-H"+").checked")  == true)) {
 		getElementByID(rowID+"-H").checked  = false;
 	}
-	else if ((checkedNow!=(rowID+"-T")) && eval("getElementByID(rowID+"+"-T"+").checked")  == true) {
+	else if ((checkedNow!=(rowID+"-T")) && (eval("getElementByID(rowID+"+"-T"+").checked")  == true)) {
 		getElementByID(rowID+"-T").checked  = false;
 	}
-	else if ((checkedNow!=(rowID+"-A")) && eval("getElementByID(rowID+"+"-A"+").checked")  == true) {
+	else if ((checkedNow!=(rowID+"-A")) && (eval("getElementByID(rowID+"+"-A"+").checked")  == true)) {
 		getElementByID(rowID+"-A").checked  = false;
 	}
 }
 
-function checkBoxValidate(cb) {
+function checkBoxValidate(parentID,cb) {
 	for (j = 0; j < 8; j++) {
 	if (eval("document.myform.ckbox[" + j + "].checked") == true) {
 	document.myform.ckbox[j].checked = false;
@@ -80,7 +80,6 @@ function checkBoxValidate(cb) {
   
      <% 
     String[] games;
-     
     String gameString=null;
      
   	try{
@@ -104,9 +103,9 @@ function checkBoxValidate(cb) {
     		%>
     		<tr id=<%="betTableRow-"+i%>>
     			<th width="4%" scope="col" class=rowStyle id=<%=i+"-N"%>><%=gameNo%></th>
-    			<th width="*" scope="col" align="left" class=rowStyle ><input name=<%=i+"B"%> type="checkbox" onClick="checkBoxValidate(this.parent.parent.parent.ID)" id=<%=i+"-H"%>> <%=gameH%></th>
-    			<th width="10%" scope="col" align="left" class=rowStyle ><input name=<%=i+"B"%> type="checkbox" onClick="checkBoxValidate(this.parent.parent.parent.ID)" id=<%=i+"-T"%>> Tie</th>
-    			<th width="*" scope="col" align="left" class=rowStyle ><input name=<%=i+"B"%> type="checkbox" onClick="checkBoxValidate(this.parent.parent.parent.ID)" id=<%=i+"-A"%>> <%=gameA%></th>
+    			<th width="*" scope="col" align="left" class=rowStyle ><input name=<%=i+"B"%> type="radio" id=<%=i+"-H"%>> <%=gameH%></th>
+    			<th width="10%" scope="col" align="left" class=rowStyle ><input name=<%=i+"B"%> type="radio" id=<%=i+"-T"%>> Tie</th>
+    			<th width="*" scope="col" align="left" class=rowStyle ><input name=<%=i+"B"%> type="radio" id=<%=i+"-A"%>> <%=gameA%></th>
     			<th width="6%" scope="col"  class=rowStyle id=<%=i+"-C"%>><input width="60px" type="text" name="textfield" /></th>
     			<th width="3%" scope="col"  class=rowStyle id=<%=i+"-B"%>><input width="100%" name="button" type=button value="Bet!"></th>
     		</tr>
