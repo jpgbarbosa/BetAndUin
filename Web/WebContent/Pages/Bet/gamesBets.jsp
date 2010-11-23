@@ -27,6 +27,40 @@
 		font-size:13px;
 	}
     </style>
+    
+<script type="text/javascript">
+  
+function checkBoxes(parentID,boxID){
+
+	alert(rowID+"");
+	var rowID=parentID.split("-")[1];
+	var checkedNow=rowID+boxID;
+	
+	if ((checkedNow!=(rowID+"-H")) && eval("getElementByID(rowID+"+"-H"+").checked")  == true) {
+		getElementByID(rowID+"-H").checked  = false;
+	}
+	else if ((checkedNow!=(rowID+"-T")) && eval("getElementByID(rowID+"+"-T"+").checked")  == true) {
+		getElementByID(rowID+"-T").checked  = false;
+	}
+	else if ((checkedNow!=(rowID+"-A")) && eval("getElementByID(rowID+"+"-A"+").checked")  == true) {
+		getElementByID(rowID+"-A").checked  = false;
+	}
+}
+
+function checkBoxValidate(cb) {
+	for (j = 0; j < 8; j++) {
+	if (eval("document.myform.ckbox[" + j + "].checked") == true) {
+	document.myform.ckbox[j].checked = false;
+	if (j == cb) {
+	document.myform.ckbox[j].checked = true;
+	         }
+	      }
+	   }
+	}
+
+  
+</script>
+    
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Insert title here</title>
 </head>
@@ -68,11 +102,11 @@
     		gameH =temp2[0];
     		gameA =temp2[1];
     		%>
-    		<tr>
+    		<tr id=<%="betTableRow-"+i%>>
     			<th width="4%" scope="col" class=rowStyle id=<%=i+"-N"%>><%=gameNo%></th>
-    			<th width="*" scope="col"  class=rowStyle id=<%=i+"-H"%>><input type="checkbox"> <%=gameH%></th>
-    			<th width="10%" scope="col"  class=rowStyle id=<%=i+"-T"%>><input type="checkbox"> Tie</th>
-    			<th width="*" scope="col"  class=rowStyle id=<%=i+"-A"%>><input type="checkbox"> <%=gameA%></th>
+    			<th width="*" scope="col" align="left" class=rowStyle ><input name=<%=i+"B"%> type="checkbox" onClick="checkBoxValidate(this.parent.parent.parent.ID)" id=<%=i+"-H"%>> <%=gameH%></th>
+    			<th width="10%" scope="col" align="left" class=rowStyle ><input name=<%=i+"B"%> type="checkbox" onClick="checkBoxValidate(this.parent.parent.parent.ID)" id=<%=i+"-T"%>> Tie</th>
+    			<th width="*" scope="col" align="left" class=rowStyle ><input name=<%=i+"B"%> type="checkbox" onClick="checkBoxValidate(this.parent.parent.parent.ID)" id=<%=i+"-A"%>> <%=gameA%></th>
     			<th width="6%" scope="col"  class=rowStyle id=<%=i+"-C"%>><input width="60px" type="text" name="textfield" /></th>
     			<th width="3%" scope="col"  class=rowStyle id=<%=i+"-B"%>><input width="100%" name="button" type=button value="Bet!"></th>
     		</tr>
