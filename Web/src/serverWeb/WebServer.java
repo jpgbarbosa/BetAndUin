@@ -23,6 +23,7 @@ import javax.servlet.http.HttpSession;
 import users.User;
 import server.ClientOperations;
 
+import clientRMI.Client;
 import clientRMI.RMIClient;
 import clientRMI.ServerOperations;
 
@@ -43,8 +44,6 @@ public class WebServer extends HttpServlet{
 			//registry = LocateRegistry.getRegistry(Constants.FIRST_RMI_SERVER_PORT);
 			registry = LocateRegistry.getRegistry(12000);
 			mainServer = (ClientOperations) registry.lookup("BetAndUinServer");
-			
-			webClient = new RMIClient();
 		}catch (AccessException e)
 		{
 			throw new ServletException(e);
@@ -71,10 +70,11 @@ public class WebServer extends HttpServlet{
 		
 		if (username == null)
 		{
-			msg += "name parameter not found";
+			msg = "name parameter not found";
 		}
 		else
 		{
+			webClient = new Client(registry, mainServer, username);
 			String value = mainServer.clientLogin(username, password, webClient);
 			
 			msg = value;
@@ -84,12 +84,15 @@ public class WebServer extends HttpServlet{
 		RequestDispatcher dispatcher;
 		
 		if (msg.equals("log successful")){
+			
 			HttpSession session = request.getSession(true);
-			User userData = new User(username);
-		    session.setAttribute("user", userData);
-		    session.setAttribute("status", "\nYou are now logged in!\n");
-			dispatcher = request.getRequestDispatcher("/Pages/Bet.jsp");
+
+			//User userData = new User(username);
+		    session.setAttribute("user", webClient);
+		    session.setAttribute("status", msg);
+			dispatcher = request.getRequestDispatcher("/Pages/Bet.html");
 			dispatcher.forward(request, response);
+			
 		}
 		else{
 			HttpSession session = request.getSession(true);
@@ -116,6 +119,7 @@ public class WebServer extends HttpServlet{
 			dispatcher = request.getRequestDispatcher("/Pages/Login.jsp");
 			dispatcher.forward(request, response);
 		}
+		
 	}
 
 	@Override

@@ -45,8 +45,8 @@ public class Constants {
 	public static int STONITH_SECOND_SERVER_PORT;
 	
 	/*Set to true if you want the program to display debugging messages.*/
-	public static boolean DEBUGGING_SERVER = false;
-	public static boolean DEBUGGING_CLIENT = false;
+	public static boolean DEBUGGING_SERVER = true;
+	public static boolean DEBUGGING_CLIENT = true;
 
 	public static void readProperties(String fileName){
 		Properties properties = new Properties();
