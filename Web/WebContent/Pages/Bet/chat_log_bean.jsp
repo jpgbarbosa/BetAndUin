@@ -12,7 +12,6 @@
 <jsp:useBean id="messagebean" class="chatJSP.MessageBean" scope="application"/>
 <br>
 
-we are in chat_log_bean
 <%
 
 List<String> messages = messagebean.getMessages();

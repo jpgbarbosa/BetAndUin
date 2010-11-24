@@ -81,24 +81,10 @@ font-family: Arial, Helvetica, sans-serif;
 				if (status == null){
 					out.println("\nInsert your username and password. Register if you don't have an account yet!\n");
 				}
-				else if (status.equals("log error")){
-			        out.println("\nUsername or password incorrect. Please try again...\n");
-			    }
-			    else if (status.equals("log repeated")){
-			        out.println("\nSorry, but this user is already logged in...\n");
-			    }
-			    else if (status.equals("log taken")){
-			        out.println("\nSorry, but this username isn't available, choose another.\n");
-			    }
-			    else if (status.equals("username all")){
-			        out.println("\nSorry, but the keyword 'all' is reserved, pick another name.\n");
-			    }
-			    else if(status.equals("user not registed")){
-			        out.println("Sorry, but you aren't registed yet.");
-			    }
 				else{
-					out.println("\nInsert your username and password. Register if you don't have an account yet!\n");
-				}
+			        out.println(status);
+			    }
+			    
 				
 				%>
               <br />		    </td>

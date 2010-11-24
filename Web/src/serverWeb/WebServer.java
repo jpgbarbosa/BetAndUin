@@ -8,7 +8,6 @@
 package serverWeb;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;import java.rmi.registry.LocateRegistry;
@@ -31,9 +30,6 @@ import clientRMI.ServerOperations;
 public class WebServer extends HttpServlet{
 
 	private static final long serialVersionUID = 1L;
-	
-	private final String HTML_START = "<html><head></head><body>";
-	private final String HTML_END = "</body></html>";
 
 	private Registry registry;
 	private ClientOperations mainServer;
@@ -91,13 +87,32 @@ public class WebServer extends HttpServlet{
 			HttpSession session = request.getSession(true);
 			User userData = new User(username);
 		    session.setAttribute("user", userData);
-		    session.setAttribute("status", msg);
-			dispatcher = request.getRequestDispatcher("/Pages/Bet.html");
+		    session.setAttribute("status", "\nYou are now logged in!\n");
+			dispatcher = request.getRequestDispatcher("/Pages/Bet.jsp");
 			dispatcher.forward(request, response);
 		}
 		else{
 			HttpSession session = request.getSession(true);
-			session.setAttribute("status", msg);
+			
+			if (msg.equals("log error")){
+				session.setAttribute("status","\nUsername or password incorrect. Please try again...\n");
+		    }
+		    else if (msg.equals("log repeated")){
+		    	session.setAttribute("status","\nSorry, but this user is already logged in...\n");
+		    }
+		    else if (msg.equals("log taken")){
+		    	session.setAttribute("status","\nSorry, but this username isn't available, choose another.\n");
+		    }
+		    else if (msg.equals("username all")){
+		    	session.setAttribute("status","\nSorry, but the keyword 'all' is reserved, pick another name.\n");
+		    }
+		    else if(msg.equals("user not registed")){
+		    	session.setAttribute("status","Sorry, but you aren't registed yet.");
+		    }
+			else{
+				session.setAttribute("status","\nInsert your username and password. Register if you don't have an account yet!\n");
+			}
+
 			dispatcher = request.getRequestDispatcher("/Pages/Login.jsp");
 			dispatcher.forward(request, response);
 		}
