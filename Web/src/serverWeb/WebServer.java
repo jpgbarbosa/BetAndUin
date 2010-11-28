@@ -75,7 +75,7 @@ public class WebServer extends HttpServlet{
 		else
 		{
 			webClient = new Client(registry, mainServer, username);
-			String value = mainServer.clientLogin(username, password, webClient);
+			String value = mainServer.clientLogin(username, password, webClient, true);
 			
 			msg = value;
 
