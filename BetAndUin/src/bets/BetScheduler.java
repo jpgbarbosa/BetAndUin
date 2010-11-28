@@ -66,21 +66,21 @@ public class BetScheduler extends Thread{
 			synchronized(man){
 				message = "";
 				nGame=0;
-		        message += "========= Results =========\n";
+		        message += "========= Results =========<br>";
 		        for (IMatch m : man.getMatches()) {
 		        	message += (m.getCode() + " - " + m + ": ");
 		            switch (man.getResult(m)) {
 		                case HOME: 
 		                	gameResults[nGame]=1;
-		                	message +=  "1\n";
+		                	message +=  "1<br>";
 		                    break;
 		                case AWAY: 
 		                	gameResults[nGame]=2;
-		                	message +=  "2\n";
+		                	message +=  "2<br>";
 		                    break;
 		                default: 
 		                	gameResults[nGame]=0;
-		                	message += "X\n";
+		                	message += "X<br>";
 		                    break;
 		            }
 		            nGame++;

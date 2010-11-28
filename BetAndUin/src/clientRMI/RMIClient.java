@@ -117,13 +117,13 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 		                	password = stringSplitted[2];
 		                	String mail = stringSplitted[3];
 		                	
-		                	serverAnswer = server.clientRegister(username, password, mail, (ServerOperations) client);
+		                	serverAnswer = server.clientRegister(username, password, mail, (ServerOperations) client, false);
 		                	
 		                } else if(stringSplitted.length == 3 && stringSplitted[0].equals("login")){
 		                	username = stringSplitted[1];
 		                	password = stringSplitted[2];
 			                
-		                	serverAnswer = (String) server.clientLogin(username, password, client);
+		                	serverAnswer = (String) server.clientLogin(username, password, client, false);
 		                }
 		                
 			        	if (!serverAnswer.equals("log successful")){
@@ -161,7 +161,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 					}
 					/* The client is logged in already. */
 					else{
-						serverAnswer = server.clientLogin(username, password, (ServerOperations) client);
+						serverAnswer = server.clientLogin(username, password, (ServerOperations) client, false);
 						if (!serverAnswer.equals("log successful")){
 			        		username = "";
 			        		password = "";

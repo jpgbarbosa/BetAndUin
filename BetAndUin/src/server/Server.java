@@ -221,7 +221,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     /* METHODS RELATED TO THE RMI */
     
 	@Override
-	public String clientLogin(String username, String password, ServerOperations client) throws RemoteException {
+	public String clientLogin(String username, String password, ServerOperations client, boolean isWeb) throws RemoteException {
 		ClientInfo clientInfo = database.findClient(username);
     	/* This username hasn't been found on the database. */
     	if (clientInfo == null){
@@ -238,7 +238,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
             	}
             	/* The validation process can be concluded. */
             	else{
-            		activeClients.addClient(username, null, client);
+            		activeClients.addClient(username, null, client, isWeb);
             		return "log successful";
             	}
             }
@@ -249,7 +249,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 	}
 	
 	@Override
-	public String clientRegister(String username, String password, String mail, ServerOperations client) throws RemoteException {    	
+	public String clientRegister(String username, String password, String mail, ServerOperations client, boolean isWeb) throws RemoteException {    	
     	/* We don't permit that a user registers under the name of 'all',
     	 * because it would interfere with the analysis of the commands
     	 * sent to the server.
@@ -265,7 +265,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     		/* Registers in the client as an active client and informs the success of the
     		 * operation.
     		 */
-    		activeClients.addClient(username, null, client);
+    		activeClients.addClient(username, null, client, isWeb);
     		return "log successful";
     	}
     	/* This username is already being used. */

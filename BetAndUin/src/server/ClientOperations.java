@@ -11,8 +11,8 @@ import java.rmi.Remote;
 import clientRMI.ServerOperations;
 
 public interface ClientOperations extends Remote{
-	public String clientLogin(String user, String pass, ServerOperations client) throws java.rmi.RemoteException;
-	public String clientRegister(String user, String pass, String email, ServerOperations client) throws java.rmi.RemoteException;
+	public String clientLogin(String user, String pass, ServerOperations client, boolean isWeb) throws java.rmi.RemoteException;
+	public String clientRegister(String user, String pass, String email, ServerOperations client, boolean isWeb) throws java.rmi.RemoteException;
 	
 	public String clientShowMenu() throws java.rmi.RemoteException;
 	public String clientShowUsers() throws java.rmi.RemoteException;

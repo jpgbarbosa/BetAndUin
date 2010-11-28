@@ -45,9 +45,9 @@ public class ActiveClients {
 		 noActiveClients = 0;
 	}
 	
-	public synchronized void addClient(String username, Socket socket, ServerOperations client){
+	public synchronized void addClient(String username, Socket socket, ServerOperations client, boolean isWeb){
 		/* This method adds a client to both the hash table and the list.*/
-		ClientListElement element = new ClientListElement(username,socket, client);
+		ClientListElement element = new ClientListElement(username,socket, client, isWeb);
 		
 		clientList.add(element);
 		clientHash.put(username, element);
@@ -99,7 +99,7 @@ public class ActiveClients {
      	return false;
 	}
 	
-	public synchronized void sendMessageAll(String message, Socket clientSocket, ServerOperations clientRMI){
+	public synchronized void sendMessageAll(String msg, Socket clientSocket, ServerOperations clientRMI){
 		synchronized(clientList){
 			/* Sends a message to all the clients. */
 			
@@ -109,7 +109,14 @@ public class ActiveClients {
 			/* Uses an iterator over the list to send a message to all the active clients. */
 			for (int i = 0; i < clientList.size(); i++)
 		    {
+				String message;
 				element = clientList.get(i);
+				
+				if (!element.isWeb){
+					message = msg.replaceAll("<br>", "\n");
+				}
+				else
+					message = msg;
 				
 				/* If this is the user who sends the message, it won't receive it back. */
 				if (element.getSocket() != null && element.getSocket() != clientSocket){	
@@ -212,11 +219,13 @@ class ClientListElement{
 	String username;
 	Socket socket;
 	ServerOperations rmiClient;
+	boolean isWeb;
 	
-	public ClientListElement(String user, Socket socketArg, ServerOperations client){
+	public ClientListElement(String user, Socket socketArg, ServerOperations client, boolean isWeb){
 		username = user;
 		socket = socketArg;
 		rmiClient = client;
+		this.isWeb = isWeb;
 	}
 
 	public String getUsername() {

@@ -80,7 +80,7 @@ class TCPClientThread extends Thread {
                 		/* Registers in the client as an active client and informs the success of the
                 		 * operation.
                 		 */
-                		activeClients.addClient(clientInfo.getUsername(), clientSocket, null);
+                		activeClients.addClient(clientInfo.getUsername(), clientSocket, null, false);
                 		activeClients.sendMessageBySocket("log successful",clientSocket);
                 		loggedIn = true;
                 	}
@@ -115,7 +115,7 @@ class TCPClientThread extends Thread {
 		                	else{
 		                		loggedIn=true;
 		                		clientInfo = client;
-		                		activeClients.addClient(username, clientSocket, null);
+		                		activeClients.addClient(username, clientSocket, null, false);
 		                		activeClients.sendMessageUser("log successful",username);
 		                	}
 		                }
