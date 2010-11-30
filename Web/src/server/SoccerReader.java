@@ -1,4 +1,5 @@
 package server;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -21,6 +22,26 @@ public class SoccerReader {
 
 	private String API_KEY = "pnrjfz6rdpdtfscjn8ccj2xv";
 
+	public static void main(String[] args) {
+		SoccerReader reader = new SoccerReader();
+		
+		// First we print the main headlines
+		System.out.println("Headlines:");
+        System.out.println("==========");
+		String [] cenas = reader.latestHeadlines("Benfica", "sport");
+
+		
+		for(int i=0;i<10;i++){
+			System.out.println(cenas[i]);
+			String lastId = cenas[i].split("<>")[0];
+			String [] array = reader.recentBody(lastId);
+			
+
+				//System.out.println("Info: "+lastId);
+				System.out.println(array[0]+" | "+array[1]+" | "+array[2]);
+		}
+	}
+	
 	
 	public String [] latestHeadlines(String query, String section) {
 		// Used to store the last ID.
@@ -74,6 +95,7 @@ public class SoccerReader {
 	        	String title = node.getAttributes().getNamedItem("web-title").getTextContent();
 	 			lastID = node.getAttributes().getNamedItem("id").getTextContent();
 	        	array[i]=lastID+"<>"+title;
+	        	
 	        }
 	        
 		} catch(IOException e) { 
@@ -131,7 +153,7 @@ public class SoccerReader {
 	        String [] data = new String[3];
 
 			// TODO 2: Extract all <field> elements using XPath.
-	        NodeList nodes = (NodeList) xPath.evaluate("/response/results/content/fields/field", inputSource, XPathConstants.NODESET);
+	        NodeList nodes = (NodeList) xPath.evaluate("/response/content/fields/field", inputSource, XPathConstants.NODESET);
 			for (int i=0;i<nodes.getLength();i++) {
 				Node node = nodes.item(i);
 				if(node.getAttributes().getNamedItem("name").getNodeValue().equals("headline")){
