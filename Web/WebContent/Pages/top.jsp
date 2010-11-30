@@ -30,7 +30,7 @@ body {
 			}
 		%>
 	      <tr>
-	        <td id="homenews" width="10%" align="left" style="font-family:Arial, Helvetica, sans-serif; font-weight: bold"><a href="NewsMain.html" target="_blank">Home News</a></td>
+	        <td id="homenews" width="10%" align="left" style="font-family:Arial, Helvetica, sans-serif; font-weight: bold"><a href="News/news.jsp" target="_blank">Home News</a></td>
 		    <td width="*"></td>
 	        <td style="border-right:solid; border-right-color:#000000; font-family:Arial, Helvetica, sans-serif; font-weight: bold" width="25%" align="right" id="username"><%=userName%></td>
 	        <td style="border-right:solid; border-right-color:#000000; font-family:Arial, Helvetica, sans-serif; font-weight: bold" width="10%" align="center" id="credits"><%=credits%> credits</td>
