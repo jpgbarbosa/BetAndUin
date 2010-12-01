@@ -8,10 +8,6 @@
 package serverWeb;
 
 import java.io.IOException;
-import java.rmi.AccessException;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -20,20 +16,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import users.User;
-import server.ClientOperations;
-
-import clientRMI.Client;
-import clientRMI.ServerOperations;
-
 
 public class Logout extends HttpServlet{
 
 	private static final long serialVersionUID = 1L;
-
-	private static Registry registry;
-	private static ClientOperations mainServer;
-	private static ServerOperations webClient;
 
 	@Override
 	public void init() throws ServletException
@@ -48,15 +34,19 @@ public class Logout extends HttpServlet{
 		HttpSession session = request.getSession(true);
 		
 		try{
+			System.out.println("We have " + (String)session.getAttribute("user"));
 			WebServer.getMainServer().clientLeave((String)session.getAttribute("user"));
 			session.invalidate();
+			
+			dispatcher = request.getRequestDispatcher("/Pages/invaliduser.html");
+			dispatcher.forward(request, response);
 		} catch(Exception e){
-			//TODO: Complete this.
+			dispatcher = request.getRequestDispatcher("/Pages/cenas.html");
+			dispatcher.forward(request, response);
 		}
 		
 		
-		//dispatcher = request.getRequestDispatcher("/Pages/Login.jsp");
-		//dispatcher.forward(request, response);
+		
 		
 	}
 

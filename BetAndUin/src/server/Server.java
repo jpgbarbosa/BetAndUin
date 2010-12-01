@@ -388,6 +388,7 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 	
 	@Override
 	public void clientLeave(String username) throws RemoteException {
+		System.out.println("We are removing " + username + "...");
 		activeClients.removeClient(username);
 	}
 }

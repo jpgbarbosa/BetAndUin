@@ -37,7 +37,7 @@ body {
 		    <td width="*"></td>
 	        <td style="border-right:solid; border-right-color:#000000; font-family:Arial, Helvetica, sans-serif; font-weight: bold" width="25%" align="right" id="username"><%=userName%></td>
 	        <td style="border-right:solid; border-right-color:#000000; font-family:Arial, Helvetica, sans-serif; font-weight: bold" width="10%" align="center" id="credits"><%=credits%> credits</td>
-	        <td id="logout" width="7%" align="center" style="font-family:Arial, Helvetica, sans-serif"><a href="Logout">Logout</a></td>
+	        <td id="logout" width="7%" align="center" style="font-family:Arial, Helvetica, sans-serif"><a href="http://localhost:8080/BetAndUinWeb/Logout">Logout</a></td>
 	      </tr>
 	    </table>
 	</div>
