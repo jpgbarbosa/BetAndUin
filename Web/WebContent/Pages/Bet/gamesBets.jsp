@@ -34,41 +34,37 @@
 <script type="text/javascript">
 
 var comet = Comet("http://localhost:8080/BetAndUinWeb/");
-
-function setButton(name, thisId){
-	 var buttonGroup = name+"B";
-	 
-	 for (var i=0; i<buttonGroup.length; i++) {
-         buttonGroup[i].checked=false;
-         alert("almost nice: "+buttonGroup[i].checked + " | "+thisId);
-         if(buttonGroup[i].id === thisId){
-        	 alert("nice");
-        	 buttonGroup[i].checked=true;
-         }
-	 }
-}
-
+var codeToBet = ['1','X','2'];
 function makeBet(id) {
+	
    var buttonGroup = id+"B";
-   if (buttonGroup[0]) {
-      for (var i=0; i<buttonGroup.length; i++) {
-         if (buttonGroup[i].checked) {
-            var bet=buttonGroup.id.substring(buttonGroup.id.length-1,buttonGroup.id.length);
-            var gameNumber = document.getElementById(id+"-N").innerHTML;
-            var credits = document.getElementById(id+"-N").value;
-            
-            if(!isNaN(parseInt(credits)) || !isNaN(parseInt(gameNumber))){
-            	comet.post("serverWeb.BetServlet","gameNumber="+gameNumber+"&bet="+bet+"&credits="+credits,function(response) {
-            		alert("Message was sent");
-            	});            	
-            } else {
-            	alert("Credits inserted are not valid!");
-            }
-         }
-         alert("cenas2"+buttonGroup[i].checked);
-      }
+   var f = document.forms[0];
+   var radios = f[id + "B"];
+   var ans = -1;
+   for(var i=0;i<radios.length;i++){
+	   if (radios[i].value == "on") ans = i;
+   }
+   if (ans == -1) {
+	   alert("You have to bet on some result");
    } else {
-      alert("butao nao encontrado");
+	   
+	   var gameNumber = document.getElementById(id+"-N").innerHTML;
+       var credits = document.getElementById(id+"-C").value;
+	   
+	   if(!isNaN(parseInt(credits)) || !isNaN(parseInt(gameNumber))){           
+           
+           alert("gameNumber="+gameNumber+"&bet="+codeToBet[ans]+"&credits="+credits);
+		   
+       	comet.post("BetServlet?"+"gameNumber="+gameNumber+"&bet="+codeToBet[ans]+"&credits="+credits,'',function(response) {
+       		alert("Message was sent");
+       	});
+       	
+       	 
+       	var crs = document.getElementById("credits").innerHTML;
+       	document.getElementById("credits").innerHTML = crs - credits;
+       } else {
+       		alert("Credits inserted are not valid!");
+       }
    }
 }
 
@@ -82,6 +78,7 @@ function makeBet(id) {
 <h1 class="style1"> Bet </h1>
 <h3 class="style1 style2"> Give your best Shot </h3>
 <div id="betsTable">
+<form name="betForms">
 <table width="100%" bordercolor="#FFCC00" style="background-color:#FFFFCC" cellpadding="3" cellspacing="3">
   <tr bordercolor="#000000" style="border-bottom:solid; border-bottom-color:#000000">
     <th width="4%" scope="col" class=style3>Game No.</th>
@@ -118,14 +115,15 @@ function makeBet(id) {
     		%>
     		<tr id=<%="betTableRow-"+i%>>
     			<th width="4%" scope="col" class=rowStyle id=<%=i+"-N"%>><%=gameNo%></th>
-    			<th width="*" scope="col" align="left" class=rowStyle ><input  name=<%=i+"B"%> type="radio" id=<%=i+"-1"%> onClick="setButton('<%=i+""%>',this.id)"> <%=gameH%></th>
-    			<th width="10%" scope="col" align="left" class=rowStyle ><input  name=<%=i+"B"%> type="radio" id=<%=i+"-X"%> onClick="setButton('<%=i+""%>',this.id)"> Tie</th>
-    			<th width="*" scope="col" align="left" class=rowStyle ><input  name=<%=i+"B"%> type="radio" id=<%=i+"-2"%> onClick="setButton('<%=i+""%>',this.id)"> <%=gameA%></th>
+    			<th width="*" scope="col" align="left" class=rowStyle ><input  name="<%=i+"B"%>" type="radio" id="bet_<%=i%>_1"> <%=gameH%></th>
+    			<th width="10%" scope="col" align="left" class=rowStyle ><input  name="<%=i+"B"%>" type="radio" id="bet_<%=i%>_X"> Tie</th>
+    			<th width="*" scope="col" align="left" class=rowStyle ><input  name="<%=i+"B"%>" type="radio" id="bet_<%=i%>_2"><%=gameA%></th>
     			<th width="6%" scope="col"  class=rowStyle ><input id=<%=i+"-C"%> width="60px" type="text" name="textfield" /></th>
-    			<th width="3%" scope="col"  class=rowStyle id=<%=i+"-B"%>><input onClick="makeBet('<%=i+""%>')" width="100%" name="button" type=button value="Bet!"></th>
+    			<th width="3%" scope="col"  class=rowStyle id=<%=i+"-B"%>><input onClick="makeBet('<%=i%>')" width="100%" name="button" type=button value="Bet!"></th>
     		</tr>
     	<% }%>
 </table>
+</form>
 <br />
 <input type="button" value="Reload" onClick="location.reload(true);">
 </div>
