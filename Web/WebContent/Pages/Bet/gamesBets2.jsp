@@ -35,7 +35,7 @@ var comet = Comet("http://localhost:8080/BetAndUinWeb/");
 
 function setButton(name, thisId){
 	 var buttonGroup = name+"B";
-	 
+	 alert("inicio nice: ");
 	 for (var i=0; i<buttonGroup.length; i++) {
          buttonGroup[i].checked=false;
          alert("almost nice: "+buttonGroup[i].checked + " | "+thisId);
@@ -80,7 +80,8 @@ function makeBet(id) {
 <h1 class="style1"> Bet </h1>
 <h3 class="style1 style2"> Give your best Shot </h3>
 <div id="betsTable">
-<table width="100%" bordercolor="#FFCC00" style="background-color:#FFFFCC" cellpadding="3" cellspacing="3">
+<form width="100%" bordercolor="#FFCC00" style="background-color:#FFFFCC" cellpadding="3" cellspacing="3">
+<table>
   <tr bordercolor="#000000" style="border-bottom:solid; border-bottom-color:#000000">
     <th width="4%" scope="col" class=style3>Game No.</th>
     <th width="*" scope="col" class=style3>Home Team</th>
@@ -89,6 +90,8 @@ function makeBet(id) {
 	<th width="6%" scope="col" class=style3>Amount of Cr</th>
     <th width="3%" scope="col" class=style3>Bet!</th>
   </tr>
+  </table>
+ </form>
   
      <% 
     String[] games;
@@ -113,16 +116,16 @@ function makeBet(id) {
     		gameH =temp2[0];
     		gameA =temp2[1];
     		%>
-    		<tr id=<%="betTableRow-"+i%>>
-    			<th width="4%" scope="col" class=rowStyle id=<%=i+"-N"%>><%=gameNo%></th>
-    			<th width="*" scope="col" align="left" class=rowStyle ><input  name=<%=i+"B"%> type="radio" id=<%=i+"-1"%> onClick="setButton('<%=i+""%>',this.id)"> <%=gameH%></th>
-    			<th width="10%" scope="col" align="left" class=rowStyle ><input  name=<%=i+"B"%> type="radio" id=<%=i+"-X"%> onClick="setButton('<%=i+""%>',this.id)"> Tie</th>
-    			<th width="*" scope="col" align="left" class=rowStyle ><input  name=<%=i+"B"%> type="radio" id=<%=i+"-2"%> onClick="setButton('<%=i+""%>',this.id)"> <%=gameA%></th>
-    			<th width="6%" scope="col"  class=rowStyle ><input id=<%=i+"-C"%> width="60px" type="text" name="textfield" /></th>
-    			<th width="3%" scope="col"  class=rowStyle id=<%=i+"-B"%>><input onClick="makeBet('<%=i+""%>')" width="100%" name="button" type=button value="Bet!"></th>
-    		</tr>
+    		<form id=<%="betTableRow-"+i%>>
+    			<span id=<%=i+"-N"%>><%=gameNo%></span>
+    			<input  name=<%=i+"B"%> type="radio" id=<%=i+"-1"%> onClick="setButton('<%=i+""%>',this.id)"> <%=gameH%>
+    			<input  name=<%=i+"B"%> type="radio" id=<%=i+"-X"%> onClick="setButton('<%=i+""%>',this.id)"> Tie
+    			<input  name=<%=i+"B"%> type="radio" id=<%=i+"-2"%> onClick="setButton('<%=i+""%>',this.id)"> <%=gameA%>
+    			<input id=<%=i+"-C"%> width="60px" type="text" name="textfield" />
+    			<input onClick="makeBet('<%=i+""%>')" width="100%" name="button" type=button value="Bet!">
+    		</form>
     	<% }%>
-</table>
+
 <br />
 <input type="button" value="Reload" onClick="location.reload(true);">
 </div>

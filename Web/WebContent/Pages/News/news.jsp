@@ -14,7 +14,12 @@
 }
 .style2 {
 	font-family: Arial, Helvetica, sans-serif;
-	color: #FFF;
+	color: #FFFFF;
+}
+
+.style3 {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #FFFFF;
 }
 -->
 </style>
@@ -33,8 +38,6 @@ function showHide(id){
 	for(var i=0; i<10; i++){
 		document.getElementById(i+"-CA").style.display='none';
 	}
-	
-	
 	
 	document.getElementById(id.split("-")[0]+"-CA").style.display='inherit';
 }
@@ -61,9 +64,9 @@ function showHide(id){
 
   	
   %>	  
-	  <div align="center" style="display: none" id=<%=i+"-CA"%>> 	 <h3 align="center" class="style2"> <%=body[0] %></h3>
+	  <div align="center" style="display: none; color: white; font-family: Arial, Helvetica, sans-serif;" id=<%=i+"-CA"%>> 	 <h3 align="center" style="font-family: Arial, Helvetica, sans-serif;"> <%=body[0] %></h3>
 																   <p><img src="<%=body[2]%>"/></p>
-																   <p class="style2"> <%=body[1] %></p> 
+																   <p style="font-family: Arial, Helvetica, sans-serif;"> <%=body[1] %></p> 
 	  </div>
 	
   

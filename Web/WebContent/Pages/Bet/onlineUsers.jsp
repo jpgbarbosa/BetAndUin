@@ -45,8 +45,9 @@ function sendToMsgBox(id){
 	 	String [] usersOntArray = usersOn.split("\n");
 		int i=0;
 		
-		while (i < usersOntArray.length){
-			out.println("<tr><td id=\""+i+"\" style=\"cursor:hand; cursor:pointer;\" onClick=\"sendToMsgBox(this.id)\">"+usersOntArray[i]+"</td></tr>");
+		while (i < usersOntArray.length){ %>
+			<tr><td id=<%=i%> style="cursor:hand; cursor:pointer;" onClick="sendToMsgBox(this.id)"><%=usersOntArray[i]%></td></tr>
+			<%
 			i++;
 		}
 	}

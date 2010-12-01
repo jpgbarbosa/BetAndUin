@@ -33,4 +33,15 @@
     	<servlet-name>ChatServlet</servlet-name>
     	<url-pattern>/ChatServlet</url-pattern>
   	</servlet-mapping>
+  	
+  	<servlet>
+   		<description></description>
+    	<display-name>BetServer</display-name>
+    	<servlet-name>BetServer</servlet-name>
+    	<servlet-class>serverWeb.BetServer</servlet-class>
+  	</servlet>
+  	<servlet-mapping>
+    	<servlet-name>BetServer</servlet-name>
+    	<url-pattern>/BetServer</url-pattern>
+  	</servlet-mapping>
 </web-app>
