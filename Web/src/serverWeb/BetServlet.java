@@ -16,13 +16,13 @@ public class BetServlet extends HttpServlet {
 	
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
 	{
-		Client user =((clientRMI.Client)request.getSession().getAttribute("user"));
+		String user =((String)request.getSession().getAttribute("user"));
 		
 		int gameNumber = Integer.parseInt(request.getParameter("gameNumber"));
 		String bet = request.getParameter("bet");
 		int credits = Integer.parseInt(request.getParameter("credits"));
 		
-		user.getMainServer().clientMakeBet(user.getUsername(), gameNumber, bet, credits);
+		WebServer.getMainServer().clientMakeBet(user, gameNumber, bet, credits);
 	}
 
 }

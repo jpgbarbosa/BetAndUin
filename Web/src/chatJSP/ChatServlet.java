@@ -14,6 +14,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.catalina.comet.CometEvent;
 import org.apache.catalina.comet.CometProcessor;
 
+import serverWeb.WebServer;
+
 import clientRMI.Client;
 
 /**
@@ -62,7 +64,7 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 
 		// Initialize the SESSION and Cache headers.
 		String sessionId = request.getSession().getId();
-		String user = ((clientRMI.Client)request.getSession().getAttribute("user")).getUsername();
+		String user = (String) request.getSession().getAttribute("user");
 		System.out.println("User: " + user); 
 		System.out.println("SESSION: " + sessionId);
 		response.setHeader("Pragma", "no-cache");
@@ -110,11 +112,11 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 			System.out.println("msg = [" + msg + "] to " + dest);
 			
 			if (msg != null && !msg.isEmpty()) {
-				Client c = (clientRMI.Client)request.getSession().getAttribute("user");
+				String c = (String)request.getSession().getAttribute("user");
 				if (dest.equals("allusers")) {
-					c.getMainServer().clientSendMsgAll(user, msg);
+					WebServer.getMainServer().clientSendMsgAll(user, msg);
 				} else {
-					c.getMainServer().clientSendMsgUser(c.getUsername(),dest, msg);
+					WebServer.getMainServer().clientSendMsgUser(c,dest, msg);
 				}
 			}
 			event.close();

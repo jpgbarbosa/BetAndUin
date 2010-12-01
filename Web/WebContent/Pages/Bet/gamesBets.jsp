@@ -1,3 +1,5 @@
+<%@page import="serverWeb.WebServer" %>
+
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -95,8 +97,9 @@ function makeBet(id) {
     String gameString=null;
      
   	try{
- 		((clientRMI.Client)session.getAttribute("user")).getUsername();
- 		gameString = ((clientRMI.Client)session.getAttribute("user")).getMainServer().clientShowMatches();
+  		//TODO: Again, how to do it?
+ 		//((clientRMI.Client)session.getAttribute("user")).getUsername();
+ 		gameString = WebServer.getMainServer().clientShowMatches();
  	} catch(Exception e){
  		System.out.println("Error getting session by RMI");
  	}

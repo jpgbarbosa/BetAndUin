@@ -129,7 +129,7 @@ public class ActiveClients {
 				}
 				else if(element.getRMIClient() != clientRMI){
 					try {
-						element.getRMIClient().printUserMessage(message);
+						element.getRMIClient().printUserMessage(message, element.getUsername());
 					} catch (ConnectException e1){
 						/* This means that the client has logged off and consequently, we can remove it
 						 * from the active list.
@@ -167,7 +167,7 @@ public class ActiveClients {
 				/* This is a RMI Client. */
 				else{
 					System.out.println("Here");
-					element.getRMIClient().printUserMessage(message);
+					element.getRMIClient().printUserMessage(message, element.getUsername());
 					System.out.println("Here1");
 				}
 				

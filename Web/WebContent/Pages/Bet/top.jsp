@@ -1,3 +1,5 @@
+<%@page import="serverWeb.WebServer" %>
+
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -22,9 +24,10 @@ body {
 		    String credits="";
 		
 			try{
-				((clientRMI.Client)session.getAttribute("user")).getUsername();
-				userName = ((clientRMI.Client)session.getAttribute("user")).getUsername();
-				credits = ((clientRMI.Client)session.getAttribute("user")).getMainServer().clientShowCredits(userName);
+				//TODO: One more time!! xD
+				//((clientRMI.Client)session.getAttribute("user")).getUsername();
+				userName = (String)session.getAttribute("user");
+				credits = WebServer.getMainServer().clientShowCredits(userName);
 			} catch(Exception e){
 				System.out.println("exception splitAndAddNameToTable");
 			}
