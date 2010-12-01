@@ -25,6 +25,17 @@
   	
   	<servlet>
    		<description></description>
+    	<display-name>Logout</display-name>
+    	<servlet-name>Logout</servlet-name>
+    	<servlet-class>serverWeb.Logout</servlet-class>
+  	</servlet>
+  	<servlet-mapping>
+    	<servlet-name>Logout</servlet-name>
+    	<url-pattern>/Logout</url-pattern>
+  	</servlet-mapping>
+  	
+  	<servlet>
+   		<description></description>
     	<display-name>ChatServlet</display-name>
     	<servlet-name>ChatServlet</servlet-name>
     	<servlet-class>chatJSP.ChatServlet</servlet-class>

@@ -59,6 +59,7 @@ public class ActiveClients {
 		/* We have to check it because if the client ends the connection before sending data,
 		 * we will have a null element as username.
 		 */
+		System.out.println("We entered this function.");
 		if (username == null || username.equals("")){
 			return;
 		}

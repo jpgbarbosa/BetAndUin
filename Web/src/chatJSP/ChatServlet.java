@@ -160,7 +160,7 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 				HttpServletResponse resp = ChatServlet.clients.get(destination);
 				resp.getWriter().println(message + "<br/>");
 				resp.getWriter().flush();
-			} catch (IOException ex) {
+			} catch (Exception ex) {
 				// Trouble using the response object's writer so we remove
 				// the user and response object from the hashtable
 				removeClient(destination,null);
