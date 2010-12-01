@@ -286,7 +286,7 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
 	}
 
 	@Override
-	public void printUserMessage(String msg) throws java.rmi.RemoteException{
+	public void printUserMessage(String msg, String username) throws java.rmi.RemoteException{
 		System.out.println(msg + "\n");
 		System.out.print(" >>> ");
 	}

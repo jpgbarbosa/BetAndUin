@@ -10,7 +10,7 @@ package clientRMI;
 import java.rmi.Remote;
 
 public interface ServerOperations extends Remote{
-	public void printUserMessage(String msg) throws java.rmi.RemoteException;
+	public void printUserMessage(String msg, String user) throws java.rmi.RemoteException;
 	
 	/* This method is just to test whether the user is still active or not.
 	 * This steps is necessary because the RMIClient may fall and the server

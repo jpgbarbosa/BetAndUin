@@ -1,3 +1,5 @@
+<%@page import="serverWeb.WebServer" %>
+
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -35,8 +37,9 @@ function sendToMsgBox(id){
     String usersOn=null;
     
  	try{
-		((clientRMI.Client)session.getAttribute("user")).getUsername();
-		usersOn = ((clientRMI.Client)session.getAttribute("user")).getMainServer().clientShowUsers();
+ 		//TODO: Again, how to do it?
+		//((clientRMI.Client)session.getAttribute("user")).getUsername();
+		usersOn = WebServer.getMainServer().clientShowUsers();
 	} catch(Exception e){
 		System.out.println("exception splitAndAddNameToTable");
 	}

@@ -24,7 +24,6 @@ import users.User;
 import server.ClientOperations;
 
 import clientRMI.Client;
-import clientRMI.RMIClient;
 import clientRMI.ServerOperations;
 
 
@@ -32,9 +31,9 @@ public class WebServer extends HttpServlet{
 
 	private static final long serialVersionUID = 1L;
 
-	private Registry registry;
-	private ClientOperations mainServer;
-	private ServerOperations webClient;
+	private static Registry registry;
+	private static ClientOperations mainServer;
+	private static ServerOperations webClient;
 
 	@Override
 	public void init() throws ServletException
@@ -44,6 +43,7 @@ public class WebServer extends HttpServlet{
 			//registry = LocateRegistry.getRegistry(Constants.FIRST_RMI_SERVER_PORT);
 			registry = LocateRegistry.getRegistry(12000);
 			mainServer = (ClientOperations) registry.lookup("BetAndUinServer");
+			webClient = new Client(registry, mainServer);
 		}catch (AccessException e)
 		{
 			throw new ServletException(e);
@@ -74,7 +74,6 @@ public class WebServer extends HttpServlet{
 		}
 		else
 		{
-			webClient = new Client(registry, mainServer, username);
 			String value = mainServer.clientLogin(username, password, webClient, true);
 			
 			msg = value;
@@ -88,7 +87,7 @@ public class WebServer extends HttpServlet{
 			HttpSession session = request.getSession(true);
 
 			//User userData = new User(username);
-		    session.setAttribute("user", webClient);
+		    session.setAttribute("user", username);
 		    session.setAttribute("status", msg);
 			dispatcher = request.getRequestDispatcher("/Pages/Bet.html");
 			dispatcher.forward(request, response);
@@ -126,5 +125,9 @@ public class WebServer extends HttpServlet{
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
 	{
 		doGet(request, response);
+	}
+	
+	public static ClientOperations getMainServer(){
+		return mainServer;
 	}
 }

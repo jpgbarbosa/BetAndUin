@@ -9,30 +9,24 @@ import chatJSP.ChatServlet;
 import server.ClientOperations;
 
 public class Client extends UnicastRemoteObject implements ServerOperations{
-	String user;
 	ClientOperations mainServer=null;
 	Registry registry = null;
 
-	public Client(Registry registry, ClientOperations mainServer, String user) throws RemoteException {
+	public Client(Registry registry, ClientOperations mainServer) throws RemoteException {
 		super();
 		this.registry = registry;
 		this.mainServer = mainServer;
-		this.user = user;
 	}
 
 	
 	@Override
-	public void printUserMessage(String msg) throws RemoteException {
+	public void printUserMessage(String msg, String user) throws RemoteException {
 		ChatServlet.sendMessage(msg, user);
 	}
 
 	@Override
 	public boolean testUser() throws RemoteException {
 		return true;
-	}
-	
-	public String getUsername(){
-		return user;
 	}
 	
 	public ClientOperations getMainServer(){
