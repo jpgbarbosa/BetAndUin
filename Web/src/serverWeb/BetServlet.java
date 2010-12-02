@@ -6,6 +6,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import server.ClientOperations;
 
 import clientRMI.Client;
 
@@ -23,7 +26,7 @@ public class BetServlet extends HttpServlet {
 		String bet = request.getParameter("bet");
 		int credits = Integer.parseInt(request.getParameter("credits"));
 		
-		WebServer.getMainServer().clientMakeBet(user, gameNumber, bet, credits);
+		((ClientOperations)session.getAttribute("server")).clientMakeBet(user, gameNumber, bet, credits);
 	}
 
 }
