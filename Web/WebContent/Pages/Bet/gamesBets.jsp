@@ -60,8 +60,9 @@ function makeBet(id) {
        	});
        	
        	 
-       	var crs = document.getElementById("credits").innerHTML;
-       	document.getElementById("credits").innerHTML = crs - credits;
+       	var crs = parent.topFrame.document.getElementById("credits").innerHTML;
+       	parent.topFrame.document.getElementById("credits").innerHTML = parseInt(crs) - credits;
+       	parent.topFrame.document.getElementById("credits").innerHTML+=" credits";
        } else {
        		alert("Credits inserted are not valid!");
        }

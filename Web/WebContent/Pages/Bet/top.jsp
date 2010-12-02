@@ -24,17 +24,16 @@ body {
 		    String credits="";
 		
 			try{
-				//TODO: One more time!! xD
-				//((clientRMI.Client)session.getAttribute("user")).getUsername();
 				userName = (String)session.getAttribute("user");
 				credits = WebServer.getMainServer().clientShowCredits(userName);
 			} catch(Exception e){
-				System.out.println("exception splitAndAddNameToTable");
+				System.out.println("Exception getting Show Users Credits");
 			}
 		%>
 	      <tr>
 	        <td id="homenews" width="10%" align="left" style="font-family:Arial, Helvetica, sans-serif; font-weight: bold"><a href="Logout">Home News</a></td>
 		    <td width="*"></td>
+		    <td width="7%"> <input align="right" name="buttonCr" type="button" value="Refresh" onclick="location.reload(true);" /> </td>
 	        <td style="border-right:solid; border-right-color:#000000; font-family:Arial, Helvetica, sans-serif; font-weight: bold" width="25%" align="right" id="username"><%=userName%></td>
 	        <td style="border-right:solid; border-right-color:#000000; font-family:Arial, Helvetica, sans-serif; font-weight: bold" width="10%" align="center" id="credits"><%=credits%> credits</td>
 	        <td id="logout" width="7%" align="center" style="font-family:Arial, Helvetica, sans-serif"><a href="http://localhost:8080/BetAndUinWeb/Logout">Logout</a></td>

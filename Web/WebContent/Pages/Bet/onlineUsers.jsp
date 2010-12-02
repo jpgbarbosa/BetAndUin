@@ -37,11 +37,9 @@ function sendToMsgBox(id){
     String usersOn=null;
     
  	try{
- 		//TODO: Again, how to do it?
-		//((clientRMI.Client)session.getAttribute("user")).getUsername();
 		usersOn = WebServer.getMainServer().clientShowUsers();
 	} catch(Exception e){
-		System.out.println("exception splitAndAddNameToTable");
+		System.out.println("Error getting ShowUsers in OnlineUsers.jsp");
 	}
 	
 	if(usersOn!=null){
