@@ -47,12 +47,12 @@
   	
   	<servlet>
    		<description></description>
-    	<display-name>BetServer</display-name>
-    	<servlet-name>BetServer</servlet-name>
-    	<servlet-class>serverWeb.BetServer</servlet-class>
+    	<display-name>BetServlet</display-name>
+    	<servlet-name>BetServlet</servlet-name>
+    	<servlet-class>serverWeb.BetServlet</servlet-class>
   	</servlet>
   	<servlet-mapping>
-    	<servlet-name>BetServer</servlet-name>
-    	<url-pattern>/BetServer</url-pattern>
+    	<servlet-name>BetServlet</servlet-name>
+    	<url-pattern>/BetServlet</url-pattern>
   	</servlet-mapping>
 </web-app>

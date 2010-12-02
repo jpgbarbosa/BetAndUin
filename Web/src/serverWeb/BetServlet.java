@@ -10,9 +10,6 @@ import javax.servlet.http.HttpSession;
 
 import server.ClientOperations;
 
-import clientRMI.Client;
-
-
 public class BetServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
@@ -20,13 +17,17 @@ public class BetServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
 	{
 		HttpSession session = request.getSession();
-		String user =((String)request.getSession().getAttribute("user"));
+
+		String user =((String)session.getAttribute("user"));
 		
 		int gameNumber = Integer.parseInt(request.getParameter("gameNumber"));
+		
 		String bet = request.getParameter("bet");
 		int credits = Integer.parseInt(request.getParameter("credits"));
+
+		String cenas = ((ClientOperations)session.getAttribute("server")).clientMakeBet(user, gameNumber, bet, credits);
 		
-		((ClientOperations)session.getAttribute("server")).clientMakeBet(user, gameNumber, bet, credits);
+		((ClientOperations)session.getAttribute("server")).clientSendMsgUser(user, user, cenas);
 	}
 
 }
