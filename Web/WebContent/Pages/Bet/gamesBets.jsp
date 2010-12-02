@@ -1,4 +1,4 @@
-<%@page import="serverWeb.WebServer" %>
+<%@page import="server.ClientOperations" %>
 
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
@@ -93,7 +93,7 @@ function makeBet(id) {
   	try{
   		//TODO: Again, how to do it?
  		//((clientRMI.Client)session.getAttribute("user")).getUsername();
- 		gameString = WebServer.getMainServer().clientShowMatches();
+ 		gameString = ((ClientOperations)session.getAttribute("server")).clientShowMatches();
  	} catch(Exception e){
  		System.out.println("Error getting session by RMI");
  	}

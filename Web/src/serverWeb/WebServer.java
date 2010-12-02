@@ -89,6 +89,7 @@ public class WebServer extends HttpServlet{
 			//User userData = new User(username);
 		    session.setAttribute("user", username);
 		    session.setAttribute("status", msg);
+		    session.setAttribute("server", mainServer);
 			dispatcher = request.getRequestDispatcher("/Pages/Bet.html");
 			dispatcher.forward(request, response);
 			
@@ -125,9 +126,5 @@ public class WebServer extends HttpServlet{
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
 	{
 		doGet(request, response);
-	}
-	
-	public static ClientOperations getMainServer(){
-		return mainServer;
 	}
 }

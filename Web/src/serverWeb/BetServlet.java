@@ -6,6 +6,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import server.ClientOperations;
 
 public class BetServlet extends HttpServlet {
 
@@ -13,19 +16,18 @@ public class BetServlet extends HttpServlet {
 	
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
 	{
-		
-		
-		String user =((String)request.getSession().getAttribute("user"));
+		HttpSession session = request.getSession();
+
+		String user =((String)session.getAttribute("user"));
 		
 		int gameNumber = Integer.parseInt(request.getParameter("gameNumber"));
 		
 		String bet = request.getParameter("bet");
 		int credits = Integer.parseInt(request.getParameter("credits"));
+
+		String cenas = ((ClientOperations)session.getAttribute("server")).clientMakeBet(user, gameNumber, bet, credits);
 		
-		String cenas = WebServer.getMainServer().clientMakeBet(user, gameNumber, bet, credits);
-		
-		WebServer.getMainServer().clientSendMsgUser(user, user, cenas);
-		
+		((ClientOperations)session.getAttribute("server")).clientSendMsgUser(user, user, cenas);
 	}
 
 }

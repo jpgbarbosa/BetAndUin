@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import server.ClientOperations;
+
 
 public class Logout extends HttpServlet{
 
@@ -34,11 +36,12 @@ public class Logout extends HttpServlet{
 		HttpSession session = request.getSession(true);
 		
 		try{
+			String user = (String)session.getAttribute("user");
 			System.out.println("We have " + (String)session.getAttribute("user"));
-			WebServer.getMainServer().clientLeave((String)session.getAttribute("user"));
+			((ClientOperations)session.getAttribute("server")).clientLeave((String)session.getAttribute("user"));
 			session.invalidate();
 			
-			dispatcher = request.getRequestDispatcher("/Pages/invaliduser.html");
+			dispatcher = request.getRequestDispatcher("/Pages/invaliduser.html" + user);
 			dispatcher.forward(request, response);
 		} catch(Exception e){
 			dispatcher = request.getRequestDispatcher("/Pages/cenas.html");

@@ -1,4 +1,4 @@
-<%@page import="serverWeb.WebServer" %>
+<%@page import="server.ClientOperations" %>
 
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
@@ -37,7 +37,7 @@ function sendToMsgBox(id){
     String usersOn=null;
     
  	try{
-		usersOn = WebServer.getMainServer().clientShowUsers();
+		usersOn = ((ClientOperations)session.getAttribute("server")).clientShowUsers();
 	} catch(Exception e){
 		System.out.println("Error getting ShowUsers in OnlineUsers.jsp");
 	}
