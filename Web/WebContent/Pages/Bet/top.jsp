@@ -1,4 +1,4 @@
-<%@page import="serverWeb.WebServer" %>
+<%@page import="server.ClientOperations" %>
 
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
@@ -25,7 +25,7 @@ body {
 		
 			try{
 				userName = (String)session.getAttribute("user");
-				credits = WebServer.getMainServer().clientShowCredits(userName);
+				credits = ((ClientOperations)session.getAttribute("server")).clientShowCredits(userName);
 			} catch(Exception e){
 				System.out.println("Exception getting Show Users Credits");
 			}

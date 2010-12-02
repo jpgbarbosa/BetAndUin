@@ -10,8 +10,6 @@ package server;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.rmi.ConnectException;
-import java.rmi.RemoteException;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
@@ -131,16 +129,14 @@ public class ActiveClients {
 				else if(element.getRMIClient() != clientRMI){
 					try {
 						element.getRMIClient().printUserMessage(message, element.getUsername());
-					} catch (ConnectException e1){
+					} catch (Exception e1){
+						System.out.println("Check point 1");
 						/* This means that the client has logged off and consequently, we can remove it
 						 * from the active list.
 						 */
 						removeClient(element.getUsername());
 						/* We have to go back one position. */
 						i--;
-					}
-					catch (RemoteException e) {
-						e.printStackTrace();
 					}
 				}
 		    }
