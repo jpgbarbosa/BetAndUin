@@ -329,11 +329,20 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 		
 		if((element = activeClients.getActiveClient(userDest)) != null){
     		/* Checks if client isn't sending a message to himself/herself. */
-    		if(userDest.equals(userSender)){
-    			answer = "What's the point of sending messages to yourself?";
-    		} else {
+				if(userDest.equals(userSender)){
+					answer = "What's the point of sending messages to yourself?";
+					if (element.getRMIClient() != null){
+						try{
+		    				element.getRMIClient().testUser();
+		    				activeClients.sendMessageUser("BetAndUin: " + message, userDest);
+						}catch(Exception e){
+							
+						}
+					}
+				}	
+			
     			/* Now, we have check if this is a RMI Client and is still active. */
-    			if (element.getRMIClient() == null){
+				else if (element.getRMIClient() == null){
     				activeClients.sendMessageUser(userSender + " says: " + message, userDest);
         			answer = "Message ["+message+"] delivered!";
     			}
@@ -347,13 +356,11 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
     					answer = userDest + " is offline at the moment.";
     				}
     			}
-    			
-    		}
     	}else if(database.findClient(userDest) != null){
     		answer = "This client if offline at the moment.";
     	} else {
     		answer = "Username not registered.";
-    	}
+    	}		
     	return answer;
 	}
 	

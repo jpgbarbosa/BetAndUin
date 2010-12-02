@@ -34,7 +34,10 @@
 <script type="text/javascript">
 
 var comet = Comet("http://localhost:8080/BetAndUinWeb/");
-var codeToBet = ['1','X','2'];
+var codeToBet = ['1','X','2'];	
+
+
+
 function makeBet(id) {
 	
    var buttonGroup = id+"B";
@@ -50,21 +53,14 @@ function makeBet(id) {
 	   
 	   var gameNumber = document.getElementById(id+"-N").innerHTML;
        var credits = document.getElementById(id+"-C").value;
-	   
-	   if(!isNaN(parseInt(credits)) || !isNaN(parseInt(gameNumber))){           
+   	   
+	   if(!isNaN(parseInt(credits)) && !isNaN(parseInt(gameNumber))){           
            
-           alert("gameNumber="+gameNumber+"&bet="+codeToBet[ans]+"&credits="+credits);
-		   
-       	comet.post("BetServlet?"+"gameNumber="+gameNumber+"&bet="+codeToBet[ans]+"&credits="+credits,'',function(response) {
-       		alert("Message was sent");
-       	});
-       	
-       	 
-       	var crs = parent.topFrame.document.getElementById("credits").innerHTML;
-       	parent.topFrame.document.getElementById("credits").innerHTML = parseInt(crs) - credits;
-       	parent.topFrame.document.getElementById("credits").innerHTML+=" credits";
+            comet.post("BetServlet?"+"gameNumber="+gameNumber+"&bet="+codeToBet[ans]+"&credits="+credits,'',function(response) {});
+      	 
+	       	var crs = parent.topFrame.location.reload(true);
        } else {
-       		alert("Credits inserted are not valid!");
+       		alert("Credits inserted are not valid or game doesn't exist!");
        }
    }
 }

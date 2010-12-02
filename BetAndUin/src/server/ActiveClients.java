@@ -167,9 +167,7 @@ public class ActiveClients {
 				}
 				/* This is a RMI Client. */
 				else{
-					System.out.println("Here");
 					element.getRMIClient().printUserMessage(message, element.getUsername());
-					System.out.println("Here1");
 				}
 				
 			} catch (IOException e) {

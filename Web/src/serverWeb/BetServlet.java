@@ -22,7 +22,10 @@ public class BetServlet extends HttpServlet {
 		String bet = request.getParameter("bet");
 		int credits = Integer.parseInt(request.getParameter("credits"));
 		
-		WebServer.getMainServer().clientMakeBet(user, gameNumber, bet, credits);
+		String cenas = WebServer.getMainServer().clientMakeBet(user, gameNumber, bet, credits);
+		
+		WebServer.getMainServer().clientSendMsgUser(user, user, cenas);
+		
 	}
 
 }
