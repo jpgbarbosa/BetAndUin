@@ -16,6 +16,7 @@ public class BetServlet extends HttpServlet {
 	
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
 	{
+		HttpSession session = request.getSession();
 		String user =((String)request.getSession().getAttribute("user"));
 		
 		int gameNumber = Integer.parseInt(request.getParameter("gameNumber"));

@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.catalina.comet.CometEvent;
 import org.apache.catalina.comet.CometProcessor;
 
+import server.ClientOperations;
 import serverWeb.WebServer;
 
 import clientRMI.Client;
@@ -99,7 +100,7 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 			}
 		} else if (event.getEventType() == CometEvent.EventType.READ) {
 			// READ event indicates that input data is available
-			
+			HttpSession session = request.getSession();
 			
 			// The first line read indicates the destination user.
 			String dest = request.getReader().readLine().trim();
@@ -112,11 +113,11 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 			System.out.println("msg = [" + msg + "] to " + dest);
 			
 			if (msg != null && !msg.isEmpty()) {
-				String c = (String)request.getSession().getAttribute("user");
+				String c = (String)session.getAttribute("user");
 				if (dest.equals("allusers")) {
-					WebServer.getMainServer().clientSendMsgAll(user, msg);
+					((ClientOperations)session.getAttribute("server")).clientSendMsgAll(user, msg);
 				} else {
-					WebServer.getMainServer().clientSendMsgUser(c,dest, msg);
+					((ClientOperations)session.getAttribute("server")).clientSendMsgUser(c,dest, msg);
 				}
 			}
 			event.close();

@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import server.ClientOperations;
+
 
 public class Logout extends HttpServlet{
 
@@ -35,7 +37,7 @@ public class Logout extends HttpServlet{
 		
 		try{
 			System.out.println("We have " + (String)session.getAttribute("user"));
-			WebServer.getMainServer().clientLeave((String)session.getAttribute("user"));
+			((ClientOperations)session.getAttribute("server")).clientLeave((String)session.getAttribute("user"));
 			session.invalidate();
 			
 			dispatcher = request.getRequestDispatcher("/Pages/invaliduser.html");
