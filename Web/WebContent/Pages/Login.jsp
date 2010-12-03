@@ -4,6 +4,21 @@
 <head>
 
 <title>BetAndUin - Sign In</title>
+
+<script language="JavaScript" type="text/javascript">
+<!--
+function breakout_of_frame()
+{
+  // see http://www.thesitewizard.com/archive/framebreak.shtml
+  // for an explanation of this script and how to use it on your
+  // own website
+  if (top.location != location) {
+    top.location.href = document.location.href ;
+  }
+}
+
+</script>
+
 <style type="text/css">
 <!--
 
@@ -45,10 +60,11 @@ font-family: Arial, Helvetica, sans-serif;
 .style20 {font-family: "Times New Roman", Times, serif}
 
 -->
+
 </style>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 </head>
-<body class="sub">
+<body onload="breakout_of_frame()" class="sub" >
 <h1 align="center" class="style4" >&nbsp;</h1>
  <h1 align="center" class="style4" >BetAndUin
  </h1>
