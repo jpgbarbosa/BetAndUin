@@ -32,20 +32,17 @@ public class Logout extends HttpServlet{
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
 	{
-		RequestDispatcher dispatcher;
 		HttpSession session = request.getSession(true);
 		
 		try{
-			String user = (String)session.getAttribute("user");
 			System.out.println("We have " + (String)session.getAttribute("user"));
 			((ClientOperations)session.getAttribute("server")).clientLeave((String)session.getAttribute("user"));
 			session.invalidate();
 			
-			dispatcher = request.getRequestDispatcher("/Pages/invaliduser.html" + user);
-			dispatcher.forward(request, response);
+			response.sendRedirect("/BetAndUinWeb/Pages/Login.jsp");
 		} catch(Exception e){
-			dispatcher = request.getRequestDispatcher("/Pages/cenas.html");
-			dispatcher.forward(request, response);
+			//dispatcher = request.getRequestDispatcher("/Pages/cenas.html");
+			//dispatcher.forward(request, response);
 		}
 		
 		
