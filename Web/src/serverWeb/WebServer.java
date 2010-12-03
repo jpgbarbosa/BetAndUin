@@ -62,63 +62,70 @@ public class WebServer extends HttpServlet{
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
 	{
-		String username = request.getParameter("username");
-		String password= request.getParameter("password");
-		String msg = null;
-
-		response.setContentType("text/html");
+		String type = request.getParameter("type");
 		
-		if (username == null)
-		{
-			msg = "name parameter not found";
-		}
-		else
-		{
-			String value = mainServer.clientLogin(username, password, webClient, true);
-			
-			msg = value;
+		if(type!=null && type.equals("reset") ){
+			mainServer.clientResetCredits(request.getParameter("username"));
+		} else{
+			String username = request.getParameter("username");
+			String password= request.getParameter("password");
+			String msg = null;
 
-		}
+			response.setContentType("text/html");
+			
+			if (username == null)
+			{
+				msg = "name parameter not found";
+			}
+			else
+			{
+				String value = mainServer.clientLogin(username, password, webClient, true);
+				
+				msg = value;
 
-		RequestDispatcher dispatcher;
-		
-		if (msg.equals("log successful")){
-			
-			HttpSession session = request.getSession(true);
-
-			//User userData = new User(username);
-		    session.setAttribute("user", username);
-		    session.setAttribute("status", msg);
-		    session.setAttribute("server", mainServer);
-			dispatcher = request.getRequestDispatcher("/Pages/Bet.html");
-			dispatcher.forward(request, response);
-			
-		}
-		else{
-			HttpSession session = request.getSession(true);
-			
-			if (msg.equals("log error")){
-				session.setAttribute("status","\nUsername or password incorrect. Please try again...\n");
-		    }
-		    else if (msg.equals("log repeated")){
-		    	session.setAttribute("status","\nSorry, but this user is already logged in...\n");
-		    }
-		    else if (msg.equals("log taken")){
-		    	session.setAttribute("status","\nSorry, but this username isn't available, choose another.\n");
-		    }
-		    else if (msg.equals("username all")){
-		    	session.setAttribute("status","\nSorry, but the keyword 'all' is reserved, pick another name.\n");
-		    }
-		    else if(msg.equals("user not registed")){
-		    	session.setAttribute("status","Sorry, but you aren't registed yet.");
-		    }
-			else{
-				session.setAttribute("status","\nInsert your username and password. Register if you don't have an account yet!\n");
 			}
 
-			dispatcher = request.getRequestDispatcher("/Pages/Login.jsp");
-			dispatcher.forward(request, response);
+			RequestDispatcher dispatcher;
+			
+			if (msg.equals("log successful")){
+				
+				HttpSession session = request.getSession(true);
+
+				//User userData = new User(username);
+			    session.setAttribute("user", username);
+			    session.setAttribute("status", msg);
+			    session.setAttribute("server", mainServer);
+				dispatcher = request.getRequestDispatcher("/Pages/Bet.html");
+				dispatcher.forward(request, response);
+				
+			}
+			else{
+				HttpSession session = request.getSession(true);
+				
+				if (msg.equals("log error")){
+					session.setAttribute("status","\nUsername or password incorrect. Please try again...\n");
+			    }
+			    else if (msg.equals("log repeated")){
+			    	session.setAttribute("status","\nSorry, but this user is already logged in...\n");
+			    }
+			    else if (msg.equals("log taken")){
+			    	session.setAttribute("status","\nSorry, but this username isn't available, choose another.\n");
+			    }
+			    else if (msg.equals("username all")){
+			    	session.setAttribute("status","\nSorry, but the keyword 'all' is reserved, pick another name.\n");
+			    }
+			    else if(msg.equals("user not registed")){
+			    	session.setAttribute("status","Sorry, but you aren't registed yet.");
+			    }
+				else{
+					session.setAttribute("status","\nInsert your username and password. Register if you don't have an account yet!\n");
+				}
+
+				dispatcher = request.getRequestDispatcher("/Pages/Login.jsp");
+				dispatcher.forward(request, response);
+			}
 		}
+		
 		
 	}
 
