@@ -7,6 +7,7 @@ import java.rmi.server.UnicastRemoteObject;
 import chatJSP.ChatServlet;
 
 import server.ClientOperations;
+import serverWeb.BetServlet;
 
 @SuppressWarnings("serial")
 public class Client extends UnicastRemoteObject implements ServerOperations{
@@ -23,6 +24,11 @@ public class Client extends UnicastRemoteObject implements ServerOperations{
 	@Override
 	public void printUserMessage(String msg, String user) throws RemoteException {
 		ChatServlet.sendMessage(msg, user);
+		//TODO: Complete this.
+		/* We are receiving the game results. */
+		if (msg.split(" ")[0].equals("=========")){
+			BetServlet.sendMessage(msg, user);
+		}
 	}
 
 	@Override

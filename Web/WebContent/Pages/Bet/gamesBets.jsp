@@ -33,37 +33,47 @@
 <script type="text/javascript" src="comet.js"> </script>
 <script type="text/javascript">
 
-var comet = Comet("http://localhost:8080/BetAndUinWeb/");
-var codeToBet = ['1','X','2'];	
-
-
-
-function makeBet(id) {
+	var comet = Comet("http://localhost:8080/BetAndUinWeb/");
+	var codeToBet = ['1','X','2'];	
+	var board = document.getElementById('betsTable');
 	
-   var buttonGroup = id+"B";
-   var f = document.forms[0];
-   var radios = f[id + "B"];
-   var ans = -1;
-   for(var i=0;i<radios.length;i++){
-	   if (radios[i].value == "on") ans = i;
-   }
-   if (ans == -1) {
-	   alert("You have to bet on some result");
-   } else {
-	   
-	   var gameNumber = document.getElementById(id+"-N").innerHTML;
-       var credits = document.getElementById(id+"-C").value;
-   	   
-	   if(!isNaN(parseInt(credits)) && !isNaN(parseInt(gameNumber))){           
-           
-            comet.post("BetServlet?"+"gameNumber="+gameNumber+"&bet="+codeToBet[ans]+"&credits="+credits,'',function(response) {});
-      	 
-	       	var crs = parent.topFrame.location.reload(true);
-       } else {
-       		alert("Credits inserted are not valid or game doesn't exist!");
-       }
-   }
-}
+	// Register with Server for COMET callbacks.
+	comet.get("BetServlet?type=register", function(response) {
+		// updates the message board with the new response.
+		board.innerHTML = "NULL";
+	});
+
+	function reloadGames() {
+		location.reload(true);
+	}
+
+
+	function makeBet(id) {
+		
+	   var buttonGroup = id+"B";
+	   var f = document.forms[0];
+	   var radios = f[id + "B"];
+	   var ans = -1;
+	   for(var i=0;i<radios.length;i++){
+		   if (radios[i].value == "on") ans = i;
+	   }
+	   if (ans == -1) {
+		   alert("You have to bet on some result");
+	   } else {
+		   
+		   var gameNumber = document.getElementById(id+"-N").innerHTML;
+	       var credits = document.getElementById(id+"-C").value;
+	   	   
+		   if(!isNaN(parseInt(credits)) && !isNaN(parseInt(gameNumber))){           
+	           
+	            comet.post("BetServlet?"+"gameNumber="+gameNumber+"&bet="+codeToBet[ans]+"&credits="+credits,'',function(response) {});
+	      	 
+		       	var crs = parent.topFrame.location.reload(true);
+	       } else {
+	       		alert("Credits inserted are not valid or game doesn't exist!");
+	       }
+	   }
+	}
 
   
 </script>
@@ -76,7 +86,7 @@ function makeBet(id) {
 <h3 class="style1 style2"> Give your best Shot </h3>
 <div id="betsTable">
 <form name="betForms">
-<table width="100%" bordercolor="#FFCC00" style="background-color:#FFFFCC" cellpadding="3" cellspacing="3">
+<table id="gamesboard" width="100%" bordercolor="#FFCC00" style="background-color:#FFFFCC" cellpadding="3" cellspacing="3">
   <tr bordercolor="#000000" style="border-bottom:solid; border-bottom-color:#000000">
     <th width="4%" scope="col" class=style3>Game No.</th>
     <th width="*" scope="col" class=style3>Home Team</th>

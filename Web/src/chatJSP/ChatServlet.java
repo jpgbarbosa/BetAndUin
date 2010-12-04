@@ -156,6 +156,7 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 	public static void sendMessage(String message, String destination) {
 		// This method sends a message to a specific user
 		System.out.println("Destination: " + destination);
+		System.out.println("Message: " + message.split(" ")[0]);
 		synchronized (ChatServlet.clients) {
 			try {
 				HttpServletResponse resp = ChatServlet.clients.get(destination);
