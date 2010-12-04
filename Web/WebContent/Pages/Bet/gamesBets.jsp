@@ -35,17 +35,12 @@
 
 	var comet = Comet("http://localhost:8080/BetAndUinWeb/");
 	var codeToBet = ['1','X','2'];	
-	var board = document.getElementById('betsTable');
-	
+
 	// Register with Server for COMET callbacks.
 	comet.get("BetServlet?type=register", function(response) {
 		// updates the message board with the new response.
-		board.innerHTML = "NULL";
-	});
-
-	function reloadGames() {
 		location.reload(true);
-	}
+	});
 
 
 	function makeBet(id) {
@@ -66,7 +61,7 @@
 	   	   
 		   if(!isNaN(parseInt(credits)) && !isNaN(parseInt(gameNumber))){           
 	           
-	            comet.post("BetServlet?"+"gameNumber="+gameNumber+"&bet="+codeToBet[ans]+"&credits="+credits,'',function(response) {});
+	            comet.post("BetServlet?type=bet&"+"gameNumber="+gameNumber+"&bet="+codeToBet[ans]+"&credits="+credits,'',function(response) {});
 	      	 
 		       	var crs = parent.topFrame.location.reload(true);
 	       } else {
@@ -132,7 +127,6 @@
 </table>
 </form>
 <br />
-<input type="button" value="Reload" onClick="location.reload(true);">
 </div>
 </body>
 </html>

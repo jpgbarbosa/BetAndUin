@@ -1,9 +1,7 @@
 package chatJSP;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,9 +13,6 @@ import org.apache.catalina.comet.CometEvent;
 import org.apache.catalina.comet.CometProcessor;
 
 import server.ClientOperations;
-import serverWeb.WebServer;
-
-import clientRMI.Client;
 
 /**
  * 
@@ -96,6 +91,16 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 				} else if (reqType.equalsIgnoreCase("exit")) {
 					// if the client wants to quit, we do it.					
 					removeClient(sessionId, request);
+					
+					HttpSession session = request.getSession(true);
+					
+					try{
+						((ClientOperations)session.getAttribute("server")).clientLeave((String)session.getAttribute("user"));
+						session.invalidate();
+					}catch(Exception e){
+						
+					}
+					
 				}
 			}
 		} else if (event.getEventType() == CometEvent.EventType.READ) {
@@ -131,27 +136,6 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 			event.close();
 		}
 	}
-	
-	
-	/*
-	public static void sendMessageToAll(String message) {
-		// The message is for everyone.
-		synchronized (ChatServlet.clients) {
-			Set<String> clientKeySet = ChatServlet.clients.keySet();
-			// Let's iterate through the clients and send each one the message.
-			for (String client : clientKeySet) {
-				try {
-					HttpServletResponse resp = ChatServlet.clients.get(client);
-					resp.getWriter().println(message + "<br/>");
-					resp.getWriter().flush();
-				} catch (IOException ex) {
-					// Trouble using the response object's writer so we remove
-					// the user and response object from the hashtable
-					removeClient(client,null);
-				}
-			}
-		}
-	}*/
 
 	public static void sendMessage(String message, String destination) {
 		// This method sends a message to a specific user

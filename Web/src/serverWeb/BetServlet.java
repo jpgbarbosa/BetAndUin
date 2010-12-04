@@ -11,12 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.catalina.comet.CometEvent;
+import org.apache.catalina.comet.CometProcessor;
 
 import chatJSP.ChatServlet;
 
 import server.ClientOperations;
 
-public class BetServlet extends HttpServlet {
+public class BetServlet extends HttpServlet implements CometProcessor{
 
 	private static final long serialVersionUID = 1L;
 	
@@ -52,22 +53,18 @@ public class BetServlet extends HttpServlet {
 		// request and response exactly like in Servlets
 		HttpServletRequest request = event.getHttpServletRequest();
 		HttpServletResponse response = event.getHttpServletResponse();
+		HttpSession session = request.getSession();
 		
 		// Parse the something from "?type=something" in the URL.
 		String reqType = request.getParameter("type");
 
 		// Initialize the SESSION and Cache headers.
-		String sessionId = request.getSession().getId();
-		String user = (String) request.getSession().getAttribute("user");
-		System.out.println("User: " + user); 
-		System.out.println("SESSION: " + sessionId);
+		String sessionId = session.getId();
+		String user = (String) session.getAttribute("user");
+
 		response.setHeader("Pragma", "no-cache");
 		response.setHeader("Cache-control", "no-cache");
 		// Disabling the cache, means that the browser will _always_ call this code.
-
-
-		// Let's see which even is being processed right now.
-		System.out.println("Event:" + event.getEventType() + ".");
 		
 		// Since the "event" method is called for every kind of event, we have to decide what to do
 		// based on the Event type. There for we check for all 4 kinds of events: BEGIN, READ, END and ERROR
@@ -89,31 +86,24 @@ public class BetServlet extends HttpServlet {
 				} else if (reqType.equalsIgnoreCase("exit")) {
 					// if the client wants to quit, we do it.					
 					removeClient(sessionId, request);
-				}
-			}
-		} else if (event.getEventType() == CometEvent.EventType.READ) {
-			// READ event indicates that input data is available
-			HttpSession session = request.getSession();
-			
-			// The first line read indicates the destination user.
-			String dest = request.getReader().readLine().trim();
-			// If it is 'allusers',the message should be delivered to all users
+					/*The other part of the removing process (informing the betting server
+					 * that this client is moving away) is already being done by the other
+					 * comet processor, namely the ChatServlet.
+					 */
+					
+				} else if (reqType.equalsIgnoreCase("bet")){
 
-			// The second line is the message itself.
-			String msg = request.getReader().readLine().trim();
-			
-			// For debug purposes
-			System.out.println("msg = [" + msg + "] to " + dest);
-			
-			if (msg != null && !msg.isEmpty()) {
-				String c = (String)session.getAttribute("user");
-				if (dest.equals("allusers")) {
-					((ClientOperations)session.getAttribute("server")).clientSendMsgAll(user, msg);
-				} else {
-					((ClientOperations)session.getAttribute("server")).clientSendMsgUser(c,dest, msg);
+					int gameNumber = Integer.parseInt(request.getParameter("gameNumber"));
+					
+					String bet = request.getParameter("bet");
+					int credits = Integer.parseInt(request.getParameter("credits"));
+
+					String answer = ((ClientOperations)session.getAttribute("server")).clientMakeBet(user, gameNumber, bet, credits);
+					
+					((ClientOperations)session.getAttribute("server")).clientSendMsgUser(user, user, answer);
 				}
+		
 			}
-			event.close();
 		} else if (event.getEventType() == CometEvent.EventType.ERROR) {
 			// In case of any error, we terminate the connection.
 			// The connection remains in cache anyway, and it's later removed
@@ -127,38 +117,17 @@ public class BetServlet extends HttpServlet {
 
 	public static void sendMessage(String message, String destination) {
 		// This method sends a message to a specific user
-		System.out.println("Destinations: " + destination);
-		System.out.println("Message: " + message.split(" ")[0]);
 		synchronized (BetServlet.clients) {
 			try {
 				HttpServletResponse resp = BetServlet.clients.get(destination);
-				/*resp.getWriter().println(message + "<br/>");
-				resp.getWriter().flush();*/
-				resp.setStatus(300);
-				resp.setHeader("redirect", "index.html");
+				resp.getWriter().println(message + "<br/>");
+				resp.getWriter().flush();
 			} catch (Exception ex) {
 				// Trouble using the response object's writer so we remove
 				// the user and response object from the hashtable
 				removeClient(destination,null);
 			}
 		}
-	}
-	
-	
-	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
-	{
-		HttpSession session = request.getSession();
-
-		String user =((String)session.getAttribute("user"));
-		
-		int gameNumber = Integer.parseInt(request.getParameter("gameNumber"));
-		
-		String bet = request.getParameter("bet");
-		int credits = Integer.parseInt(request.getParameter("credits"));
-
-		String cenas = ((ClientOperations)session.getAttribute("server")).clientMakeBet(user, gameNumber, bet, credits);
-		
-		((ClientOperations)session.getAttribute("server")).clientSendMsgUser(user, user, cenas);
 	}
 
 }
