@@ -1,24 +1,8 @@
-<%@page import="java.util.*" %>
-
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 
-<title>BetAndUin - Sign In</title>
-
-<script language="JavaScript" type="text/javascript">
-<!--
-function breakout_of_frame()
-{
-  // see http://www.thesitewizard.com/archive/framebreak.shtml
-  // for an explanation of this script and how to use it on your
-  // own website
-  if (top.location != location) {
-    top.location.href = document.location.href ;
-  }
-}
-
-</script>
-
+<title>BetAndUin - Register</title>
 <style type="text/css">
 <!--
 
@@ -37,6 +21,16 @@ body {
 	font-size: 36px;
 	color:#FFFFFF;
 	font-family: Arial, Helvetica, sans-serif;
+}
+.style5 {
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.style6 {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #CCCCCC;
+	font-size: 16px;
+		font-family: Arial, Helvetica, sans-serif;
 }
 .style7{
 background-color:#FFFF33;
@@ -60,50 +54,53 @@ font-family: Arial, Helvetica, sans-serif;
 .style20 {font-family: "Times New Roman", Times, serif}
 
 -->
-
 </style>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 </head>
-<body onload="breakout_of_frame()" class="sub" >
+<body class="sub">
 <h1 align="center" class="style4" >&nbsp;</h1>
  <h1 align="center" class="style4" >BetAndUin
  </h1>
- <form action="http://localhost:8080/BetAndUinWeb/WebServer?type=login" method="post" name="form1" id="form1">
+ <form action="http://localhost:8080/BetAndUinWeb/WebServer?type=register" method="post" name="form1" id="form1">
   <table width="100%" border="0" cellspacing="0" cellpadding="1" class="TitleColor">
     <tr style="vertical-align: top">
       <td>
         <table width="100%" border="0" cellspacing="0" cellpadding="4">
           <tr class="headerTable">
-            <td width="20%" style="vertical-align: top; border:solid">              <h3>Sign In</h3>            </td>
-            <td width="80%" style="vertical-align: top; border:solid">              <h3>Sign In</h3>            </td>
+            <td width="20%" style="vertical-align: top; border:solid">              <h3>Register</h3>            </td>
+            <td width="80%" style="vertical-align: top; border:solid">              <h3>Register</h3>            </td>
           </tr>
           <tr style="vertical-align: top">
             <td width="20%" class="style8">
-              <label for="username"><strong>User Name</strong></label>&nbsp;<br />
+			  <label for="email"><strong>E-mail</strong></label>&nbsp;<br />
+              <input id="email" name="email" type="text" size="25" />
+              <br />
+			  <br />
+			  <label for="username"><strong>User Name</strong></label>&nbsp;<br />
               <input id="username" name="username" type="text" size="25" />
               <br />
 			  <br />
               <label for="password"><strong>Password</strong></label>&nbsp;<br />
               <input id="password" name="password" type="password" size="25" />
-              <h5>
-                <input type="submit" name="ButtonName" value="Sign In" />
-                <a href="Register/Register.jsp" class="style20">Not Registed?</a></h5></td>
+              <p>
+                <input type="submit" name="ButtonName" value="Regist" />
+                <a href="/BetAndUinWeb/Pages/Login.jsp" class="style20">Back to Main Page</a></h5></td>
+              </p>            </td>
             <td width="80%" class=style7>
               <h4 class="TitleColor">Instructions:</h4>
-              <%
+            	 <%
 				String status = (String) session.getAttribute("status");
 
 				if (status == null){
-					out.println("\nInsert your username and password. Register if you don't have an account yet!\n");
+					out.println("\nInsert a username, password and a valid e-mail address, so you can register on BetAndUin!\n");
 				}
 				else{
 			        out.println(status);
 			    }
 			    
 				
-				%>
-              <br />		    </td>
-          </tr>
+				%>  
+			</tr>
         </table>      </td>
     </tr>
   </table>

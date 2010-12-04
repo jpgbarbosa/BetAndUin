@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import users.User;
 import server.ClientOperations;
 
 import clientRMI.Client;
@@ -63,19 +62,20 @@ public class WebServer extends HttpServlet{
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
 	{
 		String type = request.getParameter("type");
+		String username = request.getParameter("username");
+		String password= request.getParameter("password");
+		String email= request.getParameter("email");
+		String msg = null;
 		
-		if(type!=null && type.equals("reset") ){
+		if(type != null && type.equals("reset")){
 			mainServer.clientResetCredits(request.getParameter("username"));
-		} else{
-			String username = request.getParameter("username");
-			String password= request.getParameter("password");
-			String msg = null;
-
+		}
+		else if(type != null && type.equals("login") ){
 			response.setContentType("text/html");
 			
-			if (username == null)
+			if (username == null || password == null)
 			{
-				msg = "name parameter not found";
+				msg = "name or password parameter not found";
 			}
 			else
 			{
@@ -122,6 +122,52 @@ public class WebServer extends HttpServlet{
 				}
 
 				dispatcher = request.getRequestDispatcher("/Pages/Login.jsp");
+				dispatcher.forward(request, response);
+			}
+		}
+		else if(type != null && type.equals("register")){
+			response.setContentType("text/html");
+			
+			if (username == null || password == null || email == null)
+			{
+				msg = "name or password parameter not found";
+			}
+			else
+			{
+				String value = mainServer.clientRegister(username, password, email, webClient, true);
+				
+				msg = value;
+
+			}
+
+			RequestDispatcher dispatcher;
+			
+			if (msg.equals("log successful")){
+				
+				HttpSession session = request.getSession(true);
+
+				//User userData = new User(username);
+			    session.setAttribute("user", username);
+			    session.setAttribute("status", msg);
+			    session.setAttribute("server", mainServer);
+				dispatcher = request.getRequestDispatcher("/Pages/Bet.html");
+				dispatcher.forward(request, response);
+				
+			}
+			else{
+				HttpSession session = request.getSession(true);
+				
+				if (msg.equals("log taken")){
+					session.setAttribute("status","\nSorry, but this user already exists. Please, choose a different username.\n");
+			    }
+			    else if (msg.equals("username all")){
+			    	session.setAttribute("status","\nSorry, but the username 'all' is invalid. Please, choose a different username.\n");
+			    }
+				else{
+					session.setAttribute("status","\nInsert a username, password and a valid e-mail address, so you can register on BetAndUin!\n");
+				}
+
+				dispatcher = request.getRequestDispatcher("/Pages/Register/Register.jsp");
 				dispatcher.forward(request, response);
 			}
 		}

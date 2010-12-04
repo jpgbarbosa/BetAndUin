@@ -8,6 +8,7 @@ import chatJSP.ChatServlet;
 
 import server.ClientOperations;
 
+@SuppressWarnings("serial")
 public class Client extends UnicastRemoteObject implements ServerOperations{
 	ClientOperations mainServer=null;
 	Registry registry = null;
