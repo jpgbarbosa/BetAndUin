@@ -46,8 +46,8 @@ function reset(user){
 		    <td width="*"></td>
 	        <td style="border-right:solid; border-right-color:#000000; font-family:Arial, Helvetica, sans-serif; font-weight: bold" width="25%" align="right" id="username"><%=userName%></td>
 	        <td style="font-family:Arial, Helvetica, sans-serif; font-weight: bold" width="10%" align="center" id="credits"><%=credits%> credits</td>
-	        <td width="2%" style="border-right:solid; border-right-color:#000000;"> <span style="color: blue; text-decoration: underline; cursor:hand; cursor:pointer;" onclick="reset('<%=userName%>');"> (reset) </span> </td>
-	        <td width="2%"> <input align="right" name="buttonCr" type="button" value="Refresh" onclick="location.reload(true);" /> </td>
+	        <td width="2%"> <input align="right" name="buttonCr" type="button" value="Reset" onclick="reset('<%=userName%>');" /> </td>
+	        <td width="2%" style="border-right:solid; border-right-color:#000000;"> </td>
 	        <td id="logout" width="5%" align="center" style="font-family:Arial, Helvetica, sans-serif"><a href="http://localhost:8080/BetAndUinWeb/Logout">Logout</a></td>
 	      </tr>
 	    </table>

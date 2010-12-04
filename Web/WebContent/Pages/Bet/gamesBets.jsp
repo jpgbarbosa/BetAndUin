@@ -39,6 +39,7 @@
 	// Register with Server for COMET callbacks.
 	comet.get("BetServlet?type=register", function(response) {
 		// updates the message board with the new response.
+		parent.topFrame.location.reload(true);
 		location.reload(true);
 	});
 
