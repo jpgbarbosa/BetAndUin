@@ -13,8 +13,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.catalina.comet.CometEvent;
 import org.apache.catalina.comet.CometProcessor;
 
-import chatJSP.ChatServlet;
-
 import server.ClientOperations;
 
 public class BetServlet extends HttpServlet implements CometProcessor{

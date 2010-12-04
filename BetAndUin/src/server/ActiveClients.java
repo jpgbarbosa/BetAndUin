@@ -51,6 +51,8 @@ public class ActiveClients {
 		clientHash.put(username, element);
 		
 		noActiveClients++;
+		
+		sendMessageAll("BetAndUinChat: " + username + " has entered the room.\n", null, null);
 	}
 	
 	public synchronized void removeClient(String username){
@@ -73,6 +75,8 @@ public class ActiveClients {
 		clientList.remove(element);
 		
 		noActiveClients--;
+		
+		sendMessageAll("BetAndUinChat: " + username + " has left the room.\n", null, null);
 		
 	}
 	

@@ -37,6 +37,17 @@
     	comet.get("ChatServlet?type=register", function(response) {
     		// updates the message board with the new response.
     		board.innerHTML = response;
+
+    		//This can eventually be improved.
+    		parent.onlineUsers.location.reload(true);
+
+    		/*
+    		var header = response.getHeader('typeOfMessage');
+
+    		if (header == 'chatUpdate'){
+        		
+    		}*/
+
     	});
     
     	function sendMsg() {
