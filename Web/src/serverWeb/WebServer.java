@@ -7,11 +7,15 @@
 
 package serverWeb;
 
+
 import java.io.IOException;
+import java.net.Socket;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Hashtable;
+import java.util.Map.Entry;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -27,12 +31,14 @@ import clientRMI.ServerOperations;
 
 
 public class WebServer extends HttpServlet{
-
+	private int clientsOn = 0;
 	private static final long serialVersionUID = 1L;
 
 	private static Registry registry;
 	private static ClientOperations mainServer;
 	private static ServerOperations webClient;
+	private static ServerOperations multiplexer = null;
+	private static Hashtable <String, ServerOperations> clientsHash;
 
 	@Override
 	public void init() throws ServletException
@@ -43,6 +49,10 @@ public class WebServer extends HttpServlet{
 			registry = LocateRegistry.getRegistry(12000);
 			mainServer = (ClientOperations) registry.lookup("BetAndUinServer");
 			webClient = new Client(registry, mainServer);
+			clientsHash = new Hashtable<String, ServerOperations>();
+			if (multiplexer == null)
+				multiplexer = new Client(registry, mainServer);
+			mainServer.addWebMultiplexer(multiplexer);
 		}catch (AccessException e)
 		{
 			throw new ServletException(e);
@@ -89,6 +99,10 @@ public class WebServer extends HttpServlet{
 			
 			if (msg.equals("log successful")){
 				
+				clientsOn++;
+				System.out.println("We have " + clientsOn + " clients on.");
+				
+				clientsHash.put(username, webClient);
 				HttpSession session = request.getSession(true);
 
 				//User userData = new User(username);
@@ -179,5 +193,16 @@ public class WebServer extends HttpServlet{
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
 	{
 		doGet(request, response);
+	}
+	
+	public static void multiplexer(String msg) throws RemoteException {
+		if (clientsHash != null){
+		
+			for (Entry<String, ServerOperations> entry: clientsHash.entrySet()){
+				System.out.println("Print for: " + entry.getKey());
+				entry.getValue().printUserMessage(msg, entry.getKey());
+			}
+		}
+		
 	}
 }

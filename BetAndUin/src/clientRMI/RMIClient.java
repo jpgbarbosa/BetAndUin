@@ -295,4 +295,10 @@ public class RMIClient extends UnicastRemoteObject implements ServerOperations{
     public boolean testUser() throws java.rmi.RemoteException{
     	return true;
     }
+
+	@Override
+	public void multiplexer(String msg) throws RemoteException {
+		//Do nothing. This method is only used on the web client.
+		
+	}
 }
