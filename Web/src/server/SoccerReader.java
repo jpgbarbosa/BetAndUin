@@ -50,6 +50,8 @@ public class SoccerReader {
 		
 		for (int i = 0; i < headlines.length; i++){
 			String [] outcome = latestHeadlines(headlines[i], section);
+			if(outcome == null)
+				return null;
 			for (int z = 0; z < outcome.length; z++){
 				answer.add(outcome[z]);
 			}
