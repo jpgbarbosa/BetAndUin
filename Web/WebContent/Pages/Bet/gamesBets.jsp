@@ -62,7 +62,7 @@
 	   	   
 		   if(!isNaN(parseInt(credits)) && !isNaN(parseInt(gameNumber))){           
 	           
-	            comet.post("BetServlet?type=bet&"+"gameNumber="+gameNumber+"&bet="+codeToBet[ans]+"&credits="+credits,'',function(response) {});
+	            comet.get("BetServlet?type=bet&"+"gameNumber="+gameNumber+"&bet="+codeToBet[ans]+"&credits="+credits,'',function(response) {});
 	      	 
 		       	var crs = parent.topFrame.location.reload(true);
 	       } else {
