@@ -53,7 +53,17 @@ function showHide(id){
 	String [] body;
 
 	SoccerReader reader = new SoccerReader();
-	String [] newsArray = reader.latestHeadlines("Benfica", "sport");
+
+	String [] newsArray = reader.latestHeadlines("Portugal", "sport");
+	if(newsArray == null){%>
+		<div align="center" class="style1"> It looks like we had a fatal error. We already send two superbs engineers to solve the problem. Try again later! </div>
+		<br>
+		<div align="center"> <img alt="" src="fatal-error-cartoon.jpg"> </div>
+		<br>
+		<div align="center" class="style1"> Just in case, please take a walk while you wait... </div>
+	<%
+		return;
+	}
 
 	for(int i=0; i<newsArray.length; i++){
 	  
@@ -61,7 +71,9 @@ function showHide(id){
   		news = newsArray[i].split("<>")[1];
   		
   		body = reader.recentBody(ID);
-
+  		if(body == null){
+  			
+  		}
   	
   %>	  
 	  <div align="center" style="display: none; color: white; font-family: Arial, Helvetica, sans-serif;" id=<%=i+"-CA"%>> 	 <h3 align="center" style="font-family: Arial, Helvetica, sans-serif;"> <%=body[0] %></h3>

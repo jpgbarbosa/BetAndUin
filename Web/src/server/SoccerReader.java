@@ -64,7 +64,8 @@ public class SoccerReader {
 	        // If we get a Redirect or an Error (3xx, 4xx and 5xx)
 	        if (connection.getResponseCode() >= 300) {
 	        	// We want more information about what went wrong.
-	        	debug(connection);
+	        	//debug(connection);
+	        	return null;
 	        }
 	        
 	        
@@ -139,8 +140,8 @@ public class SoccerReader {
 			
 			// If we get a Redirect or an Error (3xx, 4xx and 5xx)
 	        if (connection.getResponseCode() >= 300) {
-	        	// We want more information about what went wrong.
-	        	debug(connection);
+	        	//debug(connection);
+	        	return null;
 	        }	        
 	        
 	        // Response body from InputStream.
@@ -170,7 +171,7 @@ public class SoccerReader {
 			
 			return data;
 	
-		} catch(IOException e) { 
+		} catch(IOException e) {
 	    	e.printStackTrace();
 	    } catch (XPathExpressionException e) {
 			e.printStackTrace();
