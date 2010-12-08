@@ -170,9 +170,11 @@ public class TCPClient {
 			        	serverAnswer = in.readUTF();
 					}
 					
+					String splittedAnswer = serverAnswer.split(" ")[0];
+					
 					/* The server informs the client that there was some kind of error in the validation
 					 * process. */
-		        	if (!serverAnswer.equals("log successful")){
+		        	if (!serverAnswer.equals("log successful") && !splittedAnswer.equals("BetAndUinChat:")){
 		        		/* This client isn't registered in the system. */
 		        		if (serverAnswer.equals("log error")){
 		        			System.out.println("\nUsername or password incorrect. Please try again...\n");
@@ -194,7 +196,7 @@ public class TCPClient {
 		        		error = true;
 		        	}
 		        	/* The login has been validated, so the client can now proceed. */
-		        	else if (serverAnswer.equals("log successful")){
+		        	else if (serverAnswer.equals("log successful") || splittedAnswer.equals("BetAndUinChat:")){
 		        		loggedIn = true;
 		        		writeThread.setUserName(command.split(" ")[1]);
 		        		System.out.println("You are now logged in!");
@@ -236,7 +238,7 @@ public class TCPClient {
 			     * with the socket connection.
 			     */
 			    clientRead();
-			    
+
 			    /* Resets the counters, the lock flags and the login variables. */
 				retries = 0;
 				retrying = 0;

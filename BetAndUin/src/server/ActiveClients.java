@@ -10,6 +10,7 @@ package server;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.rmi.RemoteException;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,6 +35,7 @@ import clientRMI.ServerOperations;
 public class ActiveClients {
 	private Hashtable<String, ClientListElement> clientHash;
 	private List <ClientListElement> clientList;
+	private ServerOperations webMultiplexer = null;
 	
 	private int noActiveClients;
 	
@@ -41,6 +43,10 @@ public class ActiveClients {
 		 clientHash = new Hashtable<String, ClientListElement>();
 		 clientList = new LinkedList<ClientListElement>();
 		 noActiveClients = 0;
+	}
+	
+	public synchronized void addWebMultiplexer(ServerOperations webMultiplexer){
+		this.webMultiplexer = webMultiplexer;
 	}
 	
 	public synchronized void addClient(String username, Socket socket, ServerOperations client, boolean isWeb){
@@ -130,7 +136,7 @@ public class ActiveClients {
 						System.out.println("IO from sendMessageAll (ActiveClients): " + e);
 					}
 				}
-				else if(element.getRMIClient() != clientRMI){
+				else if(element.getRMIClient() != clientRMI && !element.isWeb){
 					try {
 						element.getRMIClient().printUserMessage(message, element.getUsername());
 					} catch (Exception e1){
@@ -144,6 +150,14 @@ public class ActiveClients {
 					}
 				}
 		    }
+			
+			try {
+				if (webMultiplexer != null){
+					webMultiplexer.multiplexer(msg);
+				}
+			} catch (RemoteException e) {
+				webMultiplexer = null;
+			}
 		}
 	}
 	

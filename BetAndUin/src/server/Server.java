@@ -398,5 +398,13 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 		System.out.println("We are removing " + username + "...");
 		activeClients.removeClient(username);
 	}
+
+	@Override
+	public void addWebMultiplexer(ServerOperations webMultiplexer)
+			throws RemoteException {
+		System.out.println("We just added the webMultiplexer.");
+		activeClients.addWebMultiplexer(webMultiplexer);
+		
+	}
 }
 
