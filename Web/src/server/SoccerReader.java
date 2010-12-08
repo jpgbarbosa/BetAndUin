@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -42,6 +43,20 @@ public class SoccerReader {
 		}
 	}
 	
+	
+	public ArrayList<String> mergeHeadlines(String [] headlines, String section){
+		
+		ArrayList<String> answer = new ArrayList<String>();
+		
+		for (int i = 0; i < headlines.length; i++){
+			String [] outcome = latestHeadlines(headlines[i], section);
+			for (int z = 0; z < outcome.length; z++){
+				answer.add(outcome[z]);
+			}
+		}
+		
+		return answer;
+	}
 	
 	public String [] latestHeadlines(String query, String section) {
 		// Used to store the last ID.

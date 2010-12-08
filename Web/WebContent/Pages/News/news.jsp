@@ -1,11 +1,12 @@
 <%@page import="server.SoccerReader"%>
+<%@page import="java.util.ArrayList"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Top 10 Football News</title>
+<title>Top 30 Football News</title>
 <style type="text/css">
 <!--
 .style1 {
@@ -34,8 +35,9 @@ body {
 <script type="text/javascript">
 
 function showHide(id){
-	
-	for(var i=0; i<10; i++){
+
+	/* Watchout for this magic numbers! */
+	for(var i=0; i<30; i++){
 		document.getElementById(i+"-CA").style.display='none';
 	}
 	
@@ -53,10 +55,11 @@ function showHide(id){
 	String [] body;
 
 	SoccerReader reader = new SoccerReader();
-
-	String [] newsArray = reader.latestHeadlines("Portugal", "sport");
+	String [] headlines = {"Benfica", "Sporting", "Porto"};
+	
+	ArrayList<String> newsArray = reader.mergeHeadlines(headlines, "sport");
 	if(newsArray == null){%>
-		<div align="center" class="style1"> It looks like we had a fatal error. We already send two superbs engineers to solve the problem. Try again later! </div>
+		<div align="center" class="style1"> It looks like we had a fatal error. We already send two superb engineers to solve the problem. Try again later! </div>
 		<br>
 		<div align="center"> <img alt="" src="fatal-error-cartoon.jpg"> </div>
 		<br>
@@ -65,10 +68,10 @@ function showHide(id){
 		return;
 	}
 
-	for(int i=0; i<newsArray.length; i++){
+	for(int i=0; i<newsArray.size(); i++){
 	  
-  		ID = newsArray[i].split("<>")[0];
-  		news = newsArray[i].split("<>")[1];
+  		ID = newsArray.get(i).split("<>")[0];
+  		news = newsArray.get(i).split("<>")[1];
   		
   		body = reader.recentBody(ID);
   		if(body == null){
@@ -86,13 +89,13 @@ function showHide(id){
 
 <table align="center" width="90%" style="background-color:#FFFFCC" cellpadding="3" cellspacing="3">
   <tr>
-    <th scope="col" style="border-bottom:solid; border-bottom-color: #000000"><span class="style1">Top Ten News</span></th>
+    <th scope="col" style="border-bottom:solid; border-bottom-color: #000000"><span class="style1">Top Thirty News</span></th>
   </tr>
   
-<% for(int x=0; x<newsArray.length; x++){%>
+<% for(int x=0; x<newsArray.size(); x++){%>
 
 	<tr style="border:solid; border-color: #000000">
-	    <th  style="cursor:hand; cursor:pointer;" id=<%=x+"-NA"%> scope="col" onclick="showHide(this.id)"> <%=newsArray[x].split("<>")[1] %></th>
+	    <th  style="cursor:hand; cursor:pointer;" id=<%=x+"-NA"%> scope="col" onclick="showHide(this.id)"> <%=newsArray.get(x).split("<>")[1] %></th>
 	</tr> 
 	
 <%	}%>
