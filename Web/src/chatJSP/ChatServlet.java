@@ -94,6 +94,7 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 					
 					HttpSession session = request.getSession(true);
 					
+					System.out.println("We are exiting the COMET.");
 					try{
 						((ClientOperations)session.getAttribute("server")).clientLeave((String)session.getAttribute("user"));
 						session.invalidate();
