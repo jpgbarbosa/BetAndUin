@@ -23,9 +23,9 @@ function sendToMsgBox(id){
 </script>
 
 <body>
-<p> 
-  <input align="middle" name="button" type="button" value="Refresh" onclick="location.reload(true);" />
-</p>
+<br>
+<br>
+
 <p>
 <table align="center" width="100%" bordercolor="#FFCC00" style="background-color:#FFFFCC" cellpadding="3" cellspacing="3" id="betTable">
   <tbody>

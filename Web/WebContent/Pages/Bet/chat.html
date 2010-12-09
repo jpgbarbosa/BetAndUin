@@ -32,21 +32,23 @@
     	// Initiate Comet object
     	var comet = Comet("http://localhost:8080/BetAndUinWeb/");
     	var board = document.getElementById('messagesboard');
+    	var charsRead = 0;
     	
     	// Register with Server for COMET callbacks.
     	comet.get("ChatServlet?type=register", function(response) {
     		// updates the message board with the new response.
     		board.innerHTML = response;
+    		var sub = response.substring(charsRead);
+			charsRead = response.length - charsRead;
+			
+			/* If it's a BetAndUinChat message, it means a user has entered
+			 * or exited the room.
+			 */
+    		if (charsRead > 15 && sub.substring(0,14) == 'BetAndUinChat:'){
+    			parent.onlineUsers.location.reload(true);
+    		}
 
-    		//This can eventually be improved.
-    		parent.onlineUsers.location.reload(true);
-
-    		/*
-    		var header = response.getHeader('typeOfMessage');
-
-    		if (header == 'chatUpdate'){
-        		
-    		}*/
+    		charsRead = response.length;
 
     	});
     
