@@ -16,7 +16,7 @@
    		<description></description>
     	<display-name>WebServer</display-name>
     	<servlet-name>WebServer</servlet-name>
-    	<servlet-class>serverWeb.WebServer</servlet-class>
+    	<servlet-class>servlets.WebServer</servlet-class>
   	</servlet>
   	<servlet-mapping>
     	<servlet-name>WebServer</servlet-name>
@@ -27,7 +27,7 @@
    		<description></description>
     	<display-name>Logout</display-name>
     	<servlet-name>Logout</servlet-name>
-    	<servlet-class>serverWeb.Logout</servlet-class>
+    	<servlet-class>servlets.Logout</servlet-class>
   	</servlet>
   	<servlet-mapping>
     	<servlet-name>Logout</servlet-name>
@@ -38,7 +38,7 @@
    		<description></description>
     	<display-name>ChatServlet</display-name>
     	<servlet-name>ChatServlet</servlet-name>
-    	<servlet-class>chatJSP.ChatServlet</servlet-class>
+    	<servlet-class>servlets.ChatServlet</servlet-class>
   	</servlet>
   	<servlet-mapping>
     	<servlet-name>ChatServlet</servlet-name>
@@ -49,7 +49,7 @@
    		<description></description>
     	<display-name>BetServlet</display-name>
     	<servlet-name>BetServlet</servlet-name>
-    	<servlet-class>serverWeb.BetServlet</servlet-class>
+    	<servlet-class>servlets.BetServlet</servlet-class>
   	</servlet>
   	<servlet-mapping>
     	<servlet-name>BetServlet</servlet-name>

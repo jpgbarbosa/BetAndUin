@@ -9,7 +9,7 @@ package server;
 
 import java.rmi.Remote;
 
-import clientRMI.ServerOperations;
+import client.ServerOperations;
 
 
 public interface ClientOperations extends Remote{
