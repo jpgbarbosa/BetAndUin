@@ -6,9 +6,7 @@
 // User user = session.getAttribute(...);
 // if the retrieved object is null an invalid user page should be displayed
 
-	users.User user = (users.User) session.getAttribute("user");
-
-	if (user == null)
+	if (session == null)
 	{
 %>
     <jsp:forward page="/invaliduser.html"></jsp:forward>

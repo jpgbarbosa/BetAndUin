@@ -3,20 +3,17 @@ package clientRMI;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Map.Entry;
-import java.util.Hashtable;
 
-import chatJSP.ChatServlet;
 
 import server.ClientOperations;
-import serverWeb.BetServlet;
-import serverWeb.WebServer;
+import servlets.BetServlet;
+import servlets.ChatServlet;
+import servlets.WebServer;
 
 @SuppressWarnings("serial")
 public class Client extends UnicastRemoteObject implements ServerOperations{
 	ClientOperations mainServer=null;
 	Registry registry = null;
-	private Hashtable <String, ServerOperations> clientsHash;
 
 	public Client(Registry registry, ClientOperations mainServer) throws RemoteException {
 		super();
@@ -47,7 +44,6 @@ public class Client extends UnicastRemoteObject implements ServerOperations{
 
 	@Override
 	public void multiplexer(String msg) throws RemoteException {
-		System.out.println("Entered this function.");
 		WebServer.multiplexer(msg);
 		
 	}

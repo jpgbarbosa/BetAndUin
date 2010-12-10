@@ -9,7 +9,7 @@ package server;
 
 import java.rmi.Remote;
 
-import client.ServerOperations;
+import clientRMI.ServerOperations;
 
 public interface ClientOperations extends Remote{
 	public String clientLogin(String user, String pass, ServerOperations client, boolean isWeb) throws java.rmi.RemoteException;

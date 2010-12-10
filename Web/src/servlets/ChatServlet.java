@@ -14,7 +14,6 @@ import org.apache.catalina.comet.CometProcessor;
 
 import server.ClientOperations;
 
-
 public class ChatServlet extends HttpServlet implements CometProcessor {
 
 	private static final long serialVersionUID = -7025063881838597634L;
@@ -27,12 +26,14 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 	// Method called when a client is registers with the CometProcessor
 	private static void addClient(String nickName, HttpServletResponse clientResponseObject) {
 		ChatServlet.clients.put(nickName, clientResponseObject);
+
 	}
 
 	
 	// Method called after an Exception is thrown when the server tries to write to a client's socket.
 	private static void removeClient(String nickName, HttpServletRequest request) {
 		if (ChatServlet.clients.remove(nickName) != null) {
+
 		}
 	}
 

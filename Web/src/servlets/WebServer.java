@@ -25,8 +25,8 @@ import javax.servlet.http.HttpSession;
 
 import server.ClientOperations;
 
-import client.Client;
-import client.ServerOperations;
+import clientRMI.Client;
+import clientRMI.ServerOperations;
 
 
 public class WebServer extends HttpServlet{
@@ -43,6 +43,7 @@ public class WebServer extends HttpServlet{
 	public void init() throws ServletException
 	{
 		try{
+
 			registry = LocateRegistry.getRegistry(12000);
 			mainServer = (ClientOperations) registry.lookup("BetAndUinServer");
 			webClient = new Client(registry, mainServer);
@@ -100,7 +101,7 @@ public class WebServer extends HttpServlet{
 				
 				clientsHash.put(username, webClient);
 				HttpSession session = request.getSession(true);
-
+				
 			    session.setAttribute("user", username);
 			    session.setAttribute("status", msg);
 			    session.setAttribute("server", mainServer);
