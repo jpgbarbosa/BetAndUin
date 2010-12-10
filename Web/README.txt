@@ -1,6 +1,6 @@
 Correr o sevidor principal com a seguinte configuração:
 
-	java -jar server 1 localhost -debugging
+	java -jar server.jar 1 localhost -debugging
 	
 Os ficheiros relativos ao BetAndUinServer, WebContent e ficheiros .java, devem ser colocados num servidor Tomcat.
 
