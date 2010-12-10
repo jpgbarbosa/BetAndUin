@@ -16,12 +16,13 @@ import java.rmi.registry.Registry;
 import java.util.Hashtable;
 import java.util.Map.Entry;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import common.Constants;
 
 import server.ClientOperations;
 
@@ -91,13 +92,13 @@ public class WebServer extends HttpServlet{
 				msg = value;
 
 			}
-
-			RequestDispatcher dispatcher;
 			
 			if (msg.equals("log successful")){
 				
 				clientsOn++;
-				System.out.println("We have " + clientsOn + " clients on.");
+				if (Constants.DEBUGGING_SERVER){
+					System.out.println("We have " + clientsOn + " clients on.");
+				}
 				
 				clientsHash.put(username, webClient);
 				HttpSession session = request.getSession(true);
@@ -153,8 +154,6 @@ public class WebServer extends HttpServlet{
 				msg = value;
 
 			}
-
-			RequestDispatcher dispatcher;
 			
 			if (msg.equals("log successful")){
 				
@@ -201,7 +200,6 @@ public class WebServer extends HttpServlet{
 		if (clientsHash != null){
 		
 			for (Entry<String, ServerOperations> entry: clientsHash.entrySet()){
-				System.out.println("Print for: " + entry.getKey());
 				entry.getValue().printUserMessage(msg, entry.getKey());
 			}
 		}

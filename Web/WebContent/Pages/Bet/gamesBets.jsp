@@ -1,4 +1,5 @@
 <%@page import="server.ClientOperations" %>
+<%@page import="common.Constants" %>
 
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
@@ -77,6 +78,16 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Insert title here</title>
 </head>
+
+<%
+	if (session.getAttribute("user") == null)
+	{
+%>
+    <jsp:forward page="/Pages/Login.jsp"></jsp:forward>
+<%
+	} 
+%>
+
 <body>
 <h1 class="style1"> Bet </h1>
 <h3 class="style1 style2"> Give your best Shot </h3>
@@ -101,7 +112,9 @@
  		//((clientRMI.Client)session.getAttribute("user")).getUsername();
  		gameString = ((ClientOperations)session.getAttribute("server")).clientShowMatches();
  	} catch(Exception e){
- 		System.out.println("Error getting session by RMI");
+ 		if (Constants.DEBUGGING_CLIENT){
+ 			System.out.println("Error getting session by RMI");
+ 		}
  	}
     	
     	games = gameString.split("\n");

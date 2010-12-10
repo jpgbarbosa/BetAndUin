@@ -65,7 +65,6 @@ public class ActiveClients {
 		/* We have to check it because if the client ends the connection before sending data,
 		 * we will have a null element as username.
 		 */
-		System.out.println("We entered this function.");
 		if (username == null || username.equals("")){
 			return;
 		}
@@ -140,7 +139,6 @@ public class ActiveClients {
 					try {
 						element.getRMIClient().printUserMessage(message, element.getUsername());
 					} catch (Exception e1){
-						System.out.println("Check point 1");
 						/* This means that the client has logged off and consequently, we can remove it
 						 * from the active list.
 						 */

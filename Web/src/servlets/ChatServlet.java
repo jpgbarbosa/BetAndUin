@@ -12,6 +12,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.catalina.comet.CometEvent;
 import org.apache.catalina.comet.CometProcessor;
 
+import common.Constants;
+
 import server.ClientOperations;
 
 public class ChatServlet extends HttpServlet implements CometProcessor {
@@ -26,15 +28,12 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 	// Method called when a client is registers with the CometProcessor
 	private static void addClient(String nickName, HttpServletResponse clientResponseObject) {
 		ChatServlet.clients.put(nickName, clientResponseObject);
-
 	}
 
 	
 	// Method called after an Exception is thrown when the server tries to write to a client's socket.
 	private static void removeClient(String nickName, HttpServletRequest request) {
-		if (ChatServlet.clients.remove(nickName) != null) {
-
-		}
+		ChatServlet.clients.remove(nickName);
 	}
 
 	
@@ -57,15 +56,19 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 		// Initialize the SESSION and Cache headers.
 		String sessionId = request.getSession().getId();
 		String user = (String) request.getSession().getAttribute("user");
-		System.out.println("User: " + user); 
-		System.out.println("SESSION: " + sessionId);
+		if (Constants.DEBUGGING_SERVER){
+			System.out.println("User: " + user); 
+			System.out.println("SESSION: " + sessionId);
+		}
 		response.setHeader("Pragma", "no-cache");
 		response.setHeader("Cache-control", "no-cache");
 		// Disabling the cache, means that the browser will _always_ call this code.
 
 
 		// Let's see which even is being processed right now.
-		System.out.println("Event:" + event.getEventType() + ".");
+		if (Constants.DEBUGGING_SERVER){
+			System.out.println("Event:" + event.getEventType() + ".");
+		}
 		
 		// Since the "event" method is called for every kind of event, we have to decide what to do
 		// based on the Event type. There for we check for all 4 kinds of events: BEGIN, READ, END and ERROR
@@ -89,8 +92,7 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 					removeClient(sessionId, request);
 					
 					HttpSession session = request.getSession(true);
-					
-					System.out.println("We are exiting the COMET.");
+
 					try{
 						((ClientOperations)session.getAttribute("server")).clientLeave((String)session.getAttribute("user"));
 						session.invalidate();
@@ -112,7 +114,9 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 			String msg = request.getReader().readLine().trim();
 			
 			// For debug purposes
-			System.out.println("msg = [" + msg + "] to " + dest);
+			if (Constants.DEBUGGING_SERVER){
+				System.out.println("msg = [" + msg + "] to " + dest);
+			}
 			
 			if (msg != null && !msg.isEmpty()) {
 				String c = (String)session.getAttribute("user");
@@ -136,7 +140,9 @@ public class ChatServlet extends HttpServlet implements CometProcessor {
 
 	public static void sendMessage(String message, String destination) {
 		// This method sends a message to a specific user
-		System.out.println("Destination: " + destination);
+		if (Constants.DEBUGGING_SERVER){
+			System.out.println("Destination: " + destination);
+		}
 		synchronized (ChatServlet.clients) {
 			try {
 				HttpServletResponse resp = ChatServlet.clients.get(destination);

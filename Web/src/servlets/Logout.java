@@ -34,7 +34,6 @@ public class Logout extends HttpServlet{
 		HttpSession session = request.getSession(true);
 		
 		try{
-			System.out.println("We have " + (String)session.getAttribute("user"));
 			((ClientOperations)session.getAttribute("server")).clientLeave((String)session.getAttribute("user"));
 			session.invalidate();
 			

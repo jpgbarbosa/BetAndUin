@@ -7,6 +7,15 @@
 <head>
 </head>
 
+<%
+	if (session.getAttribute("user") == null)
+	{
+%>
+    <jsp:forward page="/Pages/Login.jsp"></jsp:forward>
+<%
+	} 
+%>
+
 <style type="text/css">
 body {
 	background-color:#000000;

@@ -27,15 +27,12 @@ public class BetServlet extends HttpServlet implements CometProcessor{
 	// Method called when a client is registers with the CometProcessor
 	private static void addClient(String nickName, HttpServletResponse clientResponseObject) {
 		BetServlet.clients.put(nickName, clientResponseObject);
-		// TODO 1: Write your code here.
 	}
 
 	
 	// Method called after an Exception is thrown when the server tries to write to a client's socket.
 	private static void removeClient(String nickName, HttpServletRequest request) {
-		if (BetServlet.clients.remove(nickName) != null) {
-			// TODO 2: Write your code here
-		}
+		BetServlet.clients.remove(nickName);
 	}
 
 	

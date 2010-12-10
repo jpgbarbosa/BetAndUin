@@ -8,6 +8,16 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Insert title here</title>
 </head>
+
+<%
+	if (session.getAttribute("user") == null)
+	{
+%>
+    <jsp:forward page="/Pages/Login.jsp"></jsp:forward>
+<%
+	} 
+%>
+
 <style type="text/css">
 body {
 	background-color:#FAE701;
