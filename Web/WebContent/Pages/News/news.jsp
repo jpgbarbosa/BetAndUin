@@ -50,7 +50,14 @@ function showHide(id){
 
 <body>
 
-<%
+	<%
+	if (session.getAttribute("user") == null){
+		%>
+		<jsp:forward page="/Pages/Login.jsp"></jsp:forward>
+		<%
+	} 
+
+
 	String news="", ID;
 
 	String [] body;

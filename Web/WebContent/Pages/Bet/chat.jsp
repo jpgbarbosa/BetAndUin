@@ -1,3 +1,6 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
     <head>
     <style type="text/css">
@@ -64,27 +67,31 @@
     
     	function sendMsg() {
     		var msg = document.getElementById('message').value;
-    		var dest = document.getElementById('destination').value;
-    		if (dest == "") {
-    			msg = "allusers\n" + msg;
-    		}
-    		else {
-    			msg = dest + "\n" + msg
-    		}
-    			
-    		comet.post("ChatServlet", msg, function(response) {
-    			// Do Nothing
-    		})
-    		// Clears the value of the message element
-    		document.getElementById('message').value = '';
+    		if(msg==""){
+    			alert("Message field is empty!");
+    		} else {
+	    		var dest = document.getElementById('destination').value;
+	    		if (dest == "") {
+	    			msg = "allusers\n" + msg;
+	    		}
+	    		else {
+	    			msg = dest + "\n" + msg
+	    		}
+	    			
+	    		comet.post("ChatServlet", msg, function(response) {
+	    			// Do Nothing
+	    		});
+	    		// Clears the value of the message element
+	    		document.getElementById('message').value = '';
+	    
+	    	}
     	}
-  	
     	
     	function quitChat() {
     		comet.post("ChatServlet?type=exit", '', function(response) {
     			// Exits browser
     			window.location='about:blank';
-    		})
+    		});
     	}
     	
     	
