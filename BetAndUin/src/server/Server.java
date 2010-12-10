@@ -354,12 +354,15 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 	        			answer = "Message [" + message + "] delivered!";
     				}catch(Exception e){
     					answer = userDest + " is offline at the moment.";
+    					activeClients.sendMessageUser("BetAndUin: Message was not delivered", userSender);
     				}
     			}
     	}else if(database.findClient(userDest) != null){
     		answer = "This client if offline at the moment.";
+    		activeClients.sendMessageUser("BetAndUin: Message was not delivered!", userSender);
     	} else {
     		answer = "Username not registered.";
+    		activeClients.sendMessageUser("BetAndUin: Message was not delivered!", userSender);
     	}		
     	return answer;
 	}
@@ -395,16 +398,19 @@ public class Server extends UnicastRemoteObject implements ClientOperations{
 	
 	@Override
 	public void clientLeave(String username) throws RemoteException {
-		System.out.println("We are removing " + username + "...");
+		if(Constants.DEBUGGING_SERVER){
+			System.out.println("We are removing " + username + "...");
+		}
 		activeClients.removeClient(username);
 	}
 
 	@Override
 	public void addWebMultiplexer(ServerOperations webMultiplexer)
 			throws RemoteException {
-		System.out.println("We just added the webMultiplexer.");
+		if(Constants.DEBUGGING_SERVER){
+			System.out.println("We just added the webMultiplexer.");
+		}
 		activeClients.addWebMultiplexer(webMultiplexer);
-		
 	}
 }
 

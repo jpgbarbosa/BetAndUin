@@ -105,8 +105,11 @@ public class WebServer extends HttpServlet{
 			    session.setAttribute("user", username);
 			    session.setAttribute("status", msg);
 			    session.setAttribute("server", mainServer);
-				dispatcher = request.getRequestDispatcher("/Pages/Bet.html");
-				dispatcher.forward(request, response);
+			    
+			    response.sendRedirect("/BetAndUinWeb/Pages/Bet.jsp");
+			    
+				//dispatcher = request.getRequestDispatcher("/Pages/Bet.jsp");
+				//dispatcher.forward(request, response);
 				
 			}
 			else{
@@ -131,8 +134,9 @@ public class WebServer extends HttpServlet{
 					session.setAttribute("status","\nInsert your username and password. Register if you don't have an account yet!\n");
 				}
 
-				dispatcher = request.getRequestDispatcher("/Pages/Login.jsp");
-				dispatcher.forward(request, response);
+				response.sendRedirect("/BetAndUinWeb/Pages/Login.jsp");
+				//dispatcher = request.getRequestDispatcher("/Pages/Login.jsp");
+				//dispatcher.forward(request, response);
 			}
 		}
 		else if(type != null && type.equals("register")){
@@ -159,8 +163,11 @@ public class WebServer extends HttpServlet{
 			    session.setAttribute("user", username);
 			    session.setAttribute("status", msg);
 			    session.setAttribute("server", mainServer);
-				dispatcher = request.getRequestDispatcher("/Pages/Bet.html");
-				dispatcher.forward(request, response);
+			    
+			    response.sendRedirect("/BetAndUinWeb/Pages/Bet.jsp");
+			    
+				//dispatcher = request.getRequestDispatcher("/Pages/Bet.jsp");
+				//dispatcher.forward(request, response);
 				
 			}
 			else{
@@ -176,8 +183,10 @@ public class WebServer extends HttpServlet{
 					session.setAttribute("status","\nInsert a username, password and a valid e-mail address, so you can register on BetAndUin!\n");
 				}
 
-				dispatcher = request.getRequestDispatcher("/Pages/Register/Register.jsp");
-				dispatcher.forward(request, response);
+				response.sendRedirect("/BetAndUinWeb/Pages/Register/Register.jsp");
+				
+				//dispatcher = request.getRequestDispatcher("/Pages/Register/Register.jsp");
+				//dispatcher.forward(request, response);
 			}
 		}
 	}
